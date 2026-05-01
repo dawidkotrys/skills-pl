@@ -6,22 +6,26 @@ Ekosystem skili do pracy z Claude Code metodą agentic coding. Pokrywa pełny cy
 
 ```
 agentic-coding/
-├── onboarding/                  # 7 dokumentów wprowadzających
+├── onboarding/                  # 9 dokumentów wprowadzających (główny flow + warianty)
 ├── skille/                      # 10 skili wykonawczych
 └── commands/                    # 4 slash commands do session-state save/restore
 ```
 
 ### Onboarding (zacznij tu)
 
-Czytaj sekwencyjnie:
+Sugerowana kolejność:
 
 1. [01-fundamenty.md](./onboarding/01-fundamenty.md) — LLM constraints, smart/dumb zone, Memento problem, Clear>Compact
 2. [02-zasady-metodologii.md](./onboarding/02-zasady-metodologii.md) — pełna lista 28 zasad agentic coding
 3. [03-konwencje.md](./onboarding/03-konwencje.md) — `CONTEXT.md`, `doc/decisions/`, `doc/backlog.md`
-4. [04-flow-maly-task.md](./onboarding/04-flow-maly-task.md) — bug fix, mała feature, drobny refactor
-5. [05-flow-duza-inicjatywa.md](./onboarding/05-flow-duza-inicjatywa.md) — nowy moduł, cross-cutting concern
-6. [06-flow-bug.md](./onboarding/06-flow-bug.md) — diagnose loop, build feedback FIRST
-7. [07-instalacja.md](./onboarding/07-instalacja.md) — jak zainstalować skille
+4. **[00-glowny-flow.md](./onboarding/00-glowny-flow.md)** — choreografia Manager ↔ User ↔ Executor (sequence diagram, tabela komend, save/restore session)
+5. [04-flow-maly-task.md](./onboarding/04-flow-maly-task.md) — bug fix, mała feature, drobny refactor
+6. [04a-rola-agenta-wykonawczego.md](./onboarding/04a-rola-agenta-wykonawczego.md) — co dostajesz, co robisz, czego nie robisz (counterpart code-manager z perspektywy executora)
+7. [05-flow-duza-inicjatywa.md](./onboarding/05-flow-duza-inicjatywa.md) — nowy moduł, cross-cutting concern
+8. [06-flow-bug.md](./onboarding/06-flow-bug.md) — diagnose loop, build feedback FIRST
+9. [07-instalacja.md](./onboarding/07-instalacja.md) — jak zainstalować skille
+
+**Pierwszy raz?** 01-03 (fundamenty/zasady/konwencje), potem **00** dla pełnego obrazu choreografii, dopiero potem warianty per skala (04, 05, 06) i 04a (rola executora).
 
 ### Skille wykonawcze
 
