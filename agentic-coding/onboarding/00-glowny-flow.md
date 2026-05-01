@@ -22,46 +22,46 @@ User pełni rolę **bus'a komunikacyjnego** — Manager nie rozmawia bezpośredn
 
 ---
 
-## ASCII sequence diagram (large initiative — pełny flow)
+## ASCII sequence diagram — large initiative (canonical: grill-first)
+
+**Kluczowa zasada:** Manager wchodzi do gry **dopiero gdy PRD istnieje na dysku.** Grill+PRD odbywają się w **default agent** (fresh smart zone, brak managera w kontekście). To minimalizuje bloat managera i pozwala mu w Tryb 4B czytać czysty PRD jako input zamiast brać udział w jego tworzeniu.
 
 ```
-USER             MANAGER (Opus)         EXECUTOR (Sonnet)        DYSK / ARTEFAKTY
-────             ──────────────         ─────────────────        ─────────────────
+USER             DEFAULT AGENT          MANAGER (Opus)         EXECUTOR (Sonnet)        DYSK / ARTEFAKTY
+────             ─────────────          ──────────────         ─────────────────        ─────────────────
 
-(1) wstępny brief
-    ───────────► /code-manager Tryb 1
-                 session start
-                 klasyfikuje skalę
-                 ◄── 🔴 large? propozycje ─
+(1) wstępny brief (w głowie usera lub plik notatkowy)
+    [day shift — fresh smart zone, MANAGER NIE jest jeszcze w grze]
 
-(2) wybieram                                                    [day shift — Twoja pełna uwaga]
-    kierunek ──► Tryb 1
-                 "to large → /grill"
+(2) USER → /grill-with-docs
+    rozmowa user ↔ default agent
+    przesłuchanie planu, rozwiązywanie zależności          ──►   CONTEXT.md (nowe terminy)
+                                                                  doc/decisions/NNNN-*.md (jeśli ADR)
 
-(3) /grill-with-docs (rozmowa user ↔ default agent)      ──►   CONTEXT.md (nowe terminy)
-                                                                doc/decisions/NNNN-*.md (jeśli ADR)
+(3) USER → /to-prd
+    rozmowa user ↔ default agent
+    konwersja rozmowy na destination document               ──►  doc/decisions/NNNN-<slug>.md (PRD)
+                                                                  doc/backlog.md (vertical slices z acceptance criteria)
 
-(4) /to-prd (rozmowa user ↔ default agent)               ──►   doc/decisions/NNNN-<slug>.md (PRD)
-                                                                doc/backlog.md (vertical slices)
+(4) USER → /code-manager (PIERWSZE wejście managera, Tryb 4B bridge mode)
+                          czyta PRD + slices + CONTEXT.md
+                          wybiera pierwszy slice z userem
+                          pisze bridge plan (~30-50 linii)  ──►   doc/plans/<branch>.md
+                          ◄── wiadomość-do-wkleienia dla executora ─
 
-(5) wracam      ──► Tryb 4B (bridge mode)
-    do managera     czyta PRD + slices
-                    pisze bridge plan          ──►              doc/plans/<branch>.md
-                    ◄── wiadomość-do-wkleienia ─
+(5) USER kopiuje ─────────────────────────────────────► EXECUTOR
+    do okna executora                                     czyta plan + PRD + CLAUDE.md + CONTEXT.md
+    (np. nowy worktree)                                   (manager albo user) tworzy worktree
+                                                          odpala /kronikarz live   ──►   doc/history/YYYY-MM-DD-<branch>.md
+                                                          wypełnia "Cel" + "Architektura" PRZED kodem
+                                                          implementuje slice (vertical)
+                                                          update kronika per decyzja (Implementacja log)
+                                                          komentarze w kodzie linkują → kronika
+                                                          przygotowuje scenariusze testowe inline
+                                                          ◄── raport "STOP #1: user QA" ─
 
-(6) wklej do  ──────────────────────────────► EXECUTOR
-    executora                                  czyta plan + PRD + CLAUDE.md + CONTEXT.md
-                                               (manager albo user) tworzy worktree
-                                               odpala /kronikarz live   ──►   doc/history/YYYY-MM-DD-<branch>.md
-                                               wypełnia "Cel" + "Architektura" PRZED kodem
-                                               implementuje slice (vertical)
-                                               update kronika per decyzja (Implementacja log)
-                                               komentarze w kodzie linkują → kronika
-                                               przygotowuje scenariusze testowe inline
-                                               ◄── raport "STOP #1: user QA" ─
-
-(7) STOP #1   ←── scenariusze inline ── EXECUTOR czeka
-    USER QA       [opcja] /design-checker (jeśli UI) ──►        doc/design-reviews/...
+(6) STOP #1   ←── scenariusze inline ── EXECUTOR czeka
+    USER QA       [opcja] /design-checker (jeśli UI) ──►          doc/design-reviews/...
     klikam, czytam, dotykam (zasada #26)
     ✅ ok / ⚠️ poprawki / ❌ broken ────► EXECUTOR
                                           jeśli ⚠️ → fix-y in-branch (commit "fix per user QA")
@@ -70,40 +70,40 @@ USER             MANAGER (Opus)         EXECUTOR (Sonnet)        DYSK / ARTEFAKT
                                           ◄── raport końcowy do managera ─
                                           "user QA ✅, zlecam /critical-code-review"
 
-(8) wklej     ──► MANAGER Tryb 5A
+(7) wklej     ──► MANAGER Tryb 5A
     raport        pull branch + read kronika + plan
-                  /critical-code-review                ──►      doc/code-reviews/YYYY-MM-DD-<branch>.md
+                  /critical-code-review                ──►        doc/code-reviews/YYYY-MM-DD-<branch>.md
                   tłumaczy findings na human language (zasada #4 manager-values)
                   ◄── findings + rekomendacje per-finding ─
 
-(9) STOP #2   per-finding decyzje (FIX / BACKLOG / SKIP)
+(8) STOP #2   per-finding decyzje (FIX / BACKLOG / SKIP)
     ────────► MANAGER
               pisze wiadomość-do-wkleienia (technical, decyzje)
               ◄── wiadomość ─
 
-(10) wklej   ─────────────────────────────► EXECUTOR
+(9) wklej    ─────────────────────────────► EXECUTOR
                                             fix-y dla FIX
                                             entry do backlogu dla BACKLOG (przygotowane, manager wstawia)
                                             SKIP z templatem (Impact / Koszt / Rationale / Re-evaluate)
                                             update kronika (sekcja Code review findings + decyzje)
                                             ◄── raport "STOP #3: re-test" ─
 
-(11) STOP #3 ←── scenariusze których dotykały zmiany ── EXECUTOR
+(10) STOP #3 ←── scenariusze których dotykały zmiany ── EXECUTOR
      re-test    (pomijasz jeśli wszystko BACKLOG/SKIP)
      ✅ ok ───► EXECUTOR
                                             ◄── raport końcowy do managera ─
                                             "wszystko ✅, zlecam /kronikarz close"
 
-(12) wklej   ──► MANAGER Tryb 5B
+(11) wklej   ──► MANAGER Tryb 5B
                  sanity check kroniki (czy wszystkie sekcje wypełnione)
-                 /kronikarz close                      ──►      doc/history/... (sekcja Manager close)
-                                                                doc/backlog.md (DONE entries z BACKLOG)
-                                                                doc/history/README.md (indeks)
-                                                                git commit kroniki
+                 /kronikarz close                      ──►        doc/history/... (sekcja Manager close)
+                                                                  doc/backlog.md (DONE entries z BACKLOG)
+                                                                  doc/history/README.md (indeks)
+                                                                  git commit kroniki
                  pull-up review (luki kronika ↔ backlog)
                  ◄── human-language podsumowanie do merge ─
 
-(13) AUTONOMY GATE: "merge?"
+(12) AUTONOMY GATE: "merge?"
      "akcept" ──► MANAGER Tryb 5C
                   git push
                   merge do source brancha (PR / direct per CLAUDE.md)
@@ -111,7 +111,29 @@ USER             MANAGER (Opus)         EXECUTOR (Sonnet)        DYSK / ARTEFAKT
                   ◄── final raport ─
 ```
 
-**Mały task** (Ścieżka B z [04](./04-flow-maly-task.md)) używa skróconego flow: pomija kroki (3) (4) (`/grill-with-docs`, `/to-prd`) i wchodzi od razu w Tryb 4A (full plan mode) przy kroku (5). Reszta sekwencji 3-STOP + autonomy gate identyczna.
+### Alternative entry — manager-first (fallback gdy nie wiesz czy to large)
+
+Jeśli wchodzisz do managera Tryb 1 z **wstępnym briefem** zamiast iść grill-first — manager klasyfikuje skalę i odsyła z powrotem:
+
+```
+1. USER → /code-manager Tryb 1 ("wstępny brief, chcę X")
+2. MANAGER klasyfikuje, jeśli 🔴 large → "Canonical flow to grill+PRD bez mnie. Odpal /grill-with-docs, potem /to-prd, wróć z gotowym PRD."
+3. USER → /grill-with-docs → /to-prd (default agent, BEZ managera)
+4. USER → /code-manager (świeża sesja, Tryb 4B bridge) → kontynuacja od kroku (4) canonical flow
+```
+
+To jest **fallback, nie default**. Kosztuje więcej bo manager Tryb 1 obciąża swój kontekst recap'em backlogu/git state niepotrzebnie przy large initiative. Lepsza praktyka: gdy wiesz że to large → idź od razu do `/grill-with-docs`, manager poczeka.
+
+### Mały task — manager-first jest poprawny
+
+**Mały task** (Ścieżka B z [04](./04-flow-maly-task.md)) używa skróconego flow: pomija (`/grill-with-docs`, `/to-prd`) i wchodzi od razu w `/code-manager` **Tryb 4A (full plan mode)** — tu manager-first jest canonical bo nie ma PRD do napisania. Manager pisze pełny plan (~150-200 linii) i dispatch-uje do executora. Reszta sekwencji 3-STOP + autonomy gate identyczna jak w large.
+
+| Skala | Entry point | Tryb managera |
+|---|---|---|
+| 🟢 Bardzo mały | bezpośrednio default agent → impl → commit | n/a (manager pominięty) |
+| 🟢/🟡 Mały-średni | `/code-manager` (manager-first) | Tryb 4A full plan |
+| 🔴 Large initiative | `/grill-with-docs` → `/to-prd` → `/code-manager` | Tryb 4B bridge |
+| Bug | `/diagnose` lub `/code-manager` jeśli formalny flow | Tryb 4A jeśli przez managera |
 
 ---
 

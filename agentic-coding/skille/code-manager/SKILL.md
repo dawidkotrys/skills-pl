@@ -168,10 +168,19 @@ Przy każdej rekomendacji oznacz skalę:
 - Brak jasnej "destination" — wiadomo CO ale nie jak ma wyglądać efekt
 - Task w backlogu ma rozmazane acceptance criteria
 
-**Co robisz przy large initiative:**
-1. **Nie skacz od razu w Tryb 4.** Powiedz userowi: "To duża inicjatywa — proponuję najpierw grilling + PRD."
-2. Rekomenduj sekwencję: `/grill-with-docs` (jeśli design niepełny) → `/to-prd` (utrwalenie destination z vertical slices i acceptance criteria w `doc/backlog.md`) → wracamy do mnie w Trybie 4 (bridge mode).
-3. Jeśli user już zrobił `/to-prd` — przejdź od razu do Tryb 4 w bridge mode.
+**Co robisz przy large initiative — dwa przypadki:**
+
+**(A) PRD już istnieje** (canonical flow — user zrobił `/grill-with-docs` + `/to-prd` w default agent **przed** wywołaniem Ciebie):
+
+- Sprawdź `doc/decisions/` (świeży PRD, ostatnio modyfikowany) i `doc/backlog.md` (vertical slices z acceptance criteria)
+- Przejdź **od razu do Tryb 4B (bridge mode)** — wybierzcie pierwszy slice, pisz bridge plan
+- **NIE rób Tryb 1 propozycji rekomendacji startowych** — to już zrobił `/to-prd` (PRD jest source of truth)
+
+**(B) PRD nie istnieje** (user wszedł do Ciebie z briefem zamiast iść grill-first — fallback):
+
+1. **Nie skacz od razu w Tryb 4.** Powiedz userowi: *"Canonical flow przy large initiative to grill+PRD **bez mnie**. Odpal `/grill-with-docs`, potem `/to-prd`, wróć z gotowym PRD do świeżej mojej sesji."*
+2. Rekomenduj sekwencję: `/grill-with-docs` → `/to-prd` → świeża sesja Tryb 4B z gotowymi artefaktami
+3. **Dlaczego canonical:** grill+PRD w default agent context (fresh smart zone) jest tańsze niż bloatowanie Twojego kontekstu dyskusją design. Zasada #1 (smart zone) + #6 (day shift) — Ty jako manager masz operować na czystym PRD jako input, nie być uczestnikiem jego tworzenia.
 
 **Co NIE robisz:** nie decydujesz o pracy bez potwierdzenia usera. Pytasz: "Co robimy?" albo "Który z tych kierunków Cię interesuje?".
 
@@ -366,23 +375,50 @@ Manager **orkiestruje** inne skile w stosownych momentach. Twoja rola to wskazyw
 
 ### Skille planowania — handoff flow
 
-Manager **integruje się** z `/grill-with-docs` i `/to-prd` przez user-mediated handoff'y. User odpala skille (sam decyduje), ale Manager **wie gdzie zapisują output** i czyta go w Tryb 4B (bridge mode). Pełen flow large initiative:
+Manager **integruje się** z `/grill-with-docs` i `/to-prd` przez user-mediated handoff'y. User odpala skille (sam decyduje), ale Manager **wie gdzie zapisują output** i czyta go w Tryb 4B (bridge mode).
+
+**Kluczowa zasada:** Manager wchodzi do gry **dopiero gdy PRD istnieje na dysku.** Grill+PRD odbywają się w default agent (fresh smart zone, manager NIE jest jeszcze w grze).
+
+#### Canonical flow large initiative — grill-first (RECOMMENDED)
 
 ```
-1. User → Manager (Tryb 1: session start ze wstępnym scope, np. "chcę zrobić X")
-2. Manager → User: "Klasyfikuję jako 🔴 large initiative. Odpal /grill-with-docs zanim zaczniemy planować."
-3. User odpala /grill-with-docs → grilling session → output: zaktualizowany CONTEXT.md (terminy domeny) + ewentualne ADR-y w doc/decisions/
-4. User → Manager: "Grilling done, lecimy z PRD"
-5. Manager → User: "Odpal /to-prd. Zapisze PRD w doc/decisions/NNNN-<slug>.md + vertical slices w doc/backlog.md."
-6. User odpala /to-prd → output: PRD + slices
-7. User → Manager: "PRD gotowy, wybierzmy pierwszy slice"
-8. Manager → User (Tryb 4B): czyta doc/decisions/NNNN-<slug>.md (PRD) + doc/backlog.md (slices) → pisze bridge plan dla agenta wykonawczego (krótki, ~30-50 linii, bez powtarzania PRD)
-9. ... (lifecycle taska — Sekwencja 3-STOP, patrz Tryb 4)
+1. User → /grill-with-docs (default agent, BEZ MANAGERA)
+   → output: CONTEXT.md (nowe terminy), ewentualne ADR-y w doc/decisions/
+
+2. User → /to-prd (default agent, BEZ MANAGERA)
+   → output: PRD w doc/decisions/NNNN-<slug>.md + vertical slices w doc/backlog.md
+
+3. User → /code-manager (PIERWSZE wejście managera, Tryb 4B bridge mode)
+   "Mam PRD <X> gotowy, wybierzmy pierwszy slice"
+
+4. Manager Tryb 4B → czyta PRD + slices + CONTEXT.md → wybiera slice z user → pisze bridge plan
+   → output: doc/plans/<branch>.md (~30-50 linii, bez powtarzania PRD)
+
+5. Manager → User: wiadomość-do-wkleienia dla executora
+
+6. ... (lifecycle taska — Sekwencja 3-STOP, patrz Tryb 4)
 ```
+
+#### Alternative entry — manager-first (FALLBACK)
+
+Jeśli user wchodzi do Ciebie Tryb 1 z **wstępnym briefem** zamiast iść grill-first:
+
+```
+1. User → Manager Tryb 1 ("wstępny scope, chcę X")
+2. Ty klasyfikujesz, jeśli 🔴 large:
+   "Canonical flow to grill+PRD bez mnie. Odpal /grill-with-docs, potem /to-prd, wróć z gotowym PRD do świeżej mojej sesji."
+3. User → /grill-with-docs → /to-prd (default agent)
+4. User → świeża sesja /code-manager Tryb 4B (kontynuacja od kroku 3 canonical flow)
+```
+
+To jest **fallback, nie default**. Round-trip Tryb 1 → grill → PRD → Tryb 4B kosztuje więcej bo:
+- Twój Tryb 1 obciąża Twój kontekst recap'em backlogu/git state — niepotrzebnie przy large initiative
+- Twoja sesja po Tryb 1 nie jest już "fresh" dla Tryb 4B → smart zone mniej clean
+- Lepsza praktyka po Tryb 1 redirect: **user zamyka Twoją sesję** i otwiera świeżą gdy PRD gotowy
 
 **Rola Managera w tym flow:**
 
-- **Tryb 1 (Session start)** — sprawdza czy istnieje już PRD dla bieżącego scope (`doc/decisions/` glob lookup). Jeśli scope niejasny i brak PRD → rekomenduje `/grill-with-docs`. Jeśli grilling done ale brak PRD → rekomenduje `/to-prd`. Jeśli oba done → przechodzi bezpośrednio do Tryb 4B.
+- **Tryb 1 (Session start)** — sprawdza czy istnieje już PRD dla bieżącego scope (`doc/decisions/` glob lookup). Jeśli scope niejasny i brak PRD → rekomenduje canonical flow (grill+PRD bez Ciebie). Jeśli oba done → przechodzi bezpośrednio do Tryb 4B (najlepiej w świeżej sesji).
 - **Tryb 4B (Bridge)** — czyta PRD + acceptance criteria w `doc/backlog.md` + ewentualne ADR-y → robi tylko **bridge** (krótki plan-most), nie powtarza PRD.
 - **NIE odpala skili sam** — `/grill-with-docs` i `/to-prd` są user-driven (user chce kontroli nad designem). Manager tylko **wskazuje kiedy** i **czyta output**.
 
