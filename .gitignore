@@ -1,0 +1,19 @@
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+node_modules/
+.env
+.env.local
+
+# Tymczasowe session state (per zasada Matta #19)
+_session-state.md
+*_session-state.md
+
+# Pliki recovery / scratch
+*-recovery.md
+scratch/
+
+# Lokalne ADR-y / decyzje (nie publikujemy do public repo)
+decisions/
