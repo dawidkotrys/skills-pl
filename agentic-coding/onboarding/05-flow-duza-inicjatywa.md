@@ -18,7 +18,7 @@ Jeśli mówisz "to wprowadza nowy concept w domain" / "to dotyka jak users się 
 
 ```
 PLANOWANIE
-  1. Grill                     →  /grill-with-docs        (CONTEXT.md + ADR-y)
+  1. Grill                     →  /grill        (CONTEXT.md + ADR-y)
   2. PRD + vertical slices     →  /to-prd                 (doc/decisions/ + doc/backlog.md)
   3. Bridge na implementację   →  /code-manager (Tryb 4B) (krótki plan-most)
 
@@ -46,7 +46,7 @@ Krok 1-3 to **day shift** (twoja pełna uwaga, designujesz z agentem). Krok 4-9 
 
 ---
 
-## Krok 1 — Grill (`/grill-with-docs`)
+## Krok 1 — Grill (`/grill`)
 
 **Najważniejszy krok.** Nie skracaj. Per zasada #5 — eager planning bez grillingu = plan który nie wytrzyma kontaktu z rzeczywistością.
 

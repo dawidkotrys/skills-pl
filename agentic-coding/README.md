@@ -1,13 +1,13 @@
 # agentic-coding/
 
-Ekosystem skili do pracy z Claude Code metodą agentic coding. Pokrywa pełny cykl: od grillingu pomysłu, przez planowanie i slicing, implementację z TDD, code review, aż po dokumentację zmian i utrzymanie persistent kontekstu.
+Ekosystem skili do pracy z Claude Code metodą agentic coding. Pokrywa pełny cykl: od grillingu pomysłu, przez planowanie i slicing, implementację, code review, aż po dokumentację zmian i utrzymanie persistent kontekstu.
 
 ## Co tu jest
 
 ```
 agentic-coding/
 ├── onboarding/                  # 9 dokumentów wprowadzających (główny flow + warianty)
-├── skille/                      # 10 skili wykonawczych
+├── skille/                      # 9 skili wykonawczych
 └── commands/                    # 4 slash commands do session-state save/restore
 ```
 
@@ -31,13 +31,12 @@ Sugerowana kolejność:
 
 | Skill | Cel | Status |
 |---|---|---|
-| `grill-with-docs` | Grilling pomysłu z budowaniem persistent kontekstu (CONTEXT.md, ADR-y) | inspired by Matt Pocock |
-| `to-prd` | Konwersja kontekstu rozmowy na PRD (destination document z vertical slices) | inspired by Matt Pocock |
-| `tdd` | Test-driven development z pętlą red-green-refactor (vertical, NIE horizontal) | inspired by Matt Pocock |
+| `grill` | Grilling pomysłu z budowaniem persistent kontekstu (CONTEXT.md, ADR-y) | autorski (inspired by Matt Pocock) |
+| `to-prd` | Konwersja kontekstu rozmowy na folder inicjatywy `doc/plans/<slug>/` z `prd.md` (vision + slices) i scaffold `backlog.md` | autorski (inspired by Matt Pocock) |
+| `tusks` | Task breakdown bieżącego slice'a — manager invoke per slice w pętli, rozbija slice na 3-7 granularnych tasków z file targets + acceptance | autorski |
 | `diagnose` | Zdyscyplinowana pętla diagnostyczna dla bugów i regresji | inspired by Matt Pocock |
-| `improve-codebase-architecture` | Deepening modułów (deep modules, deletion test) | inspired by Matt Pocock |
 | `repo-onboarding` | Onboarding nowego repo: CLAUDE.md, CONTEXT.md, doc/ structure | autorski |
-| `code-manager` | Bird's-eye manager: planowanie, dispatch do subagentów, weryfikacja | autorski |
+| `code-manager` | Bird's-eye manager: planowanie, dispatch do subagentów, weryfikacja, archive po close inicjatywy | autorski |
 | `critical-code-review` | Krytyczne code review przez doświadczonego architekta | autorski |
 | `design-checker` | Weryfikacja zgodności kodu UI z design systemem (kolory, typografia, spacing, radius) | autorski |
 | `kronikarz` | Dokumentacja zmian, ADR creation, update CHANGELOG / backlog | autorski |
@@ -62,7 +61,8 @@ Większość zasad metodologii ma korzenie w klasykach software design — Ouste
 Każdy skill respektuje uniwersalne zasady (patrz [02-zasady-metodologii.md](./onboarding/02-zasady-metodologii.md)):
 
 - **Vertical slicing** — `/to-prd` rozbija destination document na cienkie slicesy end-to-end
-- **Grill > eager planning** — `/grill-with-docs` przed `/to-prd` (Manager wskazuje handoff)
+- **Grill > eager planning** — `/grill` przed `/to-prd` (Manager wskazuje handoff)
+- **Per-slice planning loop** — `/tusks` rozbija JEDEN slice na taski przed startem agenta, kolejny slice rozpisuje się dopiero po close poprzedniego (manager-driven cadence, nie wszystko z góry)
 - **Persistent kontekst** — `/repo-onboarding` zakłada `CONTEXT.md`, `/kronikarz` żyje przez cały lifecycle taska (live mode)
 - **Build feedback loop FIRST** — `/diagnose` Faza 1 to reprodukcja w fast/deterministic loop
 - **External review** — `/critical-code-review` odpalany przez Code Managera (Opus), NIE przez agenta wykonawczego (Sonnet) — peer review principle

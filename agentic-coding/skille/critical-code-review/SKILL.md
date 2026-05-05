@@ -208,3 +208,23 @@ Po zakończeniu review **zawsze zapisz raport** do `doc/code-reviews/`.
 4. Po zapisaniu wyświetl ścieżkę do pliku.
 
 **Ważne:** Raport jest artefaktem **read-only** — skill NIE wdraża poprawek ani nie modyfikuje kodu źródłowego. Tylko dokumentuje znaleziska. Użytkownik decyduje co wdrożyć.
+
+---
+
+## Convention linkowania w raporcie
+
+Linki w raporcie używają **standard markdown** (relative paths):
+
+- Format: `[label](relative/path/to/file.md#anchor)`
+- Anchor: lowercase + dashes (GitHub auto-slug)
+
+**Task IDs jako lingua franca:** jeśli branch który reviewujesz pracował z `doc/plans/<slug>/backlog.md` (Format B — folder per inicjatywa), **mapuj findings na konkretne taski `T<slice>.<num>`** gdzie to ma sens:
+
+```markdown
+### [HIGH] H2 — Race condition w upload pipeline
+
+**Dotyczy:** [T2.2 Upload pipeline](../plans/<slug>/backlog.md#t22) z `src/services/offline-blob-uploader.ts`
+**Problem:** ...
+```
+
+To pozwala managerowi przy decyzji FIX/BACKLOG/SKIP wskazać agentowi konkretny task do reopen'u (status `🔄 in-progress` z linkiem do code review w sublinii).

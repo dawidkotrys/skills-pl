@@ -25,7 +25,7 @@ Skill rekomenduje i odwołuje się do innych skilli z metodologii agentic coding
 
 Zainstaluj te skille globalnie (`~/.claude/skills/`) zanim uruchomisz `/repo-onboarding`, jeśli chcesz pełny workflow. W szczególności:
 
-- **`grill-with-docs`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
+- **`grill`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
 - **`pre-session-onboarding`, `kronikarz`, `tdd`, `diagnose`, `improve-codebase-architecture`, `critical-code-review`, `code-manager`, `to-prd`** — opcjonalne. Skill rekomenduje je w Fazie 2.3 per typ repo. Bez nich plan wdrożenia nadal się wygeneruje, ale rekomendacje skilli będą wskazywać na komendy których user nie ma.
 
 Jeśli któregoś brak — zainstaluj z repo, albo pomiń rekomendację w prezentacji planu (Faza 3).
@@ -140,7 +140,7 @@ doc/
 
 **`CONTEXT.md` — domain glossary (zawsze w roocie repo):**
 
-Persistent kontekst językowy projektu. Nie jest opisem techniki — jest opisem **języka domeny**: terminów, ich znaczeń, aliasów do unikania, relacji między pojęciami. Format: zobacz `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` (sekcja "Struktura").
+Persistent kontekst językowy projektu. Nie jest opisem techniki — jest opisem **języka domeny**: terminów, ich znaczeń, aliasów do unikania, relacji między pojęciami. Format: zobacz `~/.claude/skills/grill/CONTEXT-FORMAT.md` (sekcja "Struktura").
 
 W tej fazie zaplanuj **5-10 terminów seed** wyciągniętych z analizy:
 - README — nazwy domenowe powtarzające się w opisie
@@ -166,7 +166,7 @@ Rozważ które z tych skilli byłyby wartościowe dla tego repo (NIE twórz wszy
 - `/kronikarz` lub wariant — dokumentacja zmian (jeśli repo jest aktywnie rozwijane)
 
 **Dla code repos — workflow methodology (Matt Pocock, dostępne globalnie):**
-- `/grill-with-docs` — grilling przed planowaniem, zamiast eager-planning
+- `/grill` — grilling przed planowaniem, zamiast eager-planning
 - `/to-prd` — destination document po grilling session (z vertical slices i acceptance criteria w `doc/backlog.md`), gdy inicjatywa duża
 - `/tdd` — red-green-refactor pętla (test-first, vertical slicing)
 - `/diagnose` — bug fixing przez Reprodukcję → Minimalizację → Hipotezy → Fix
@@ -242,7 +242,7 @@ Po akceptacji planu, twórz pliki w kolejności:
 
 **Tworzenie `CONTEXT.md`:**
 
-- Format dokładnie jak w `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md`
+- Format dokładnie jak w `~/.claude/skills/grill/CONTEXT-FORMAT.md`
 - 5-10 terminów seed wyciągniętych z analizy fazy 1 (README, package.json, struktura folderów, nazwy modułów)
 - Każdy termin: zwięzła definicja (1 zdanie) + `_Unikaj_:` z aliasami które nie powinny być używane
 - Sekcja **Relacje** — kardynalność między terminami (np. "Order generuje jeden lub więcej Invoice")

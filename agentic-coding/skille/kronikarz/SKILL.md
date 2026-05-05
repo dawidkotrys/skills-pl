@@ -1,7 +1,6 @@
 ---
 name: kronikarz
 description: Kronikarz projektu — generuje i utrzymuje wpis dokumentacji technicznej brancha. Ma 2 tryby — `live` (agent wykonawczy aktualizuje w trakcie pracy) i `close` (Code Manager finalizuje przed merge). Wywołanie przez `/kronikarz live` lub `/kronikarz close` (default: live).
-disable-model-invocation: true
 argument-hint: "[live|close] [opcjonalny komentarz]"
 model: opus
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
@@ -298,6 +297,32 @@ function processOrder(order: Order) { ... }
 **Zasada:** komentarz w kodzie = "co i kiedy", kronika = "dlaczego". Krótki marker linkuje do pełnego rozumowania. Future agent modyfikujący ten kod może otworzyć kronikę i zobaczyć szerszy kontekst (np. agent sprzed miesiąca rozważał alternatywy A/B/C, wybrał B z powodu X — agent dziś nie powtarza tego rozumowania).
 
 W sekcji `## Zmodyfikowane pliki` kroniki — zawsze podlinkuj plik:linia → entry w kronice (kolumna "Linki do komentarzy w kodzie").
+
+---
+
+## Convention linkowania (kronika ↔ inne dokumenty)
+
+Linki w kronice używają **standard markdown** (relative paths) — działają w Obsidian (graf), GitHub (rendering), VS Code (preview):
+
+- Format: `[label](relative/path/to/file.md#anchor)`
+- Anchor: lowercase + dashes (GitHub auto-slug)
+
+**Task IDs `T<slice>.<num>` jako lingua franca** — jeśli branch realizuje slice z `doc/plans/<slug>/backlog.md` (Format B — folder per inicjatywa), **referuj konkretne taski w decyzjach i sekcji testów**:
+
+```markdown
+### Decyzja 3: Debounce 500ms w watcher hook
+
+**Kontekst:** T2.1 z [backlog.md](../plans/<slug>/backlog.md#t21) — file watcher hook miał race condition przy szybkim re-create
+**Wybór:** debounce 500ms zamiast immediate fire
+**Alternatywy:** debounce 100ms (za szybki, fires twice), debounce 1s (visible delay)
+```
+
+To pozwala future agent czytając kronikę zobaczyć *"Decyzja przy T2.1 — debounce 500ms"* i wiedzieć dokładnie z którego taska decyzja wynika. Plus w `backlog.md` można wstecznie linkować z taska do decyzji w kronice (manager edytuje przy close):
+
+```markdown
+- ✅ T2.1 File watcher hook — `src/hooks/useOfflineBlobWatcher.ts`
+  - Decyzja debounce 500ms: [kronika §3](../../history/2026-05-05-feat-sync.md#decyzja-3)
+```
 
 ---
 

@@ -21,10 +21,10 @@ Claude Code automatycznie wykrywa skille z tego katalogu i triggeruje je gdy `de
 
 ```bash
 # Skopiuj skill do ~/.claude/skills/
-cp -r ~/aiOS/Projekty/skills-pl/agentic-coding/skille/grill-with-docs ~/.claude/skills/
+cp -r ~/aiOS/Projekty/skills-pl/agentic-coding/skille/grill ~/.claude/skills/
 
 # Lub przez git clone + symlink (jeśli chcesz update przez git pull)
-ln -s ~/aiOS/Projekty/skills-pl/agentic-coding/skille/grill-with-docs ~/.claude/skills/grill-with-docs
+ln -s ~/aiOS/Projekty/skills-pl/agentic-coding/skille/grill ~/.claude/skills/grill
 ```
 
 Po skopiowaniu — restart Claude Code (jeśli był odpalony) żeby wykrył nowy skill.
@@ -72,7 +72,7 @@ Skille powinny być widoczne w liście. Albo wpisz część nazwy z `description
 "chcę grill na ten pomysł"
 ```
 
-→ powinien auto-trigger `grill-with-docs`.
+→ powinien auto-trigger `grill`.
 
 ## Sugerowana kolejność instalacji
 
@@ -84,7 +84,7 @@ Jeśli zaczynasz z metodologią — instaluj **stopniowo**:
 
 ### Etap 2 — daily flow
 
-2. `grill-with-docs` — grilling pomysłu przed planem
+2. `grill` — grilling pomysłu przed planem
 3. `code-manager` — bird's-eye manager dla planowania i dispatch
 4. `kronikarz` — dokumentacja zmian po implementacji
 

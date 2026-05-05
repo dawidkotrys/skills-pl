@@ -1,6 +1,6 @@
 ---
-name: grill-with-docs
-description: Sesja przesłuchania, która konfrontuje twój plan z istniejącym modelem domenowym, doprecyzowuje terminologię i aktualizuje dokumentację (CONTEXT.md, ADR-y) na bieżąco, w miarę krystalizowania się decyzji. Używaj, kiedy użytkownik chce stress-testować plan względem języka projektu i udokumentowanych decyzji.
+name: grill
+description: Sesja przesłuchania, która konfrontuje twój plan z istniejącym modelem domenowym, doprecyzowuje terminologię i aktualizuje dokumentację (CONTEXT.md, ADR-y) na bieżąco, w miarę krystalizowania się decyzji. Używaj kiedy chcesz stress-testować plan względem języka projektu i udokumentowanych decyzji — zwłaszcza przed `/to-prd` przy large initiative. Triggery - "grill", "grilling", "przesłuchaj mój plan", "stress-test pomysłu", "doprecyzuj scope", "konfrontacja z domeną".
 disable-model-invocation: true
 ---
 

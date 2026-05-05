@@ -57,7 +57,7 @@ Cel pracy z modelem to **shared design concept** (oboje rozumiecie tak samo), ni
 
 Eager planning bez grillingu daje plany które wyglądają OK ale nie wytrzymują kontaktu z rzeczywistością — bo żaden constraint nie został przetestowany.
 
-**Konsekwencja:** zawsze grill (`/grill-with-docs`) przed planem. Grilling = test hipotez, plan = wynik testów.
+**Konsekwencja:** zawsze grill (`/grill`) przed planem. Grilling = test hipotez, plan = wynik testów.
 
 ### 6. Day shift vs night shift
 

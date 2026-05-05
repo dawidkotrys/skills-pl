@@ -30,7 +30,7 @@ Dwie ścieżki — wybór zależy od skali:
 ### Ścieżka B — mały ale nietrywialny task (przez `/code-manager`)
 
 ```
-1. (opcjonalnie) Grill           →  /grill-with-docs       jeśli problem niejasny
+1. (opcjonalnie) Grill           →  /grill       jeśli problem niejasny
 2. Plan / dispatch               →  /code-manager (Tryb 4A — full plan mode)
 3. Implementacja                 →  agent wykonawczy → /kronikarz live (faza impl)
 4. Manual test inline na czat    →  STOP #1 user QA
@@ -57,7 +57,7 @@ Tylko gdy:
 - Refactor jest **subtelny** — łatwo wprowadzić regres, trzeba ustalić scope
 - Mały task **dotyka** krytycznej części kodu (auth, payments, data integrity)
 
-Wtedy: `/grill-with-docs` lub po prostu rozmowa z domyślnym agentem dopóki nie masz **shared design concept** (zasada #5).
+Wtedy: `/grill` lub po prostu rozmowa z domyślnym agentem dopóki nie masz **shared design concept** (zasada #5).
 
 Pytaj o:
 
@@ -167,7 +167,7 @@ Push (jeśli pracujesz na branchu) lub direct na develop (jeśli convention proj
 Zacząłeś jako mały task, w trakcie odkrywasz że trzeba ruszyć 8 plików, dotknąć 3 modułów, zmienić architekturę. **Stop.** Zatrzymaj się, zrób mental model resetu:
 
 - To jest duża inicjatywa, nie mały task
-- Wróć do `/grill-with-docs`, potem `/to-prd`
+- Wróć do `/grill`, potem `/to-prd`
 - Per zasada #5 — eager planning bez grillingu = kłopoty
 
 ### Pomijanie weryfikacji bo „mały task"

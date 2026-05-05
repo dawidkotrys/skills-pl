@@ -33,7 +33,7 @@ USER             DEFAULT AGENT          MANAGER (Opus)         EXECUTOR (Sonnet)
 (1) wstępny brief (w głowie usera lub plik notatkowy)
     [day shift — fresh smart zone, MANAGER NIE jest jeszcze w grze]
 
-(2) USER → /grill-with-docs
+(2) USER → /grill
     rozmowa user ↔ default agent
     przesłuchanie planu, rozwiązywanie zależności          ──►   CONTEXT.md (nowe terminy)
                                                                   doc/decisions/NNNN-*.md (jeśli ADR)
@@ -117,22 +117,22 @@ Jeśli wchodzisz do managera Tryb 1 z **wstępnym briefem** zamiast iść grill-
 
 ```
 1. USER → /code-manager Tryb 1 ("wstępny brief, chcę X")
-2. MANAGER klasyfikuje, jeśli 🔴 large → "Canonical flow to grill+PRD bez mnie. Odpal /grill-with-docs, potem /to-prd, wróć z gotowym PRD."
-3. USER → /grill-with-docs → /to-prd (default agent, BEZ managera)
+2. MANAGER klasyfikuje, jeśli 🔴 large → "Canonical flow to grill+PRD bez mnie. Odpal /grill, potem /to-prd, wróć z gotowym PRD."
+3. USER → /grill → /to-prd (default agent, BEZ managera)
 4. USER → /code-manager (świeża sesja, Tryb 4B bridge) → kontynuacja od kroku (4) canonical flow
 ```
 
-To jest **fallback, nie default**. Kosztuje więcej bo manager Tryb 1 obciąża swój kontekst recap'em backlogu/git state niepotrzebnie przy large initiative. Lepsza praktyka: gdy wiesz że to large → idź od razu do `/grill-with-docs`, manager poczeka.
+To jest **fallback, nie default**. Kosztuje więcej bo manager Tryb 1 obciąża swój kontekst recap'em backlogu/git state niepotrzebnie przy large initiative. Lepsza praktyka: gdy wiesz że to large → idź od razu do `/grill`, manager poczeka.
 
 ### Mały task — manager-first jest poprawny
 
-**Mały task** (Ścieżka B z [04](./04-flow-maly-task.md)) używa skróconego flow: pomija (`/grill-with-docs`, `/to-prd`) i wchodzi od razu w `/code-manager` **Tryb 4A (full plan mode)** — tu manager-first jest canonical bo nie ma PRD do napisania. Manager pisze pełny plan (~150-200 linii) i dispatch-uje do executora. Reszta sekwencji 3-STOP + autonomy gate identyczna jak w large.
+**Mały task** (Ścieżka B z [04](./04-flow-maly-task.md)) używa skróconego flow: pomija (`/grill`, `/to-prd`) i wchodzi od razu w `/code-manager` **Tryb 4A (full plan mode)** — tu manager-first jest canonical bo nie ma PRD do napisania. Manager pisze pełny plan (~150-200 linii) i dispatch-uje do executora. Reszta sekwencji 3-STOP + autonomy gate identyczna jak w large.
 
 | Skala | Entry point | Tryb managera |
 |---|---|---|
 | 🟢 Bardzo mały | bezpośrednio default agent → impl → commit | n/a (manager pominięty) |
 | 🟢/🟡 Mały-średni | `/code-manager` (manager-first) | Tryb 4A full plan |
-| 🔴 Large initiative | `/grill-with-docs` → `/to-prd` → `/code-manager` | Tryb 4B bridge |
+| 🔴 Large initiative | `/grill` → `/to-prd` → `/code-manager` | Tryb 4B bridge |
 | Bug | `/diagnose` lub `/code-manager` jeśli formalny flow | Tryb 4A jeśli przez managera |
 
 ---
@@ -141,8 +141,8 @@ To jest **fallback, nie default**. Kosztuje więcej bo manager Tryb 1 obciąża 
 
 | Artefakt | Tworzy | Aktualizuje (kiedy) | Finalizuje |
 |---|---|---|---|
-| `CONTEXT.md` | `/grill-with-docs` lub `/repo-onboarding` | grilling kolejnych sesji (gdy nowy termin) | nigdy nie "zamyka się" |
-| `doc/decisions/NNNN-*.md` (ADR / PRD) | `/grill-with-docs` lub `/to-prd` | rzadko (gdy decyzja rewidowana) | tylko status w nagłówku |
+| `CONTEXT.md` | `/grill` lub `/repo-onboarding` | grilling kolejnych sesji (gdy nowy termin) | nigdy nie "zamyka się" |
+| `doc/decisions/NNNN-*.md` (ADR / PRD) | `/grill` lub `/to-prd` | rzadko (gdy decyzja rewidowana) | tylko status w nagłówku |
 | `doc/backlog.md` | manual lub `/to-prd` | manager (Tryb 6), kronikarz close, manager session-start (auto-DONE detection) | n/a — żyje cały czas |
 | `doc/plans/<branch>.md` | manager (Tryb 4A/4B) | rzadko (zmiana scope w trakcie) | n/a |
 | `doc/history/YYYY-MM-DD-<branch>.md` (kronika) | executor (`/kronikarz live` Krok 1) | executor live mode (impl, user QA, fix po review, re-test) | manager (`/kronikarz close`) — sekcja "Manager close" + commit |
@@ -187,7 +187,7 @@ Po `/kronikarz close` manager pyta: "Branch X gotowy do merge. OK?" — czekasz 
 | Komenda | Kto odpala | Kiedy | Output (gdzie) |
 |---|---|---|---|
 | `/repo-onboarding` | user (default agent) | nowe repo, brak CLAUDE.md / CONTEXT.md / doc/ | CLAUDE.md, CONTEXT.md, doc/ structure |
-| `/grill-with-docs` | user (default agent) | mglisty pomysł / large initiative przed planem | CONTEXT.md (terms), doc/decisions/ (ADR-y) |
+| `/grill` | user (default agent) | mglisty pomysł / large initiative przed planem | CONTEXT.md (terms), doc/decisions/ (ADR-y) |
 | `/to-prd` | user (default agent) | po grillingu, large initiative | doc/decisions/NNNN-*.md (PRD), doc/backlog.md (slices) |
 | `/code-manager` | user → manager | start sesji / planowanie / external review / close / merge | doc/plans/ + commits |
 | `/kronikarz live` | executor | przed implementacją + per faza pracy | doc/history/YYYY-MM-DD-<branch>.md (no commit) |
@@ -252,7 +252,7 @@ Każdy worktree ma własny `doc/session/` — brak konfliktu między równoległ
 - **Pomijanie STOP #1** — kod idzie do review zanim user zweryfikował user-facing behavior. Zasada #26 (imposing taste) pominięta. "Po co reviewować coś co nie działa?"
 - **Manager mergeuje bez user "akcept"** — autonomy gate złamany. Per ADR-0001 → zawsze human-in-the-loop dla irreversible action
 - **Kronika tylko w trybie close** — executor nie odpala `/kronikarz live` per faza, manager wpada na zamykanie pustej kroniki, brakuje rozumowania per decyzję
-- **`/grill-with-docs` pominięty przy 🔴 large initiative** — eager planning bez grillingu, zasada #5 złamana → plan nie wytrzyma kontaktu z rzeczywistością
+- **`/grill` pominięty przy 🔴 large initiative** — eager planning bez grillingu, zasada #5 złamana → plan nie wytrzyma kontaktu z rzeczywistością
 - **`/design-checker` pominięty przy zmianach UI** — design tokens drift po fakcie, niespójność wizualna w bazie kodu
 - **Multi-slice work bez save/restore** — wpadasz w dumb zone w środku slica 4 z 7, halucynacje, kosztowne błędy
 - **Raport bez konkretów** — "wszystko działa" zamiast "test 1, 2, 3 ✅, manualny smoke pass na X" → manager nie ma czego review-ować

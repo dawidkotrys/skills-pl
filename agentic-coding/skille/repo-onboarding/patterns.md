@@ -183,7 +183,7 @@ Repozytorium łączące kod z dokumentacją, bazą wiedzy, strategią.
 
 ### CONTEXT.md — domain glossary (zawsze w roocie)
 
-`CONTEXT.md` to persistent kontekst językowy projektu — słownik terminów domenowych, ich znaczeń, aliasów do unikania i relacji. Czytany przez agenta na początku każdej sesji. **Pełny format** w `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md`.
+`CONTEXT.md` to persistent kontekst językowy projektu — słownik terminów domenowych, ich znaczeń, aliasów do unikania i relacji. Czytany przez agenta na początku każdej sesji. **Pełny format** w `~/.claude/skills/grill/CONTEXT-FORMAT.md`.
 
 **Szkielet (skrócony):**
 
