@@ -1,6 +1,6 @@
 ---
 name: kronikarz
-description: Kronikarz projektu — generuje i utrzymuje wpis dokumentacji technicznej brancha. Ma 2 tryby — `live` (agent wykonawczy aktualizuje w trakcie pracy) i `close` (Code Manager finalizuje przed merge). Wywołanie przez `/kronikarz live` lub `/kronikarz close` (default: live).
+description: 'Kronikarz projektu — generuje i utrzymuje wpis dokumentacji technicznej brancha. Ma 2 tryby — `live` (agent wykonawczy aktualizuje w trakcie pracy) i `close` (Code Manager finalizuje przed merge). Wywołanie przez `/kronikarz live` lub `/kronikarz close` (default: live).'
 argument-hint: "[live|close] [opcjonalny komentarz]"
 model: opus
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write

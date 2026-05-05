@@ -1,6 +1,6 @@
 ---
 name: to-tasks
-description: Manager invoke gdy chce rozpisać konkretny vertical slice z backlogu na granularne taski wykonawcze (3-7 per slice). Bierze `doc/plans/<slug>/backlog.md` (scaffolded by /to-prd) + `prd.md`, eksploruje kod, generuje task breakdown z file targets + acceptance criteria. Wywołanie przez `/to-tasks slice <N>` (lub fallback do "first niezdetailowany"). Używaj zawsze gdy manager musi przekazać "co konkretnie agent ma zrobić w tym etapie" — nawet jeśli user nie wymieni słowa "to-tasks". Triggery: "rozpisz slice", "rozpisz etap", "task breakdown", "rozbij slice na taski", "co konkretnie w tym etapie", "detail current slice", "co dalej w tym slice". NIE auto-trigger, NIE commit (manager owns docs commits).
+description: 'Manager invoke gdy chce rozpisać konkretny vertical slice z backlogu na granularne taski wykonawcze (3-7 per slice). Bierze `doc/plans/<slug>/backlog.md` (scaffolded by /to-prd) + `prd.md`, eksploruje kod, generuje task breakdown z file targets + acceptance criteria. Wywołanie przez `/to-tasks slice <N>` (lub fallback do "first niezdetailowany"). Używaj zawsze gdy manager musi przekazać "co konkretnie agent ma zrobić w tym etapie" — nawet jeśli user nie wymieni słowa "to-tasks". Triggery: "rozpisz slice", "rozpisz etap", "task breakdown", "rozbij slice na taski", "co konkretnie w tym etapie", "detail current slice", "co dalej w tym slice". NIE auto-trigger, NIE commit (manager owns docs commits).'
 disable-model-invocation: true
 argument-hint: "[slice <N>]"
 model: opus
