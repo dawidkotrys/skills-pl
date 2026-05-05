@@ -7,7 +7,7 @@ Ekosystem skili do pracy z Claude Code metodą agentic coding. Pokrywa pełny cy
 ```
 agentic-coding/
 ├── onboarding/                  # 9 dokumentów wprowadzających (główny flow + warianty)
-├── skille/                      # 9 skili wykonawczych
+├── skille/                      # 10 skili wykonawczych
 └── commands/                    # 4 slash commands do session-state save/restore
 ```
 
@@ -33,6 +33,7 @@ Sugerowana kolejność:
 |---|---|---|
 | `grill` | Grilling pomysłu z budowaniem persistent kontekstu (CONTEXT.md, ADR-y) | autorski (inspired by Matt Pocock) |
 | `to-prd` | Konwersja kontekstu rozmowy na folder inicjatywy `doc/plans/<slug>/` z `prd.md` (vision + slices) i scaffold `backlog.md` | autorski (inspired by Matt Pocock) |
+| `critical-prd-review` | Krytyczny audyt PRD przed task breakdown'em — security/scalability/architecture lens. Pre-code review na poziomie wymagań. Werdykt Needs revision / Almost ready / Ready + feedback dla agenta-autora PRD do iteracji | autorski |
 | `to-tasks` | Task breakdown bieżącego slice'a — manager invoke per slice w pętli, rozbija slice na 3-7 granularnych tasków z file targets + acceptance | autorski |
 | `diagnose` | Zdyscyplinowana pętla diagnostyczna dla bugów i regresji | inspired by Matt Pocock |
 | `repo-onboarding` | Onboarding nowego repo: CLAUDE.md, CONTEXT.md, doc/ structure | autorski |
@@ -65,7 +66,7 @@ Każdy skill respektuje uniwersalne zasady (patrz [02-zasady-metodologii.md](./o
 - **Per-slice planning loop** — `/to-tasks` rozbija JEDEN slice na taski przed startem agenta, kolejny slice rozpisuje się dopiero po close poprzedniego (manager-driven cadence, nie wszystko z góry)
 - **Persistent kontekst** — `/repo-onboarding` zakłada `CONTEXT.md`, `/kronikarz` żyje przez cały lifecycle taska (live mode)
 - **Build feedback loop FIRST** — `/diagnose` Faza 1 to reprodukcja w fast/deterministic loop
-- **External review** — `/critical-code-review` odpalany przez Code Managera (Opus), NIE przez agenta wykonawczego (Sonnet) — peer review principle
+- **External review na dwóch poziomach** — `/critical-prd-review` na poziomie wymagań (po `/to-prd`, przed `/to-tasks`); `/critical-code-review` na poziomie kodu (po STOP #1 user QA, przed merge). Oba odpalane przez Code Managera (Opus), NIE przez agenta wykonawczego (Sonnet) — peer review principle. PRD review łapie luki bezpieczeństwa/skalowania **zanim** powstanie kod
 - **Po co reviewować coś co nie działa** — najpierw user QA (zasada #9 imposing taste), potem external review, kronikarz close na końcu
 - **Komunikacja bez presji** — `code-manager/references/manager-values.md` (research-backed: badanie Anthropic 2026-04-02)
 - **Autonomy gate** — Manager merguje, ale po user "akcept" (zasada #10: crucial decisions z udziałem człowieka)

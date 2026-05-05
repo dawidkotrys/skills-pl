@@ -18,22 +18,26 @@ Jeśli mówisz "to wprowadza nowy concept w domain" / "to dotyka jak users się 
 
 ```
 PLANOWANIE
-  1. Grill                     →  /grill        (CONTEXT.md + ADR-y)
-  2. PRD + scaffold backlog    →  /to-prd       (folder doc/plans/<slug>/{prd.md, backlog.md})
-  3. Bridge na implementację   →  /code-manager (Tryb 4B) — invoke /to-tasks slice <N>
+  1. Grill                     →  /grill                 (CONTEXT.md + ADR-y)
+  2. PRD + scaffold backlog    →  /to-prd                (folder doc/plans/<slug>/{prd.md, backlog.md})
+  3. Audyt PRD (iteracyjny)    →  /critical-prd-review   (security/scale/architecture lens
+                                                          → werdykt Needs revision / Almost ready / Ready
+                                                          → feedback wklejany agentowi-autorowi do iteracji
+                                                          → pętla aż Ready)
+  4. Bridge na implementację   →  /code-manager (Tryb 4B) — invoke /to-tasks slice <N>
                                   + krótki plan-most dla agenta
 
 IMPLEMENTACJA per slice (loop, slice po slicie)
-  4. Agent wykonawczy implementuje → /kronikarz live + sekwencja 3-STOP
+  5. Agent wykonawczy implementuje → /kronikarz live + sekwencja 3-STOP
      (patrz 00-glowny-flow.md#cztery-punkty-kontrolne-usera)
-  5. Manager Tryb 5C close + slice → ✅ done w backlog.md
-  6. User /clear + restore → wróć do kroku 3 dla slice N+1
+  6. Manager Tryb 5C close + slice → ✅ done w backlog.md
+  7. User /clear + restore → wróć do kroku 4 dla slice N+1
 
 ARCHIVE (po merge ostatniego slice'a)
-  7. Manager Tryb 5D → folder doc/plans/<slug>/ → doc/plans/archive/<slug>/
+  8. Manager Tryb 5D → folder doc/plans/<slug>/ → doc/plans/archive/<slug>/
 ```
 
-Krok 1-3 to **day shift** (twoja pełna uwaga, designujesz z agentem). Krok 4 to mix **night shift** (agent implementuje) i **day shift** (Twoje QA + decyzje per-finding po code review).
+Krok 1-4 to **day shift** (twoja pełna uwaga, designujesz z agentem). Krok 5 to mix **night shift** (agent implementuje) i **day shift** (Twoje QA + decyzje per-finding po code review).
 
 **Per-slice loop:** każdy slice z PRD przechodzi pełną sekwencję 3-STOP osobno (`/to-tasks` → impl → user QA → external review → close → merge). Manager rozpisuje **tylko bieżący slice** — nie wszystko z góry. Po merge slice'a kolejny slice rozpisuje się dopiero gdy manager jest gotów.
 
@@ -125,9 +129,53 @@ Każdy slice **dostarcza** coś działającego. User po slice 1 widzi listę (na
 
 ---
 
-## Krok 3 — Bridge + task breakdown (`/code-manager` Tryb 4B + `/to-tasks`)
+## Krok 3 — Audyt PRD (`/critical-prd-review`)
 
-Po `/to-prd` masz folder inicjatywy. Przed implementacją: bridge mode managera. Manager:
+Przed task breakdown'em — audyt PRD jak critical code review **wykonane zanim powstanie kod**. Skill wchodzi w rolę wymagającego reviewera techniczno-produktowego i szuka luk w trzech wymiarach: **security by design** (least privilege, threat model, walidacja na granicy backendu, sekrety, audytowalność), **scalability by design** (limity, backpressure, idempotencja, timeouts, koszty, degradacja), **simple deep architecture** (głębokie moduły, proste kontrakty, brak płytkich wrapperów).
+
+Output: werdykt **Needs revision** / **Almost ready** / **Ready** + feedback z etykietami **BLOCKER / MAJOR / MINOR / QUESTION**, każda uwaga zakotwiczona w konkretnym fragmencie PRD lub brakującej sekcji.
+
+### Kto odpala — agent-auditor, nie agent-autor PRD
+
+Peer review principle, analogiczny do `/critical-code-review`. Audyt PRD **musi** robić agent który nie pisał PRD — inaczej confirmation bias: agent broni własnych decyzji zamiast je kwestionować.
+
+Praktycznie: User puszcza skill w **świeżej sesji** (default agent) lub w **innym CLI** (np. Codex / inny LLM provider — feedback z innego modelu jest dodatkową soczewką). Wkleja PRD lub linkuje plik. Audyt zwraca raport.
+
+### Iteracja — feedback → revision → re-audit
+
+```
+revision N:
+  feedback z auditora    ──►   user wkleja agentowi-autorowi
+  agent-autor naprawia luki   ──►   commit "PRD <slug> rev. <N+1> — <K> fixów"
+  ◄── prd.md rev. N+1 ──
+
+revision N+1:
+  user puszcza /critical-prd-review na nowej wersji
+  ◄── nowy werdykt ──
+```
+
+Pętla biegnie aż werdykt = **Ready** (lub świadomie **Almost ready** z explicit acceptance pozostałych MINOR-ów). Każda rev. zostawia ślad: `doc/code-reviews/<DATE>-prd-<slug>-rev<N>.md` (raport audytora) + commity rev. w git history PRD.
+
+### Sygnały że audyt jest wartościowy
+
+- Wykrył 1+ **BLOCKER** który prowadziłby do rewrite po implementacji (np. brakujący authorization model, unbounded query, frontend-only validation security)
+- Wymusił 2-5 **MAJOR** doprecyzowań w decyzjach implementacyjnych / testowych
+- Wskazał luki w out-of-scope (rzeczy które wyglądają jak in-scope ale nie są jasno wykluczone)
+- Skrócił późniejszy `/critical-code-review` (mniej findings na finalnym kodzie, bo PRD już je wyłapał na poziomie wymagań)
+
+### Sygnały że audyt jest "fake green"
+
+- Werdykt **Ready** za pierwszym razem na nietrywialnym PRD bez żadnych BLOCKER/MAJOR — najczęściej oznacza że auditor nie wszedł w detale, nie skonfrontował z `CONTEXT.md`, nie sprawdził kodu który PRD dotyka
+- Feedback w stylu "warto rozważyć" / "może doprecyzować" — łagodne sformułowania zamiast konkretnej zmiany do dopisania w PRD
+- Brak Pre-Code Review Checklist coverage — audyt który nie sprawdza klasyk z security/scalability hard gates jest powierzchowny
+
+W obu przypadkach: nie akceptuj werdyktu, puść audyt jeszcze raz — najlepiej przez innego agenta / inny model / explicit prompt "ostrzejsza linia".
+
+---
+
+## Krok 4 — Bridge + task breakdown (`/code-manager` Tryb 4B + `/to-tasks`)
+
+Po **PRD audit Ready** masz folder inicjatywy z dopracowanym PRD. Przed implementacją: bridge mode managera. Manager:
 
 - Wybiera **bieżący slice** (typowo Slice 0 lub 1)
 - Invoke `/to-tasks slice <N>` → rozbija slice na 3-7 granularnych tasków wykonawczych z file targets + acceptance criteria. Status sekcji slice'a: `[ ] niezdetailowany` → `🔄 in-progress`
@@ -138,7 +186,7 @@ Output: bridge plan + zaktualizowany `backlog.md` (current slice rozpisany na ta
 
 ---
 
-## Krok 4 — Implementacja per slice (sekwencja 3-STOP)
+## Krok 5 — Implementacja per slice (sekwencja 3-STOP)
 
 Per bieżący slice:
 
@@ -151,15 +199,15 @@ Manager Tryb 5C zamyka slice po merge: status `🔄 in-progress` → `✅ done` 
 
 ---
 
-## Krok 5 — Loop dla kolejnego slice'a
+## Krok 6 — Loop dla kolejnego slice'a
 
-Po close slice'a N: **user `/clear` + `/restore-session-manager`** → świeża sesja managera dla slice'a N+1. Wracasz do **kroku 3** (manager invoke `/to-tasks slice <N+1>`).
+Po close slice'a N: **user `/clear` + `/restore-session-manager`** → świeża sesja managera dla slice'a N+1. Wracasz do **kroku 4** (manager invoke `/to-tasks slice <N+1>`).
 
-Per-slice loop trwa aż wszystkie slices są `✅ done`. Wtedy → krok 6.
+Per-slice loop trwa aż wszystkie slices są `✅ done`. Wtedy → krok 7.
 
 ---
 
-## Krok 6 — Archive folderu inicjatywy
+## Krok 7 — Archive folderu inicjatywy
 
 Manager Tryb 5D: po merge ostatniego slice'a → folder `doc/plans/<slug>/` przenosi się do `doc/plans/archive/<slug>/`. Zawartość intact (audit trail). Frontmatter `status: in-progress` → `status: done`.
 
@@ -170,6 +218,14 @@ Manager Tryb 5D: po merge ostatniego slice'a → folder `doc/plans/<slug>/` prze
 ### Pomijanie grillingu
 
 "Już wiem co trzeba zrobić, lecę do `/to-prd`". Tracisz okazję do testu hipotez. Plan będzie wyglądał OK ale rozsypie się przy implementacji.
+
+### Pomijanie PRD audit przed task breakdown'em
+
+"PRD jest jasny, lecę do `/to-tasks`". `/critical-prd-review` łapie luki **na poziomie wymagań** które inaczej wyjdą jako CRITICAL findings w `/critical-code-review` po implementacji — wtedy fix wymaga rewrite kodu, nie poprawki w PRD. Audyt PRD trwa minuty, audyt kodu trwa godziny + rewrite. Pomijanie = oszczędzanie minut kosztem godzin.
+
+### PRD audit zrobiony przez agenta-autora PRD
+
+Confirmation bias. Agent który napisał PRD nie znajdzie luk w swoich własnych decyzjach — broni ich. Audyt **musi** robić agent w świeżej sesji lub innym CLI/modelu. Peer review principle, identyczny jak dla `/critical-code-review`.
 
 ### Slices które są horizontal
 

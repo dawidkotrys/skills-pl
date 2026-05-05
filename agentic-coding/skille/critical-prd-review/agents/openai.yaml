@@ -1,0 +1,4 @@
+interface:
+  display_name: "Critical PRD Review"
+  short_description: "Pre-code security and scale review"
+  default_prompt: "Use $critical-prd-review as a critical pre-code review of this PRD for security, scalability, simplicity, and write strict feedback for the agent that authored it."

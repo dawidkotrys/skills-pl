@@ -43,6 +43,12 @@ USER             DEFAULT AGENT          MANAGER (Opus)         EXECUTOR (Sonnet)
     konwersja rozmowy na folder inicjatywy                  ──►  doc/plans/<slug>/prd.md (vision + slices)
                                                                   doc/plans/<slug>/backlog.md (scaffold ze statusem [ ] niezdetailowany)
 
+(3a) USER → /critical-prd-review (świeża sesja / inny CLI — peer review principle)
+     audyt PRD: security / scalability / architecture lens
+     werdykt: Needs revision / Almost ready / Ready          ──►  doc/code-reviews/<DATE>-prd-<slug>-rev<N>.md
+     feedback wklejany agentowi-autorowi PRD
+     pętla rev. N → rev. N+1 aż werdykt = Ready              ──►  prd.md commits "PRD <slug> rev. <N> — <K> fixów"
+
 (4) USER → /code-manager (PIERWSZE wejście managera, Tryb 4B bridge mode)
                           czyta prd.md + backlog.md scaffold
                           wybiera bieżący slice z userem
@@ -119,7 +125,7 @@ Jeśli wchodzisz do managera Tryb 1 z **wstępnym briefem** zamiast iść grill-
 ```
 1. USER → /code-manager Tryb 1 ("wstępny brief, chcę X")
 2. MANAGER klasyfikuje, jeśli 🔴 large → "Canonical flow to grill+PRD bez mnie. Odpal /grill, potem /to-prd, wróć z gotowym PRD."
-3. USER → /grill → /to-prd (default agent, BEZ managera)
+3. USER → /grill → /to-prd → /critical-prd-review (default agent, BEZ managera; audyt iteracyjnie aż Ready)
 4. USER → /code-manager (świeża sesja, Tryb 4B bridge) → kontynuacja od kroku (4) canonical flow
 ```
 
@@ -151,6 +157,7 @@ To jest **fallback, nie default**. Kosztuje więcej bo manager Tryb 1 obciąża 
 | `doc/history/YYYY-MM-DD-<branch>.md` (kronika) | executor (`/kronikarz live` Krok 1) | executor live mode (impl, user QA, fix po review, re-test) | manager (`/kronikarz close`) — sekcja "Manager close" + commit |
 | `doc/history/README.md` (indeks) | `/repo-onboarding` lub kronikarz close (jeśli brak) | kronikarz close per branch | n/a |
 | `doc/code-reviews/YYYY-MM-DD-<branch>.md` | manager (`/critical-code-review`) | n/a — read-only | n/a |
+| `doc/code-reviews/<DATE>-prd-<slug>-rev<N>.md` | user / default agent (`/critical-prd-review`) | n/a — read-only (nowy raport per iteracja rev. N) | n/a |
 | `doc/design-reviews/YYYY-MM-DD-<branch>.md` | executor (`/design-checker` po STOP #1, jeśli UI) | n/a — read-only | n/a |
 
 ---
@@ -192,6 +199,7 @@ Po `/kronikarz close` manager pyta: "Branch X gotowy do merge. OK?" — czekasz 
 | `/repo-onboarding` | user (default agent) | nowe repo, brak CLAUDE.md / CONTEXT.md / doc/ | CLAUDE.md, CONTEXT.md, doc/ structure |
 | `/grill` | user (default agent) | mglisty pomysł / large initiative przed planem | CONTEXT.md (terms), doc/decisions/ (ADR-y) |
 | `/to-prd` | user (default agent) | po grillingu, large initiative | doc/plans/<slug>/prd.md + scaffold backlog.md |
+| `/critical-prd-review` | user (default agent / inny CLI — NIE agent-autor PRD) | po `/to-prd`, przed `/to-tasks`; iteracyjnie aż werdykt Ready | doc/code-reviews/<DATE>-prd-<slug>-rev<N>.md |
 | `/to-tasks` | manager | rozpisanie bieżącego slice'a na taski wykonawcze (przed dispatchem do agenta) | update doc/plans/<slug>/backlog.md sekcja current slice |
 | `/code-manager` | user → manager | start sesji / planowanie / external review / close / merge / archive | doc/plans/ + commits |
 | `/kronikarz live` | executor | przed implementacją + per faza pracy | doc/history/YYYY-MM-DD-<branch>.md (no commit) |
@@ -242,7 +250,7 @@ Każdy worktree ma własny `doc/session/` — brak konfliktu między równoległ
 |---|---|---|
 | 🟢 Bardzo mały (typo, jednoplikowa poprawka) | Default agent → impl → commit | [04 Ścieżka A](./04-flow-maly-task.md#ścieżka-a--bardzo-mały-task-typo-jednoplikowa-poprawka) |
 | 🟢/🟡 Mały-średni | Manager Tryb 4A → 3 STOP-y → close → merge | [04 Ścieżka B](./04-flow-maly-task.md#ścieżka-b--mały-ale-nietrywialny-task-przez-code-manager) |
-| 🔴 Duża inicjatywa | Grill → PRD → Manager Tryb 4B per slice → 3 STOP-y per slice → close per slice → merge per slice | [05](./05-flow-duza-inicjatywa.md) |
+| 🔴 Duża inicjatywa | Grill → PRD → PRD audit (iteracyjnie) → Manager Tryb 4B per slice → 3 STOP-y per slice → close per slice → merge per slice | [05](./05-flow-duza-inicjatywa.md) |
 | Bug | Diagnose loop → fix → test regresji → (opcjonalnie) Manager 3 STOP-y | [06](./06-flow-bug.md) |
 
 ---
@@ -255,6 +263,8 @@ Każdy worktree ma własny `doc/session/` — brak konfliktu między równoległ
 - **Manager mergeuje bez user "akcept"** — autonomy gate złamany. Per ADR-0001 → zawsze human-in-the-loop dla irreversible action
 - **Kronika tylko w trybie close** — executor nie odpala `/kronikarz live` per faza, manager wpada na zamykanie pustej kroniki, brakuje rozumowania per decyzję
 - **`/grill` pominięty przy 🔴 large initiative** — eager planning bez grillingu, zasada #4 złamana → plan nie wytrzyma kontaktu z rzeczywistością
+- **`/critical-prd-review` pominięty między `/to-prd` a `/to-tasks`** — luki w wymaganiach (security, scalability, architecture) wychodzą jako CRITICAL findings dopiero w `/critical-code-review` po implementacji, gdy fix wymaga rewrite kodu zamiast poprawki w PRD
+- **PRD audit zrobiony przez agenta-autora PRD** — confirmation bias, agent broni własnych decyzji zamiast je kwestionować. Audyt **musi** robić agent w świeżej sesji lub innym CLI/modelu
 - **`/design-checker` pominięty przy zmianach UI** — design tokens drift po fakcie, niespójność wizualna w bazie kodu
 - **Multi-slice work bez save/restore** — wpadasz w dumb zone w środku slica 4 z 7, halucynacje, kosztowne błędy
 - **Raport bez konkretów** — "wszystko działa" zamiast "test 1, 2, 3 ✅, manualny smoke pass na X" → manager nie ma czego review-ować
