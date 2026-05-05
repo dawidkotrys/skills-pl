@@ -4,7 +4,7 @@ Repozytorium skili dla Claude Code w języku polskim. Zbiór modułów rozszerza
 
 ## Kategorie
 
-- **[agentic-coding/](./agentic-coding/)** — ekosystem skili + slash commands do pracy z Claude Code metodą agentic coding. Część zasad inspirowana Matt Pocock — atrybucja w [agentic-coding/README.md](./agentic-coding/README.md).
+- **[agentic-coding/](./agentic-coding/)** — ekosystem skili + slash commands do pracy z Claude Code metodą agentic coding.
 
 W przyszłości mogą dojść inne kategorie (np. `seo/`, `marketing/`, `domain-specific/`).
 

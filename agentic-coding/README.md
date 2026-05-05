@@ -53,7 +53,7 @@ Komendy zapisują do `doc/session/`, restore usuwa plik po wczytaniu (ulotne). P
 
 ## Atrybucja
 
-`grill`, `to-prd` i `diagnose` są polskimi adaptacjami oryginalnych skili Matta Pococka — credit: [Matt Pocock](https://www.mattpocock.com/). Pozostałe skille są autorskie.
+Skille `grill`, `to-prd` i `diagnose` to polskie adaptacje [skili Matta Pococka](https://www.mattpocock.com/). Reszta autorska.
 
 Większość zasad metodologii ma korzenie w klasykach software design — Ousterhout (*Philosophy of Software Design*), Fowler (*Refactoring*), Hunt/Thomas (*Pragmatic Programmer*), Brooks (*Design of Design*). LLM-y są nowe, problemy są stare.
 
