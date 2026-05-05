@@ -1,6 +1,6 @@
 ---
 name: to-prd
-description: Zamień bieżący kontekst rozmowy na PRD (destination document) + folder inicjatywy `doc/plans/<slug>/` z dwoma plikami - `prd.md` (vision + slices) i `backlog.md` (scaffold ze statusem `[ ] niezdetailowany` per slice). Używaj kiedy chcesz utrwalić ustalenia z grillingu/rozmowy jako trwały dokument zanim zaczniecie implementację — szczególnie przy dużych inicjatywach przed `/tusks` rozbijaniem slicesów na taski. Triggery - "napisz PRD", "stwórz PRD", "PRD z naszej rozmowy", "destination document", "zarys planu", "nowa inicjatywa". NIE auto-trigger.
+description: Zamień bieżący kontekst rozmowy na PRD (destination document) + folder inicjatywy `doc/plans/<slug>/` z dwoma plikami - `prd.md` (vision + slices) i `backlog.md` (scaffold ze statusem `[ ] niezdetailowany` per slice). Używaj kiedy chcesz utrwalić ustalenia z grillingu/rozmowy jako trwały dokument zanim zaczniecie implementację — szczególnie przy dużych inicjatywach przed `/to-tasks` rozbijaniem slicesów na taski. Triggery - "napisz PRD", "stwórz PRD", "PRD z naszej rozmowy", "destination document", "zarys planu", "nowa inicjatywa". NIE auto-trigger.
 disable-model-invocation: true
 ---
 
@@ -17,18 +17,18 @@ Ten skill bierze bieżący kontekst rozmowy i zrozumienie kodu, i produkuje **tr
 ## Pozycja w workflow
 
 ```
-/grill (opcjonalny grilling) → [ /to-prd ] → /tusks slice 1 → agent wykonuje → ...
+/grill (opcjonalny grilling) → [ /to-prd ] → /to-tasks slice 1 → agent wykonuje → ...
                                   ↓
                            folder + prd.md + backlog.md scaffold
 ```
 
-`/to-prd` zostawia inicjatywę w stanie **gotowym do `/tusks`** — slice'y są zdefiniowane w PRD, ale **nierozbite na taski wykonawcze**. Manager wraca później z `/tusks slice <N>` żeby rozpisać konkretny etap.
+`/to-prd` zostawia inicjatywę w stanie **gotowym do `/to-tasks`** — slice'y są zdefiniowane w PRD, ale **nierozbite na taski wykonawcze**. Manager wraca później z `/to-tasks slice <N>` żeby rozpisać konkretny etap.
 
 ## Pojedyncza odpowiedzialność
 
 Tworzysz folder + PRD + scaffold backlog. Konkretnie **NIE robisz**:
 
-- Nie rozbijasz slicesów na taski wykonawcze (to robi `/tusks` — slice po slice'cie, w pętli z managerem)
+- Nie rozbijasz slicesów na taski wykonawcze (to robi `/to-tasks` — slice po slice'cie, w pętli z managerem)
 - Nie commit'ujesz (manager owns docs commits — rule projektowa)
 - Nie eksplorujesz pełnego repo (rule surgical — czytasz wystarczająco żeby napisać sensowne slices)
 - Nie tworzysz ADR-ów (to robi `/grill` — proponuje ADR-y oszczędnie, gdy decyzja jest hard-to-reverse + zaskakująca + wynik trade-off'u)
@@ -80,9 +80,9 @@ Skonfrontuj proponowany podział z user'em — czy slice'y odpowiadają jego ocz
 
 Pełna ścieżka: `doc/plans/<slug>/prd.md`. Użyj template'u poniżej.
 
-**Krytyczne dla późniejszego scaffolding'u** (Krok 3c) i konsumpcji przez `/tusks`:
+**Krytyczne dla późniejszego scaffolding'u** (Krok 3c) i konsumpcji przez `/to-tasks`:
 - Slice headings w formacie `## Slice N: <tytuł>` — żeby anchor był deterministic (`#slice-1-<slug>`)
-- Per-slice section MUSI mieć **Slice purpose** (jedno-dwa zdania) i **Slice acceptance** (lista bullet'ów) — to są pola które `/tusks` konsumuje, agent wykonawczy też na nich operuje
+- Per-slice section MUSI mieć **Slice purpose** (jedno-dwa zdania) i **Slice acceptance** (lista bullet'ów) — to są pola które `/to-tasks` konsumuje, agent wykonawczy też na nich operuje
 
 ### Krok 3c: Scaffold `backlog.md`
 
@@ -92,7 +92,7 @@ Pełna ścieżka: `doc/plans/<slug>/backlog.md`. Użyj template'u poniżej.
 1. Czyta wygenerowany `prd.md` (sekcje slice'ów)
 2. Generuje frontmatter metadata (`status: init`, `current_slice: null`, `total_slices: <N>`, `last_update: <today>`)
 3. Generuje sekcję per slice — kopiuje **Slice purpose** + **Slice acceptance** z PRD do backlog'u
-4. W każdej sekcji slice'a wstawia placeholder `_Slice niezdetailowany. Manager invoke /tusks slice <N> żeby rozbić na taski._`
+4. W każdej sekcji slice'a wstawia placeholder `_Slice niezdetailowany. Manager invoke /to-tasks slice <N> żeby rozbić na taski._`
 5. Status każdego slice'a: `[ ] niezdetailowany`
 
 **Dlaczego kopia, nie link:**
@@ -135,7 +135,7 @@ Lista decyzji implementacyjnych, które zostały podjęte. Może obejmować:
 - Kontrakty API
 - Konkretne interakcje
 
-NIE umieszczaj konkretnych ścieżek plików ani fragmentów kodu — szybko się dezaktualizują. Konkrety lądują w `backlog.md` per task (zadanie `/tusks`).
+NIE umieszczaj konkretnych ścieżek plików ani fragmentów kodu — szybko się dezaktualizują. Konkrety lądują w `backlog.md` per task (zadanie `/to-tasks`).
 
 ## Decyzje testowe
 
@@ -147,7 +147,7 @@ Lista decyzji testowych. Uwzględnij:
 
 ## Vertical slices
 
-Każdy slice = sekcja z fixed format (kontrakt z `/tusks` i `backlog.md`).
+Każdy slice = sekcja z fixed format (kontrakt z `/to-tasks` i `backlog.md`).
 
 ### Slice 1: <Krótki tytuł>
 
@@ -208,7 +208,7 @@ last_update: <YYYY-MM-DD>
 
 ### Tasks
 
-_Slice niezdetailowany. Manager invoke `/tusks slice 1` żeby rozbić na taski._
+_Slice niezdetailowany. Manager invoke `/to-tasks slice 1` żeby rozbić na taski._
 
 ---
 
@@ -222,7 +222,7 @@ _Slice niezdetailowany. Manager invoke `/tusks slice 1` żeby rozbić na taski._
 
 ### Tasks
 
-_Slice niezdetailowany. Manager invoke `/tusks slice 2` żeby rozbić na taski._
+_Slice niezdetailowany. Manager invoke `/to-tasks slice 2` żeby rozbić na taski._
 
 ---
 
@@ -239,7 +239,7 @@ Wszystkie skille produkujące dokumentację używają **standard markdown** link
 - Linki **relative** zawsze (Obsidian buduje graph, GitHub renderuje natywnie, linters je sprawdzają)
 - Anchor: lowercase + dashes (GitHub auto-slug — `## Slice 2: Sync engine` → `#slice-2-sync-engine`)
 - Slice IDs `Slice <N>` jako referencja w PRD/backlog
-- Task IDs `T<slice>.<num>` (generowane przez `/tusks` w fazie task breakdown'u) jako lingua franca: backlog → commits → kroniki → code reviews → ADR-y
+- Task IDs `T<slice>.<num>` (generowane przez `/to-tasks` w fazie task breakdown'u) jako lingua franca: backlog → commits → kroniki → code reviews → ADR-y
 
 W PRD linkuj do:
 - `CONTEXT.md` (jeśli używasz terminów ze słownika)
@@ -252,9 +252,9 @@ W PRD linkuj do:
 
 | Pokusa | Dlaczego nie | Co zamiast |
 |---|---|---|
-| "Wpiszę konkretne ścieżki plików w decyzjach implementacyjnych" | Ścieżki plików dezaktualizują się szybko, PRD ma żyć długo. | Decyzje high-level w PRD; konkretne pliki w `backlog.md` per task (`/tusks`). |
-| "Rozbiję slice 1 na taski od razu w PRD" | Mieszasz odpowiedzialności — PRD to vision, taski to execution. | PRD zostaje na poziomie slice. `/tusks` invoke później rozbija slice na taski. |
-| "Zapomnę o `Slice acceptance` — wystarczy `Slice purpose`" | `/tusks` i agent wykonawczy konsumują acceptance. Bez nich = slice mglisty. | Każdy slice MUSI mieć acceptance (3-5 verifiowalnych kryteriów). |
+| "Wpiszę konkretne ścieżki plików w decyzjach implementacyjnych" | Ścieżki plików dezaktualizują się szybko, PRD ma żyć długo. | Decyzje high-level w PRD; konkretne pliki w `backlog.md` per task (`/to-tasks`). |
+| "Rozbiję slice 1 na taski od razu w PRD" | Mieszasz odpowiedzialności — PRD to vision, taski to execution. | PRD zostaje na poziomie slice. `/to-tasks` invoke później rozbija slice na taski. |
+| "Zapomnę o `Slice acceptance` — wystarczy `Slice purpose`" | `/to-tasks` i agent wykonawczy konsumują acceptance. Bez nich = slice mglisty. | Każdy slice MUSI mieć acceptance (3-5 verifiowalnych kryteriów). |
 | "Commitnę po Write żeby nic nie zginęło" | Manager owns docs commits. | Zostawiasz pliki na dysku (uncommitted). Manager commituje sam. |
 
 ---

@@ -174,7 +174,7 @@ Przy każdej rekomendacji oznacz skalę:
 **(A) PRD już istnieje** (canonical flow — user zrobił `/grill` + `/to-prd` w default agent **przed** wywołaniem Ciebie):
 
 - Sprawdź `doc/plans/<slug>/prd.md` (świeży PRD) i `doc/plans/<slug>/backlog.md` (scaffold ze slicesami w stanie `[ ] niezdetailowany`)
-- Przejdź **od razu do Tryb 4B (bridge mode)** — wybierzcie pierwszy slice, invoke `/tusks slice 1` żeby rozpisać taski, potem pisz bridge plan
+- Przejdź **od razu do Tryb 4B (bridge mode)** — wybierzcie pierwszy slice, invoke `/to-tasks slice 1` żeby rozpisać taski, potem pisz bridge plan
 - **NIE rób Tryb 1 propozycji rekomendacji startowych** — to już zrobił `/to-prd` (PRD + scaffold backlog jest source of truth)
 
 **(B) PRD nie istnieje** (user wszedł do Ciebie z briefem zamiast iść grill-first — fallback):
@@ -251,7 +251,7 @@ Gdy user zaakceptował task i decyzję o branchu/worktree — piszesz plan pracy
 
 **Kiedy:** user już zrobił `/to-prd` (folder `doc/plans/<slug>/` z `prd.md` + scaffold `backlog.md` ze slicesami `[ ] niezdetailowany`). Teraz wybierasz jeden konkretny slice do zrealizowania.
 
-**Krok pre-bridge: invoke `/tusks slice <N>`** żeby rozpisać slice na taski wykonawcze. `/tusks` updatuje `doc/plans/<slug>/backlog.md` — sekcja slice'a `[ ] niezdetailowany` → `🔄 in-progress`, plus task breakdown 3-7 tasków z `T<N>.<num>` IDs + acceptance per task. Po `/tusks` wracasz do bridge plan'u.
+**Krok pre-bridge: invoke `/to-tasks slice <N>`** żeby rozpisać slice na taski wykonawcze. `/to-tasks` updatuje `doc/plans/<slug>/backlog.md` — sekcja slice'a `[ ] niezdetailowany` → `🔄 in-progress`, plus task breakdown 3-7 tasków z `T<N>.<num>` IDs + acceptance per task. Po `/to-tasks` wracasz do bridge plan'u.
 
 **Nie duplikuj task acceptance z backlogu — backlog jest źródłem prawdy dla execution.** Twoja rola to **most (bridge)** między backlog'iem a subagentem: krótki briefing kontekstowy (~30-50 linii) który łączy globalny kontekst (PRD, slot w inicjatywie) z punktem startowym (taski w backlog'u).
 
@@ -262,7 +262,7 @@ Gdy user zaakceptował task i decyzję o branchu/worktree — piszesz plan pracy
 3. **Wycinek z PRD relevantny dla tego slicea** (3-5 linii kontekstu) — żeby subagent rozumiał WHY, nie tylko WHAT
 4. **Punkty startowe** — pliki do przeczytania (zwykle te z task acceptance + 1-2 dodatkowe które Ty wiesz że są ważne — np. `CONTEXT.md`, ADR-y linkowane w PRD)
 5. **Co NIE jest w scope tego slice** — co należy do innych slicesów. Anti-scope creep.
-6. **Pułapki specyficzne dla tego slicea** — wiedza która nie jest w task acceptance (np. *"uważaj na race condition z innym slice"*, *"ADR-0011 dotyka tego obszaru"*) — często output briefingu z `/tusks` zawiera te pułapki
+6. **Pułapki specyficzne dla tego slicea** — wiedza która nie jest w task acceptance (np. *"uważaj na race condition z innym slice"*, *"ADR-0011 dotyka tego obszaru"*) — często output briefingu z `/to-tasks` zawiera te pułapki
 7. **Pierwsze 3 kroki** — bardzo konkretnie, oparte na pierwszych taskach (T<N>.1, T<N>.2)
 8. **Koniec pracy** — sekwencja jak w Tryb 4A: impl → `/kronikarz live` → user QA (STOP) → fix → raport do Managera, **Manager** odpala `/critical-code-review` (STOP) → fix po decyzjach Managera → re-test (STOP, jeśli były fixy) → raport końcowy do Managera, **Manager** odpala `/kronikarz close` + autonomy gate "merge?" + merge + (jeśli ostatni slice) Tryb 5D archive.
 
@@ -272,7 +272,7 @@ Gdy user zaakceptował task i decyzję o branchu/worktree — piszesz plan pracy
 - Pełnego designu (jest w PRD)
 - Zasad z CLAUDE.md (subagent czyta CLAUDE.md sam)
 
-**Bridge mode powtarza tylko to czego nie ma w żadnym innym dokumencie** — kontekst pracy równoległej, niuanse koordynacji, świeżą wiedzę z `/tusks` briefingu, kolejność wykonania tasków.
+**Bridge mode powtarza tylko to czego nie ma w żadnym innym dokumencie** — kontekst pracy równoległej, niuanse koordynacji, świeżą wiedzę z `/to-tasks` briefingu, kolejność wykonania tasków.
 
 **Output Tryb 4B:** plik `doc/plans/<branch-name>.md` (krótki bridge) + wiadomość briefingowa dla subagenta zawierająca: link do planu-bridge + link do `backlog.md` (z anchor do slice'a) + link do PRD.
 
@@ -395,7 +395,7 @@ Manager **orkiestruje** inne skile w stosownych momentach. Twoja rola to wskazyw
 
 ### Skille planowania — handoff flow
 
-Manager **integruje się** z `/grill`, `/to-prd` i `/tusks` przez user-mediated handoff'y. User odpala `/grill` i `/to-prd` (sam decyduje); Manager **inwoke'uje `/tusks`** sam (per slice w pętli, gdy gotów rozpisać następny etap).
+Manager **integruje się** z `/grill`, `/to-prd` i `/to-tasks` przez user-mediated handoff'y. User odpala `/grill` i `/to-prd` (sam decyduje); Manager **inwoke'uje `/to-tasks`** sam (per slice w pętli, gdy gotów rozpisać następny etap).
 
 **Kluczowa zasada:** Manager wchodzi do gry **dopiero gdy PRD + scaffold backlog istnieją na dysku.** Grill+PRD odbywają się w default agent (fresh smart zone, manager NIE jest jeszcze w grze).
 
@@ -412,7 +412,7 @@ Manager **integruje się** z `/grill`, `/to-prd` i `/tusks` przez user-mediated 
    "Mam folder <slug> gotowy, wybierzmy pierwszy slice"
 
 4. Manager Tryb 4B:
-   a. Invoke `/tusks slice <N>` → updateuje backlog.md z task breakdown
+   a. Invoke `/to-tasks slice <N>` → updateuje backlog.md z task breakdown
    b. Pisze bridge plan w doc/plans/<branch>.md (~30-50 linii)
 
 5. Manager → User: wiadomość-do-wkleienia dla executora
@@ -444,9 +444,9 @@ To jest **fallback, nie default**. Round-trip Tryb 1 → grill → PRD → Tryb 
 **Rola Managera w tym flow:**
 
 - **Tryb 1 (Session start)** — sprawdza czy istnieje już folder dla bieżącego scope (`doc/plans/*/backlog.md` glob lookup). Jeśli scope niejasny i brak folderu → rekomenduje canonical flow (grill+PRD bez Ciebie). Jeśli oba done → przechodzi bezpośrednio do Tryb 4B (najlepiej w świeżej sesji).
-- **Tryb 4B (Bridge)** — invoke `/tusks slice <N>` żeby rozpisać taski, czyta `doc/plans/<slug>/{prd.md, backlog.md}` + ewentualne ADR-y → pisze bridge plan (krótki most), nie powtarza PRD ani task acceptance.
+- **Tryb 4B (Bridge)** — invoke `/to-tasks slice <N>` żeby rozpisać taski, czyta `doc/plans/<slug>/{prd.md, backlog.md}` + ewentualne ADR-y → pisze bridge plan (krótki most), nie powtarza PRD ani task acceptance.
 - **`/grill` i `/to-prd` są user-driven** — user chce kontroli nad designem. Manager **wskazuje kiedy** i **czyta output**.
-- **`/tusks` Manager invoke'uje sam** — to jest mechaniczna dekompozycja w środku pętli planowania, nie wymaga user agency.
+- **`/to-tasks` Manager invoke'uje sam** — to jest mechaniczna dekompozycja w środku pętli planowania, nie wymaga user agency.
 
 #### `/grill`
 
@@ -460,12 +460,12 @@ To jest **fallback, nie default**. Round-trip Tryb 1 → grill → PRD → Tryb 
 - **Output (gdzie czytasz):** folder `doc/plans/<slug>/` z dwoma plikami:
   - `prd.md` — destination document (vision, vertical slices z `Slice purpose` + `Slice acceptance`)
   - `backlog.md` — scaffold (metadata frontmatter + sekcja per slice ze statusem `[ ] niezdetailowany` + skopiowane slice purpose/acceptance z PRD + placeholder `### Tasks`)
-- **Po:** user wraca do Ciebie z "PRD gotowy". Sprawdź że folder + oba pliki istnieją. Wybierzcie **pierwszy slice** → Tryb 4B (invoke `/tusks slice 1` → bridge plan).
+- **Po:** user wraca do Ciebie z "PRD gotowy". Sprawdź że folder + oba pliki istnieją. Wybierzcie **pierwszy slice** → Tryb 4B (invoke `/to-tasks slice 1` → bridge plan).
 
-#### `/tusks`
+#### `/to-tasks`
 
 - **Kiedy:** Tryb 4B, przed napisaniem bridge plan'u — dla każdego slice'a w pętli.
-- **Wywołanie:** `/tusks slice <N>` (explicit param) lub `/tusks` (fallback do "first niezdetailowany").
+- **Wywołanie:** `/to-tasks slice <N>` (explicit param) lub `/to-tasks` (fallback do "first niezdetailowany").
 - **Output:** zaktualizowana sekcja slice'a w `doc/plans/<slug>/backlog.md` — status `[ ] niezdetailowany` → `🔄 in-progress`, task breakdown 3-7 tasków z `T<N>.<num>` IDs + acceptance + opcjonalny test. Plus briefing na czat (pułapki, kolejność wykonania).
 - **NIE commit'uje** — Ty (Manager) commitujesz `backlog.md` razem z bridge plan'em.
 
@@ -508,7 +508,7 @@ Gdy user mówi "duża inicjatywa", "nowy moduł", "cross-cutting refactor" lub k
 |---|---|
 | Brak `CONTEXT.md` zaktualizowanego dla tego scope, mglisty pomysł | "Odpal `/grill`. Wróć z `CONTEXT.md` i ewentualnymi ADR-ami." |
 | `CONTEXT.md` aktualny, brak folderu inicjatywy | "Odpal `/to-prd`. Folder `doc/plans/<slug>/` z `prd.md` i scaffold `backlog.md` powstanie." |
-| Folder inicjatywy istnieje (`doc/plans/<slug>/{prd.md, backlog.md}`), slices `[ ] niezdetailowany` | "Wybierzcie pierwszy slice — invoke `/tusks slice <N>`, potem piszę bridge plan dla agenta (Tryb 4B)." |
+| Folder inicjatywy istnieje (`doc/plans/<slug>/{prd.md, backlog.md}`), slices `[ ] niezdetailowany` | "Wybierzcie pierwszy slice — invoke `/to-tasks slice <N>`, potem piszę bridge plan dla agenta (Tryb 4B)." |
 
 Bridge mode (Tryb 4B) jest **dramatycznie krótszy** niż full plan, bo PRD niesie większość kontekstu. Pomijanie tego flow przy large initiative = sediment problem (long plan duplikujący PRD, drift po fakcie).
 

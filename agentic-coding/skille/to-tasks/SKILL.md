@@ -1,22 +1,22 @@
 ---
-name: tusks
-description: Manager invoke gdy chce rozpisać konkretny vertical slice z backlogu na granularne taski wykonawcze (3-7 per slice). Bierze `doc/plans/<slug>/backlog.md` (scaffolded by /to-prd) + `prd.md`, eksploruje kod, generuje task breakdown z file targets + acceptance criteria. Wywołanie przez `/tusks slice <N>` (lub fallback do "first niezdetailowany"). Używaj zawsze gdy manager musi przekazać "co konkretnie agent ma zrobić w tym etapie" — nawet jeśli user nie wymieni słowa "tusks". Triggery: "rozpisz slice", "rozpisz etap", "task breakdown", "rozbij slice na taski", "co konkretnie w tym etapie", "detail current slice", "co dalej w tym slice". NIE auto-trigger, NIE commit (manager owns docs commits).
+name: to-tasks
+description: Manager invoke gdy chce rozpisać konkretny vertical slice z backlogu na granularne taski wykonawcze (3-7 per slice). Bierze `doc/plans/<slug>/backlog.md` (scaffolded by /to-prd) + `prd.md`, eksploruje kod, generuje task breakdown z file targets + acceptance criteria. Wywołanie przez `/to-tasks slice <N>` (lub fallback do "first niezdetailowany"). Używaj zawsze gdy manager musi przekazać "co konkretnie agent ma zrobić w tym etapie" — nawet jeśli user nie wymieni słowa "to-tasks". Triggery: "rozpisz slice", "rozpisz etap", "task breakdown", "rozbij slice na taski", "co konkretnie w tym etapie", "detail current slice", "co dalej w tym slice". NIE auto-trigger, NIE commit (manager owns docs commits).
 disable-model-invocation: true
 argument-hint: "[slice <N>]"
 model: opus
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
 ---
 
-# `/tusks` — Task breakdown bieżącego slice'a
+# `/to-tasks` — Task breakdown bieżącego slice'a
 
 Jesteś subagentem invoke'owanym przez Code Managera w środku pętli planowania. Twoja rola jest wąska i dyscyplinowana: bierzesz **jeden** vertical slice z `doc/plans/<slug>/backlog.md` i rozbijasz go na **3-7 granularnych tasków wykonawczych**, które agent na branchu może realizować jeden po drugim, z jasnym acceptance per task.
 
 ## Pozycja w workflow
 
 ```
-/grill → /to-prd → [ /tusks slice 1 ] → agent wykonuje → /kronikarz → /critical-code-review → close →
+/grill → /to-prd → [ /to-tasks slice 1 ] → agent wykonuje → /kronikarz → /critical-code-review → close →
                 ↓
-        [ /tusks slice 2 ] → agent wykonuje → ... → archive
+        [ /to-tasks slice 2 ] → agent wykonuje → ... → archive
 ```
 
 `/to-prd` przed Tobą stworzył folder inicjatywy `doc/plans/<slug>/` z dwoma plikami:
@@ -60,7 +60,7 @@ Jeśli **>1 aktywna inicjatywa** (kilka folderów w `doc/plans/` z `backlog.md` 
 - `Read doc/plans/<slug>/backlog.md` w pełni — metadata header + już wykonane slices
 
 **Detect current slice** (priorytet kolejności):
-1. Explicit param: `/tusks slice 2` → slice 2
+1. Explicit param: `/to-tasks slice 2` → slice 2
 2. Brak param → fallback "first slice ze statusem `[ ] niezdetailowany`"
 3. Wszystkie slices są `🔄 in-progress` lub `✅ done` → zaalarmuj managera (*"Brak slice'ów do rozpisania. Slice X jest in-progress, slice Y czeka na agenta. Czy chciałeś inny scope?"*) i zatrzymaj się
 

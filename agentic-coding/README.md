@@ -33,7 +33,7 @@ Sugerowana kolejność:
 |---|---|---|
 | `grill` | Grilling pomysłu z budowaniem persistent kontekstu (CONTEXT.md, ADR-y) | autorski (inspired by Matt Pocock) |
 | `to-prd` | Konwersja kontekstu rozmowy na folder inicjatywy `doc/plans/<slug>/` z `prd.md` (vision + slices) i scaffold `backlog.md` | autorski (inspired by Matt Pocock) |
-| `tusks` | Task breakdown bieżącego slice'a — manager invoke per slice w pętli, rozbija slice na 3-7 granularnych tasków z file targets + acceptance | autorski |
+| `to-tasks` | Task breakdown bieżącego slice'a — manager invoke per slice w pętli, rozbija slice na 3-7 granularnych tasków z file targets + acceptance | autorski |
 | `diagnose` | Zdyscyplinowana pętla diagnostyczna dla bugów i regresji | inspired by Matt Pocock |
 | `repo-onboarding` | Onboarding nowego repo: CLAUDE.md, CONTEXT.md, doc/ structure | autorski |
 | `code-manager` | Bird's-eye manager: planowanie, dispatch do subagentów, weryfikacja, archive po close inicjatywy | autorski |
@@ -62,7 +62,7 @@ Każdy skill respektuje uniwersalne zasady (patrz [02-zasady-metodologii.md](./o
 
 - **Vertical slicing** — `/to-prd` rozbija destination document na cienkie slicesy end-to-end
 - **Grill > eager planning** — `/grill` przed `/to-prd` (Manager wskazuje handoff)
-- **Per-slice planning loop** — `/tusks` rozbija JEDEN slice na taski przed startem agenta, kolejny slice rozpisuje się dopiero po close poprzedniego (manager-driven cadence, nie wszystko z góry)
+- **Per-slice planning loop** — `/to-tasks` rozbija JEDEN slice na taski przed startem agenta, kolejny slice rozpisuje się dopiero po close poprzedniego (manager-driven cadence, nie wszystko z góry)
 - **Persistent kontekst** — `/repo-onboarding` zakłada `CONTEXT.md`, `/kronikarz` żyje przez cały lifecycle taska (live mode)
 - **Build feedback loop FIRST** — `/diagnose` Faza 1 to reprodukcja w fast/deterministic loop
 - **External review** — `/critical-code-review` odpalany przez Code Managera (Opus), NIE przez agenta wykonawczego (Sonnet) — peer review principle
