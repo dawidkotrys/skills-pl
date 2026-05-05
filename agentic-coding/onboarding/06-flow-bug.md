@@ -7,7 +7,7 @@ Coś działa źle. Test failuje, klient zgłosił, regresja w produkcji, mysteri
 - Reprodukcja **NIE** jest oczywista (gdyby była — fix też byłby trywialny)
 - Ryzyko że "fix" maskuje prawdziwy problem (treat symptom, not cause)
 - Może wymagać **głębokiej** instrumentacji żeby zrozumieć
-- Często wymaga **building feedback loop FIRST** (zasada #22)
+- Często wymaga **building feedback loop FIRST** (zasada #5)
 
 ---
 
@@ -16,7 +16,7 @@ Coś działa źle. Test failuje, klient zgłosił, regresja w produkcji, mysteri
 ```
 1. Reprodukcja                  →  zrób żeby bug się odpalał deterministycznie
 2. Minimalizacja                →  zredukuj input do najmniejszego który triggeruje bug
-3. Build feedback loop FIRST    →  zasada #22 — fast, deterministic test/scenario
+3. Build feedback loop FIRST    →  zasada #5 — fast, deterministic test/scenario
 4. Hipotezy                     →  co MOGŁO to spowodować? lista możliwości
 5. Instrumentacja               →  loggery / breakpointy / asserts żeby weryfikować hipotezy
 6. Test hipotez                 →  weryfikujesz każdą za pomocą feedback loopu
@@ -66,13 +66,13 @@ Po minimalizacji: masz **canonical reproducer**. Coś jak unit test który failu
 
 ---
 
-## Krok 3 — Build feedback loop FIRST (zasada #22)
+## Krok 3 — Build feedback loop FIRST (zasada #5)
 
 **Najważniejszy krok**. 90% buga jest **fixed** kiedy masz solidny feedback loop.
 
 Loop powinien być:
 
-- **Fast** — sekundy, nie minuty. Jeśli twój reproducer trwa 60s, najpierw zrób żeby trwał 1s (zasada #23 — iterate na samym feedback loop)
+- **Fast** — sekundy, nie minuty. Jeśli twój reproducer trwa 60s, najpierw zrób żeby trwał 1s (inwestycja w feedback loop zwraca się 10x — patrz zasada #8)
 - **Deterministic** — leci za każdym razem tak samo. Brak flakiness.
 - **Local** — leci u ciebie, nie wymaga staging environment / external service. Mock / fixture jeśli trzeba.
 - **Targeted** — testuje **dokładnie** ten bug, nie cały system
@@ -123,7 +123,7 @@ Odpalasz feedback loop → patrzysz na output → potwierdzasz / wykluczasz hipo
 
 ### Anty-wzorzec — fix bez root cause
 
-Pokusą jest "wpisać try/catch żeby błąd zniknął". To jest **maskowanie symptomu**. Bug nadal jest. Pojawi się w innej formie. Per zasada #16 — bad codebase = bad agent output, takie maskowanie psuje jakość codebase.
+Pokusą jest "wpisać try/catch żeby błąd zniknął". To jest **maskowanie symptomu**. Bug nadal jest. Pojawi się w innej formie. Per zasada #6 — bad codebase = bad agent output, takie maskowanie psuje jakość codebase.
 
 **Zawsze** root cause przed fixem.
 
@@ -145,7 +145,7 @@ Test powinien:
 
 - Reprodukować dokładnie ten scenariusz który był w canonical reproducer
 - Failować przed fixem, przechodzić po fixie
-- Być wystarczająco specyficzny żeby ochronić przed nawrotem **dokładnie tego buga**, ale nie tak specyficzny żeby breakować przy każdym refactorze (zasada #21 — test behavior, nie implementation)
+- Być wystarczająco specyficzny żeby ochronić przed nawrotem **dokładnie tego buga**, ale nie tak specyficzny żeby breakować przy każdym refactorze (testuj zewnętrzne behavior, nie szczegóły implementacyjne)
 
 ---
 

@@ -32,11 +32,11 @@ Co jest **opinionated** (możesz nie lubić):
 Czego **NIE oczekuj out-of-the-box**:
 
 - Linear / Jira / GitHub Issues integration
-- Native angielska wersja — kanon nazw skili pozostaje (`/to-prd`, `/tdd`), ale instrukcje są po polsku
+- Native angielska wersja — kanon nazw skili pozostaje (`/to-prd`, `/to-tasks`, `/code-manager`, etc.), ale instrukcje są po polsku
 
 ## Filozofia
 
-**„Bad codebase = bad agent output"** (zasada #16). Jakość outputu AI jest ograniczona jakością twoich feedback loops, structure i persistent kontekstu. Te skille **nie** są o "magicznych promptach" — są o budowie codebase, w którym agent może działać efektywnie.
+**„Bad codebase = bad agent output"** (zasada #6). Jakość outputu AI jest ograniczona jakością twoich feedback loops, structure i persistent kontekstu. Te skille **nie** są o "magicznych promptach" — są o budowie codebase, w którym agent może działać efektywnie.
 
 Kluczowe założenia:
 
@@ -47,13 +47,13 @@ Kluczowe założenia:
 5. **Po co reviewować coś co nie działa** — najpierw user QA (imposing taste), potem external code review przez Managera, kronika na końcu
 6. **Implementer pulls, reviewer pushes** — Code Manager (Opus) reviewuje pracę agenta wykonawczego (Sonnet), nie sam siebie
 
-Pełna lista 28 zasad: [agentic-coding/onboarding/02-zasady-metodologii.md](./agentic-coding/onboarding/02-zasady-metodologii.md).
+Pełna lista 10 zasad: [agentic-coding/onboarding/02-zasady-metodologii.md](./agentic-coding/onboarding/02-zasady-metodologii.md).
 
 ## Jak zacząć
 
-1. Przeczytaj **[agentic-coding/onboarding/](./agentic-coding/onboarding/)** — 7 dokumentów wprowadzających (fundamenty, zasady, konwencje, flow per typ taska, instalacja).
+1. Przeczytaj **[agentic-coding/onboarding/](./agentic-coding/onboarding/)** — 9 dokumentów wprowadzających (fundamenty, zasady, pliki projektu, główny flow, warianty per skala, instalacja).
 2. Zainstaluj skille (`~/.claude/skills/`) i slash commands (`~/.claude/commands/`) — pełna instrukcja w [07-instalacja.md](./agentic-coding/onboarding/07-instalacja.md).
-3. Pracuj z metodologią — odpalaj skille kontekstowo (`/grill-with-docs`, `/to-prd`, `/code-manager`, `/diagnose`, etc.) zgodnie z flow w [04-flow-maly-task.md](./agentic-coding/onboarding/04-flow-maly-task.md), [05-flow-duza-inicjatywa.md](./agentic-coding/onboarding/05-flow-duza-inicjatywa.md), [06-flow-bug.md](./agentic-coding/onboarding/06-flow-bug.md).
+3. Pracuj z metodologią — odpalaj skille kontekstowo (`/grill`, `/to-prd`, `/to-tasks`, `/code-manager`, `/diagnose`, etc.) zgodnie z flow w [04-flow-maly-task.md](./agentic-coding/onboarding/04-flow-maly-task.md), [05-flow-duza-inicjatywa.md](./agentic-coding/onboarding/05-flow-duza-inicjatywa.md), [06-flow-bug.md](./agentic-coding/onboarding/06-flow-bug.md).
 
 ## Sync z `~/.claude/skills/`
 

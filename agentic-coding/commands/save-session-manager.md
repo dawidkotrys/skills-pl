@@ -24,7 +24,7 @@ Jako Code Manager — strategiczna rola — Twój session-state ma zawierać **w
 - **Otwarte handoff'y** — czy czekasz na user QA? Na decyzje per-finding po review? Na user akcept dla merge?
 - **Kluczowe decyzje** — co wynegocjowane / zaakceptowane w tej sesji (które ADR-y do napisania, które TODO odhaczone)
 - **Status backlogów** — co odhaczone w tej sesji, jakie nowe entries dopisane
-- **Linki do kluczowych plików** — kroniki live, code-review reports, plany w `doc/plans/`, PRD w `doc/decisions/`
+- **Linki do kluczowych plików** — kroniki live, code-review reports, plany w `doc/plans/<branch>.md` (Format A) lub `doc/plans/<slug>/{prd.md, backlog.md}` (Format B), ADR-y w `doc/decisions/`
 - **Nierozwiązane pytania / blockery** — co czeka na decyzję, co eskalowane
 - **Następny krok po restore** — konkretnie, co zrobić jako pierwsze gdy sesja zostanie wczytana
 
@@ -57,14 +57,15 @@ Format pliku `doc/session/manager-session.md`:
 ## Status backlogów
 
 - `doc/backlog.md`: <co zmienione w tej sesji>
-- `doc/features/<x>/backlog.md`: <co zmienione>
+- `doc/plans/<slug>/backlog.md`: <co zmienione w aktywnej inicjatywie>
 
 ## Kluczowe pliki (linki)
 
 - Kronika live: doc/history/YYYY-MM-DD-<branch>.md
 - Code review: doc/code-reviews/YYYY-MM-DD-<branch>.md
-- Plan: doc/plans/<branch>.md
-- PRD: doc/decisions/NNNN-<slug>.md
+- Plan: doc/plans/<branch>.md (Format A) lub doc/plans/<slug>/ (Format B)
+- PRD: doc/plans/<slug>/prd.md
+- ADR-y: doc/decisions/NNNN-<slug>.md
 
 ## Nierozwiązane / blockery
 

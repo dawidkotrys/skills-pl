@@ -18,7 +18,7 @@ Pozostałe dokumenty onboarding (04, 05, 06) opisują **warianty per skala**. Te
 - **Manager (Opus, `/code-manager`)** — bird's-eye view, planowanie, dispatch, external code review, close, autonomy gate, merge. **Nie pisze kodu produktowego.**
 - **Executor (Sonnet, agent w worktree/branchu)** — pisze kod. Aktualizuje kronikę live. Raportuje do Managera (przez user). **Nie odpala `/critical-code-review`, nie pushuje, nie merguje.**
 
-User pełni rolę **bus'a komunikacyjnego** — Manager nie rozmawia bezpośrednio z Executorem. Każda wiadomość przechodzi przez user'a (kopiuj-wklej). To zapobiega autonomous loop'om bez human-in-the-loop i wymusza imposing taste (zasada #26) na każdym STOP-ie.
+User pełni rolę **bus'a komunikacyjnego** — Manager nie rozmawia bezpośrednio z Executorem. Każda wiadomość przechodzi przez user'a (kopiuj-wklej). To zapobiega autonomous loop'om bez human-in-the-loop i wymusza imposing taste (zasada #9) na każdym STOP-ie.
 
 ---
 
@@ -63,7 +63,7 @@ USER             DEFAULT AGENT          MANAGER (Opus)         EXECUTOR (Sonnet)
 
 (6) STOP #1   ←── scenariusze inline ── EXECUTOR czeka
     USER QA       [opcja] /design-checker (jeśli UI) ──►          doc/design-reviews/...
-    klikam, czytam, dotykam (zasada #26)
+    klikam, czytam, dotykam (zasada #9)
     ✅ ok / ⚠️ poprawki / ❌ broken ────► EXECUTOR
                                           jeśli ⚠️ → fix-y in-branch (commit "fix per user QA")
                                           update kronika 🧪 Testy
@@ -161,7 +161,7 @@ To są **cztery momenty** w pełnym flow gdy bez Twojego "ok" sekwencja się zat
 
 ### STOP #1 — user QA po implementacji
 
-Co robisz: **klikasz, czytasz, dotykasz** rzeczywistego obiektu. Per zasada #26 (imposing taste). Manualny QA pass na scenariuszach które executor podał inline.
+Co robisz: **klikasz, czytasz, dotykasz** rzeczywistego obiektu. Per zasada #9 (imposing taste). Manualny QA pass na scenariuszach które executor podał inline.
 
 Co mówisz:
 - ✅ "wszystko ok, zlecaj /critical-code-review" → executor raportuje do managera
@@ -181,7 +181,7 @@ Tylko jeśli były FIX-y. Jeśli wszystko BACKLOG/SKIP — **pomijasz**. Re-test
 
 ### Autonomy gate — "merge?"
 
-Po `/kronikarz close` manager pyta: "Branch X gotowy do merge. OK?" — czekasz na **"akcept"**. Bez tego manager **NIE** mergeuje. Per zasada #28 (crucial decisions wymagają human-in-the-loop) i ADR-0001.
+Po `/kronikarz close` manager pyta: "Branch X gotowy do merge. OK?" — czekasz na **"akcept"**. Bez tego manager **NIE** mergeuje. Per zasada #10 (crucial decisions wymagają human-in-the-loop) i ADR-0001.
 
 ---
 
@@ -250,11 +250,11 @@ Każdy worktree ma własny `doc/session/` — brak konfliktu między równoległ
 ## Anti-patterny w komunikacji
 
 - **Manager pisze do executora bezpośrednio** (bez user mediacji) — łamie autonomy gate, brak imposing taste
-- **Executor odpala `/critical-code-review`** — peer review principle złamany (Sonnet review-uje Sonnet, confirmation bias). Per zasada #25 — Opus reviewuje pracę Sonneta
+- **Executor odpala `/critical-code-review`** — peer review principle złamany (Sonnet review-uje Sonnet, confirmation bias). Manager (Opus) reviewuje pracę Sonneta
 - **Pomijanie STOP #1** — kod idzie do review zanim user zweryfikował user-facing behavior. Zasada #26 (imposing taste) pominięta. "Po co reviewować coś co nie działa?"
 - **Manager mergeuje bez user "akcept"** — autonomy gate złamany. Per ADR-0001 → zawsze human-in-the-loop dla irreversible action
 - **Kronika tylko w trybie close** — executor nie odpala `/kronikarz live` per faza, manager wpada na zamykanie pustej kroniki, brakuje rozumowania per decyzję
-- **`/grill` pominięty przy 🔴 large initiative** — eager planning bez grillingu, zasada #5 złamana → plan nie wytrzyma kontaktu z rzeczywistością
+- **`/grill` pominięty przy 🔴 large initiative** — eager planning bez grillingu, zasada #4 złamana → plan nie wytrzyma kontaktu z rzeczywistością
 - **`/design-checker` pominięty przy zmianach UI** — design tokens drift po fakcie, niespójność wizualna w bazie kodu
 - **Multi-slice work bez save/restore** — wpadasz w dumb zone w środku slica 4 z 7, halucynacje, kosztowne błędy
 - **Raport bez konkretów** — "wszystko działa" zamiast "test 1, 2, 3 ✅, manualny smoke pass na X" → manager nie ma czego review-ować

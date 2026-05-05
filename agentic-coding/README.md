@@ -66,6 +66,6 @@ Każdy skill respektuje uniwersalne zasady (patrz [02-zasady-metodologii.md](./o
 - **Persistent kontekst** — `/repo-onboarding` zakłada `CONTEXT.md`, `/kronikarz` żyje przez cały lifecycle taska (live mode)
 - **Build feedback loop FIRST** — `/diagnose` Faza 1 to reprodukcja w fast/deterministic loop
 - **External review** — `/critical-code-review` odpalany przez Code Managera (Opus), NIE przez agenta wykonawczego (Sonnet) — peer review principle
-- **Po co reviewować coś co nie działa** — najpierw user QA (zasada #26 imposing taste), potem external review, kronikarz close na końcu
+- **Po co reviewować coś co nie działa** — najpierw user QA (zasada #9 imposing taste), potem external review, kronikarz close na końcu
 - **Komunikacja bez presji** — `code-manager/references/manager-values.md` (research-backed: badanie Anthropic 2026-04-02)
-- **Autonomy gate** — Manager merguje, ale po user "akcept" (zasada #28: crucial decisions z udziałem człowieka)
+- **Autonomy gate** — Manager merguje, ale po user "akcept" (zasada #10: crucial decisions z udziałem człowieka)

@@ -102,6 +102,6 @@ Domain expert + product owner + dev + AI w jednym pokoju. AI nie zastąpi domain
 
 **Pierwszy raz** — przeczytaj sekwencyjnie 1-10.
 
-**Na co dzień** — wracaj tu kiedy potrzebujesz przypomnienia konkretnej zasady (np. "co Pocock mówił o vertical slicing" → zasada #5).
+**Na co dzień** — wracaj tu kiedy potrzebujesz przypomnienia konkretnej zasady (np. "co Pocock mówił o vertical slicing" → zasada #4).
 
 **Reguła:** zasady mają wartość tylko gdy są stosowane w realnej pracy. Same z siebie są tylko listą bullet pointów.

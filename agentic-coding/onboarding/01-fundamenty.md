@@ -71,13 +71,12 @@ Praktyczna heurystyka: jeśli rozważasz `/compact`, zadaj sobie pytanie — *cz
 
 Te trzy ograniczenia kształtują wszystko co dalej:
 
-1. **Persistent kontekst na dysku** (zasada #17, #18, #19) — bo Memento
-2. **Vertical slicing + thin slices** (zasada #8, #9, #10) — bo każdy slice = kompletny session w smart zone
-3. **Grilling > eager planning** (zasada #5) — bo plan napisany w smart zone jest precyzyjny; plan napisany w dumb zone jest sloppy
-4. **Day shift vs night shift** (zasada #6) — human dostarcza taste i decisions w smart zone; AI implementuje w dobrze zdefiniowanej, wąskiej domenie
-5. **Bad codebase = bad agent output** (zasada #16) — fast feedback loops i czysta struktura **przedłużają smart zone** poprzez redukcję noise w kontekście
+1. **Persistent kontekst na dysku** (`CONTEXT.md`, `doc/plans/<slug>/`, `doc/decisions/` — patrz [03-pliki-projektu.md](./03-pliki-projektu.md)) — bo Memento
+2. **Vertical slicing + thin slices** (zasada #5) — bo każdy slice = kompletny session w smart zone
+3. **Grilling > eager planning** (zasada #4) — bo plan napisany w smart zone jest precyzyjny; plan napisany w dumb zone jest sloppy
+4. **Bad codebase = bad agent output** (zasada #6) — fast feedback loops i czysta struktura **przedłużają smart zone** poprzez redukcję noise w kontekście
 
-Wszystkie 28 zasad metodologii: [02-zasady-metodologii.md](./02-zasady-metodologii.md).
+Wszystkie 10 zasad metodologii: [02-zasady-metodologii.md](./02-zasady-metodologii.md).
 
 ---
 

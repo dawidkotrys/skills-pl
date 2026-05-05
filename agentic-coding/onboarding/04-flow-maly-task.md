@@ -52,7 +52,7 @@ Tylko gdy:
 - Refactor jest **subtelny** — łatwo wprowadzić regres, trzeba ustalić scope
 - Mały task **dotyka** krytycznej części kodu (auth, payments, data integrity)
 
-Wtedy: `/grill` lub po prostu rozmowa z domyślnym agentem dopóki nie masz **shared design concept** (zasada #5).
+Wtedy: `/grill` lub po prostu rozmowa z domyślnym agentem dopóki nie masz **shared design concept** (zasada #4).
 
 Pytaj o:
 

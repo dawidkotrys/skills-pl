@@ -103,7 +103,7 @@ Numerowana lista. Golden path + edge cases. Piszemy **zanim** subagent zacznie i
 
 ⚠️ **Filozofia tej sekwencji** (per ADR-0002, ADR-0003):
 
-- "Po co reviewować coś co nie działa" — implementacja musi **najpierw zadziałać user-side** (manual QA = imposing taste, zasada #26), dopiero potem polerowanie.
+- "Po co reviewować coś co nie działa" — implementacja musi **najpierw zadziałać user-side** (manual QA = imposing taste, zasada #9), dopiero potem polerowanie.
 - **External code review** — Manager (Opus) odpala `/critical-code-review`, NIE agent wykonawczy. Świeże oczy, brak confirmation bias na własne decyzje (peer review principle).
 - **Kronika żyje przez całą drogę** — agent uruchamia `/kronikarz live` per faza. Manager finalizuje przez `/kronikarz close` na samym końcu.
 - **Merge przez Managera z autonomy gate** (ADR-0001) — Manager pyta usera "merge?", user "akcept", Manager merguje.

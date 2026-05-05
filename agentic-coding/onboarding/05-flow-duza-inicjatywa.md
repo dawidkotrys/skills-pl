@@ -96,7 +96,7 @@ Slice'y w `backlog.md` zostają **niezdetailowane** dopóki manager nie invoke `
 
 ### Każdy slice musi być
 
-- **Vertical slice** (zasada #5) — UI → API → DB → tests dla jednej małej funkcjonalności end-to-end
+- **Vertical slice** (zasada #4) — UI → API → DB → tests dla jednej małej funkcjonalności end-to-end
 - **Tracer bullet** — działający kod, nie prototyp
 - **Cienki** — bias na cieńsze. Jeśli wahasz się czy podzielić — dziel.
 - **Blocking relationships** explicite — `wymaga: SLICE-3`, `blokuje: SLICE-5`
@@ -173,7 +173,7 @@ Manager Tryb 5D: po merge ostatniego slice'a → folder `doc/plans/<slug>/` prze
 
 ### Slices które są horizontal
 
-Każdy slice **musi** być vertical slice end-to-end. Patrz zasada #5.
+Każdy slice **musi** być vertical slice end-to-end. Patrz zasada #4.
 
 ### Rozpisanie wszystkich slicesów na taski z góry
 
