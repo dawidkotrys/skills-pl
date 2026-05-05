@@ -138,9 +138,7 @@ CLAUDE.md                    # Cel bazy, struktura, konwencje, indeksy
 ### Struktura doc/
 ```
 doc/
-├── backlog.md              # Brakujące informacje, do uzupełnienia
-└── For humans/
-    └── workflow-guide.md
+└── backlog.md              # Brakujące informacje, do uzupełnienia
 ```
 
 ---

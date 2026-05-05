@@ -17,6 +17,21 @@ ultrathink
 
 ---
 
+## Wymagania — companion skills
+
+Skill rekomenduje i odwołuje się do innych skilli z metodologii agentic coding. Pełny zestaw jest dostępny w publicznym repo:
+
+**👉 https://github.com/dawidkotrys/skills-pl**
+
+Zainstaluj te skille globalnie (`~/.claude/skills/`) zanim uruchomisz `/repo-onboarding`, jeśli chcesz pełny workflow. W szczególności:
+
+- **`grill-with-docs`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
+- **`pre-session-onboarding`, `kronikarz`, `tdd`, `diagnose`, `improve-codebase-architecture`, `critical-code-review`, `code-manager`, `to-prd`** — opcjonalne. Skill rekomenduje je w Fazie 2.3 per typ repo. Bez nich plan wdrożenia nadal się wygeneruje, ale rekomendacje skilli będą wskazywać na komendy których user nie ma.
+
+Jeśli któregoś brak — zainstaluj z repo, albo pomiń rekomendację w prezentacji planu (Faza 3).
+
+---
+
 ## Faza 1: Analiza repozytorium
 
 ### 1.1 Zbierz kontekst strukturalny
@@ -119,10 +134,8 @@ Szczegółowe wzorce per typ repo znajdziesz w [patterns.md](patterns.md).
 CONTEXT.md                  # Słownik domeny (terminy, relacje, aliasy do unikania)
 doc/
 ├── backlog.md              # Taski, tech debt, pomysły
-├── decisions/              # ADR (Architecture/Any Decision Records)
-│   └── 0001-<opis>.md
-└── For humans/
-    └── workflow-guide.md   # Instrukcja pracy z Claude Code
+└── decisions/              # ADR (Architecture/Any Decision Records)
+    └── 0001-<opis>.md
 ```
 
 **`CONTEXT.md` — domain glossary (zawsze w roocie repo):**
@@ -190,7 +203,6 @@ Wyświetl plan użytkownikowi w formacie:
 | `CLAUDE.md` | Root context — [krótki opis zawartości] |
 | `src/xyz/CLAUDE.md` | [opis] |
 | `doc/backlog.md` | Backlog projektu |
-| `doc/For humans/workflow-guide.md` | Instrukcja pracy |
 | ... | ... |
 
 ### Skille do utworzenia (projektowe)
@@ -226,8 +238,7 @@ Po akceptacji planu, twórz pliki w kolejności:
 3. **CONTEXT.md** — domain glossary z 5-10 terminami seed (lub `CONTEXT-MAP.md` + per-module `CONTEXT.md` dla repo z wieloma kontekstami)
 4. **doc/backlog.md** — z istniejącymi taskami jeśli da się je wyciągnąć z TODO/README/issues
 5. **doc/decisions/0001-claude-code-methodology.md** — ADR dokumentujący wdrożenie
-6. **doc/For humans/workflow-guide.md** — instrukcja pracy (ZAWSZE tworzony)
-7. **Skille projektowe** (jeśli zaplanowane) — do `.claude/skills/`
+6. **Skille projektowe** (jeśli zaplanowane) — do `.claude/skills/`
 
 **Tworzenie `CONTEXT.md`:**
 
@@ -240,16 +251,6 @@ Po akceptacji planu, twórz pliki w kolejności:
 - Tylko terminy **specyficzne dla domeny** projektu — pomijaj ogólne pojęcia programistyczne
 
 Jeśli nie udaje się wydobyć terminów z analizy (repo jest puste/nowe) — zostaw `CONTEXT.md` z pustym szkieletem i komentarzem "Uzupełnij gdy poznasz domenę". Lepszy szkielet niż brak pliku.
-
-### Workflow guide — szablon
-
-Plik `doc/For humans/workflow-guide.md` ZAWSZE zawiera:
-1. Jak zacząć sesję
-2. Jak pracować na co dzień (jakie skille odpalać i kiedy)
-3. Skrót typowego flow sesji
-4. Gdzie leżą skille (ścieżki do SKILL.md — globalne i projektowe)
-5. Gdzie leżą CLAUDE.md (ścieżki + zakres każdego)
-6. Co gdzie trafia (kto co aktualizuje)
 
 ### Tworzenie plików
 
@@ -286,7 +287,7 @@ Po utworzeniu wszystkich plików:
 
 ## Zasady ogólne
 
-- Pisz CLAUDE.md i workflow-guide w tym samym języku co reszta dokumentacji repo (jeśli repo jest po polsku — pisz po polsku, jeśli po angielsku — po angielsku). Zapytaj użytkownika jeśli nie jest jasne.
+- Pisz CLAUDE.md i pozostałą dokumentację w tym samym języku co reszta repo (jeśli repo jest po polsku — pisz po polsku, jeśli po angielsku — po angielsku). Zapytaj użytkownika jeśli nie jest jasne.
 - Nie twórz plików "na zapas" — każdy plik musi wnosić konkretną wartość
 - Bądź precyzyjny w CLAUDE.md — podawaj ścieżki, nazwy, przykłady
 - Sekcja "Znane pułapki" to najważniejsza część CLAUDE.md — poświęć jej najwięcej uwagi
