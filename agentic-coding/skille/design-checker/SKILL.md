@@ -1,6 +1,6 @@
 ---
 name: design-checker
-description: Weryfikacja zgodności kodu UI z design systemem. Sprawdza kolory, typografię, spacing, border-radius, glass effect. Uruchamiaj po implementacji zmian w components/.
+description: 'Weryfikacja zgodności kodu UI z design systemem. Sprawdza kolory, typografię, spacing, border-radius, glass effect. Uruchamiaj po implementacji zmian w components/.'
 disable-model-invocation: true
 argument-hint: "[opcjonalny zakres, np. 'chat' lub 'assistant']"
 model: sonnet

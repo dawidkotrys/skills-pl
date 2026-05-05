@@ -1,6 +1,6 @@
 ---
 name: code-manager
-description: Coding Manager — orchestrator sesji pracy nad repozytorium. Pomaga wybrać co robić z backlogu, rozdziela zadania między równoległe worktree/subagenty, pisze plany pracy w `doc/plans/<branch-name>.md`, sprawdza kolizje między równoległymi taskami, weryfikuje jakość subagentów po zakończeniu pracy i aktualizuje backlog. Używaj na start sesji kodowania albo gdy user mówi "co robimy?", "zacznijmy pracę", "ogarnij mi backlog", "co możemy robić równolegle", "zweryfikuj co zrobił drugi agent", "zaktualizuj backlog po mergo". Działa w każdym repozytorium — skill jest generyczny, adaptuje się do konwencji projektu z CLAUDE.md. Wywoływany przez `/code-manager`.
+description: 'Coding Manager — orchestrator sesji pracy nad repozytorium. Pomaga wybrać co robić z backlogu, rozdziela zadania między równoległe worktree/subagenty, pisze plany pracy w `doc/plans/<branch-name>.md`, sprawdza kolizje między równoległymi taskami, weryfikuje jakość subagentów po zakończeniu pracy i aktualizuje backlog. Używaj na start sesji kodowania albo gdy user mówi "co robimy?", "zacznijmy pracę", "ogarnij mi backlog", "co możemy robić równolegle", "zweryfikuj co zrobił drugi agent", "zaktualizuj backlog po mergo". Działa w każdym repozytorium — skill jest generyczny, adaptuje się do konwencji projektu z CLAUDE.md. Wywoływany przez `/code-manager`.'
 disable-model-invocation: true
 argument-hint: "[opcjonalny: intent tej sesji, np. 'verify' / 'plan' / 'backlog']"
 model: opus

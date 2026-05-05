@@ -1,6 +1,6 @@
 ---
 name: repo-onboarding
-description: Analizuje repozytorium i wdraża metodologię Claude Code — hierarchiczne CLAUDE.md, skille workflow'owe, doc structure, workflow guide. Działa na dowolnym typie repo (kod, baza wiedzy, dokumentacja strategiczna).
+description: 'Analizuje repozytorium i wdraża metodologię Claude Code — hierarchiczne CLAUDE.md, skille workflow''owe, doc structure, workflow guide. Działa na dowolnym typie repo (kod, baza wiedzy, dokumentacja strategiczna).'
 disable-model-invocation: true
 argument-hint: "[opcjonalny typ repo: code|knowledge|docs|mixed]"
 model: opus
@@ -25,7 +25,7 @@ Skill rekomenduje i odwołuje się do innych skilli z metodologii agentic coding
 
 Zainstaluj te skille globalnie (`~/.claude/skills/`) zanim uruchomisz `/repo-onboarding`, jeśli chcesz pełny workflow. W szczególności:
 
-- **`grill`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
+- **`grill-with-docs`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
 - **`pre-session-onboarding`, `kronikarz`, `tdd`, `diagnose`, `improve-codebase-architecture`, `critical-code-review`, `code-manager`, `to-prd`** — opcjonalne. Skill rekomenduje je w Fazie 2.3 per typ repo. Bez nich plan wdrożenia nadal się wygeneruje, ale rekomendacje skilli będą wskazywać na komendy których user nie ma.
 
 Jeśli któregoś brak — zainstaluj z repo, albo pomiń rekomendację w prezentacji planu (Faza 3).
@@ -140,7 +140,7 @@ doc/
 
 **`CONTEXT.md` — domain glossary (zawsze w roocie repo):**
 
-Persistent kontekst językowy projektu. Nie jest opisem techniki — jest opisem **języka domeny**: terminów, ich znaczeń, aliasów do unikania, relacji między pojęciami. Format: zobacz `~/.claude/skills/grill/CONTEXT-FORMAT.md` (sekcja "Struktura").
+Persistent kontekst językowy projektu. Nie jest opisem techniki — jest opisem **języka domeny**: terminów, ich znaczeń, aliasów do unikania, relacji między pojęciami. Format: zobacz `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` (sekcja "Struktura").
 
 W tej fazie zaplanuj **5-10 terminów seed** wyciągniętych z analizy:
 - README — nazwy domenowe powtarzające się w opisie
@@ -165,15 +165,17 @@ Rozważ które z tych skilli byłyby wartościowe dla tego repo (NIE twórz wszy
 - `/pre-session-onboarding` — briefing startowy (jeśli nie istnieje globalnie)
 - `/kronikarz` lub wariant — dokumentacja zmian (jeśli repo jest aktywnie rozwijane)
 
-**Dla code repos — workflow methodology (autorska adaptacja, dostępne globalnie):**
-- `/grill` — grilling przed planowaniem, zamiast eager-planning
-- `/to-prd` — destination document po grilling session — produkuje folder `doc/plans/<slug>/{prd.md, backlog.md}` z vertical slices + scaffold backlog
-- `/to-tasks` — task breakdown bieżącego slice'a (manager invoke per slice w pętli)
+**Dla code repos — workflow methodology (Matt Pocock, dostępne globalnie):**
+- `/grill-with-docs` — grilling przed planowaniem, zamiast eager-planning
+- `/to-prd` — destination document po grilling session (z vertical slices i acceptance criteria w `doc/backlog.md`), gdy inicjatywa duża
+- `/tdd` — red-green-refactor pętla (test-first, vertical slicing)
 - `/diagnose` — bug fixing przez Reprodukcję → Minimalizację → Hipotezy → Fix
+- `/improve-codebase-architecture` — deepening modułów (Ousterhout's deep modules)
 - `/critical-code-review` — formalny audyt przed merge
 
 **Dla code repos — operacyjne:**
-- `/code-manager` — orchestrator sesji (wybór taska, plan, weryfikacja, archive)
+- `/code-manager` — orchestrator sesji (wybór taska, plan, weryfikacja)
+- `/quality-guard` — quick check jakości kodu
 - `/design-checker` — weryfikacja design systemu (jeśli ma UI)
 
 **Dla knowledge/docs/strategy repos:**
@@ -240,7 +242,7 @@ Po akceptacji planu, twórz pliki w kolejności:
 
 **Tworzenie `CONTEXT.md`:**
 
-- Format dokładnie jak w `~/.claude/skills/grill/CONTEXT-FORMAT.md`
+- Format dokładnie jak w `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md`
 - 5-10 terminów seed wyciągniętych z analizy fazy 1 (README, package.json, struktura folderów, nazwy modułów)
 - Każdy termin: zwięzła definicja (1 zdanie) + `_Unikaj_:` z aliasami które nie powinny być używane
 - Sekcja **Relacje** — kardynalność między terminami (np. "Order generuje jeden lub więcej Invoice")

@@ -1,11 +1,6 @@
 ---
 name: critical-prd-review
-description: >
-  Krytyczny audyt Product Requirements Document przed implementacją, działający jak critical code review wykonane
-  przed napisaniem kodu. Używaj po sesji grill-with-docs/to-prd, gdy użytkownik wkleja PRD, prosi o review/audyt PRD,
-  chce znaleźć luki techniczne, produktowe, testowe, bezpieczeństwa, skalowania lub architektoniczne przed rozbiciem
-  na issues, albo chce feedback do agenta, który stworzył PRD po grillowaniu. Szczególny nacisk: security by design,
-  scalability by design, prostota architektury i standard produkcyjny systemów działających pod realnym obciążeniem.
+description: 'Krytyczny audyt Product Requirements Document przed implementacją, działający jak critical code review wykonane przed napisaniem kodu. Używaj po sesji grill-with-docs/to-prd, gdy użytkownik wkleja PRD, prosi o review/audyt PRD, chce znaleźć luki techniczne, produktowe, testowe, bezpieczeństwa, skalowania lub architektoniczne przed rozbiciem na issues, albo chce feedback do agenta, który stworzył PRD po grillowaniu. Szczególny nacisk: security by design, scalability by design, prostota architektury i standard produkcyjny systemów działających pod realnym obciążeniem.'
 ---
 
 # Critical PRD Review

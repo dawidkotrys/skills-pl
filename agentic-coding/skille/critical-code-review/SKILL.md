@@ -1,13 +1,6 @@
 ---
 name: critical-code-review
-description: >
-  Dogłębne, krytyczne code review przez doświadczonego architekta. Uruchamiaj ZAWSZE gdy użytkownik prosi
-  o review kodu, przeglądanie zmian, sprawdzenie PR-a, znalezienie bugów lub ocenę implementacji —
-  nawet jeśli nie pada słowo "review". Identyfikuje bugi, luki bezpieczeństwa, problemy wydajnościowe,
-  architektoniczne i jakości kodu. Generuje formalny raport z werdyktem.
-  Przykłady: "zrób review", "sprawdź mój kod", "przejrzyj PR", "znajdź bugi", "review this code",
-  "check my implementation", "oceń ten komponent", "czy ten kod jest OK?", "co sądzisz o tej funkcji?",
-  "przeanalizuj zmiany", "sprawdź co zmieniłem".
+description: 'Dogłębne, krytyczne code review przez doświadczonego architekta. Uruchamiaj ZAWSZE gdy użytkownik prosi o review kodu, przeglądanie zmian, sprawdzenie PR-a, znalezienie bugów lub ocenę implementacji — nawet jeśli nie pada słowo "review". Identyfikuje bugi, luki bezpieczeństwa, problemy wydajnościowe, architektoniczne i jakości kodu. Generuje formalny raport z werdyktem. Przykłady: "zrób review", "sprawdź mój kod", "przejrzyj PR", "znajdź bugi", "review this code", "check my implementation", "oceń ten komponent", "czy ten kod jest OK?", "co sądzisz o tej funkcji?", "przeanalizuj zmiany", "sprawdź co zmieniłem".'
 argument-hint: "[plik-lub-katalog-lub-diff-lub-numer-PR]"
 model: opus
 allowed-tools: Read, Grep, Glob, Write, Bash(git diff*), Bash(git log*), Bash(git show*), Bash(git status*), Bash(wc *), Bash(mkdir *), Bash(date *), Bash(cat *)

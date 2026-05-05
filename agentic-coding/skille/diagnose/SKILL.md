@@ -1,6 +1,6 @@
 ---
 name: diagnose
-description: Zdyscyplinowana pętla diagnostyczna dla trudnych bugów i regresji wydajnościowych. Reprodukcja → Minimalizacja → Hipotezy → Instrumentacja → Fix → Test regresji. Triggeruj na "diagnose", "debug", "zdiagnozuj", "broken", "throwing", "failing", "regression", "nie działa", "spadek wydajności".
+description: 'Zdyscyplinowana pętla diagnostyczna dla trudnych bugów i regresji wydajnościowych. Reprodukcja → Minimalizacja → Hipotezy → Instrumentacja → Fix → Test regresji. Triggeruj na "diagnose", "debug", "zdiagnozuj", "broken", "throwing", "failing", "regression", "nie działa", "spadek wydajności".'
 ---
 
 # Diagnose
@@ -114,4 +114,4 @@ Wymagane przed deklaracją "done":
 - [ ] Throwaway prototypy usunięte (lub przeniesione do clearly-marked debug location)
 - [ ] Hipoteza która okazała się prawidłowa jest stwierdzona w commit / PR message — żeby następny debugger się nauczył
 
-**Potem zapytaj: co by zapobiegło temu bugowi?** Jeśli odpowiedź obejmuje zmianę architektoniczną (brak dobrego test seamu, splątani callerzy, ukryte coupling) — flag w kronice jako follow-up dla managera (refactor proposal, do osobnego planu). Rekomendację rób **po** wprowadzeniu fixu, nie przed — masz teraz więcej informacji niż na początku.
+**Potem zapytaj: co by zapobiegło temu bugowi?** Jeśli odpowiedź obejmuje zmianę architektoniczną (brak dobrego test seamu, splątani callerzy, ukryte coupling) — przekaż do `/improve-codebase-architecture` z konkretami. Rekomendację rób **po** wprowadzeniu fixu, nie przed — masz teraz więcej informacji niż na początku.

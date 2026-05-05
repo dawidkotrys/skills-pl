@@ -1,6 +1,6 @@
 ---
 name: to-prd
-description: Zamień bieżący kontekst rozmowy na PRD (destination document) + folder inicjatywy `doc/plans/<slug>/` z dwoma plikami - `prd.md` (vision + slices) i `backlog.md` (scaffold ze statusem `[ ] niezdetailowany` per slice). Używaj kiedy chcesz utrwalić ustalenia z grillingu/rozmowy jako trwały dokument zanim zaczniecie implementację — szczególnie przy dużych inicjatywach przed `/to-tasks` rozbijaniem slicesów na taski. Triggery - "napisz PRD", "stwórz PRD", "PRD z naszej rozmowy", "destination document", "zarys planu", "nowa inicjatywa". NIE auto-trigger.
+description: 'Zamień bieżący kontekst rozmowy na PRD (destination document) + folder inicjatywy `doc/plans/<slug>/` z dwoma plikami - `prd.md` (vision + slices) i `backlog.md` (scaffold ze statusem `[ ] niezdetailowany` per slice). Używaj kiedy chcesz utrwalić ustalenia z grillingu/rozmowy jako trwały dokument zanim zaczniecie implementację — szczególnie przy dużych inicjatywach przed `/to-tasks` rozbijaniem slicesów na taski. Triggery - "napisz PRD", "stwórz PRD", "PRD z naszej rozmowy", "destination document", "zarys planu", "nowa inicjatywa". NIE auto-trigger.'
 disable-model-invocation: true
 ---
 
