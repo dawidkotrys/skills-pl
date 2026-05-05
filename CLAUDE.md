@@ -67,13 +67,13 @@ Wyjątki: imię + lokacje w `LICENSE` (copyright), GitHub username w atrybucji r
 
 ## Atrybucja
 
-Część skili w `agentic-coding/skille/` jest inspirowana metodologią Matt Pocock. Atrybucja w jednym miejscu — `agentic-coding/README.md` sekcja "Atrybucja" + tabela skili z kolumną Status.
+Część skili w `agentic-coding/skille/` jest inspirowana metodologią Matt Pocock. Atrybucja w jednym miejscu — `agentic-coding/README.md` sekcja "Atrybucja" (lista explicite które skille są adaptacjami).
 
 **NIE dodawaj** w README:
 
 - "PR-y mile widziane" / "kontrybucje welcome" / "feedback welcome"
 - Defensywnego tłumaczenia się autorom źródeł
-- Słów "autorski/autorskie" w sekcjach opisowych — lista cech mówi sama za siebie. Wyjątek: status "autorski" w tabeli skili (vs "inspired by Matt Pocock") jako neutralny fakt.
+- Słów "autorski/autorskie" w sekcjach opisowych — lista cech mówi sama za siebie. Atrybucja Matt Pocock vs autorskie żyje w jednym miejscu (sekcja "Atrybucja" w `agentic-coding/README.md`), nie w tabeli skili ani w opisach poszczególnych skili.
 
 ## Decisions folder
 

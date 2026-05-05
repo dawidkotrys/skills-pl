@@ -29,18 +29,18 @@ Sugerowana kolejność:
 
 ### Skille wykonawcze
 
-| Skill | Cel | Status |
-|---|---|---|
-| `grill` | Grilling pomysłu z budowaniem persistent kontekstu (CONTEXT.md, ADR-y) | autorski (inspired by Matt Pocock) |
-| `to-prd` | Konwersja kontekstu rozmowy na folder inicjatywy `doc/plans/<slug>/` z `prd.md` (vision + slices) i scaffold `backlog.md` | autorski (inspired by Matt Pocock) |
-| `critical-prd-review` | Krytyczny audyt PRD przed task breakdown'em — security/scalability/architecture lens. Pre-code review na poziomie wymagań. Werdykt Needs revision / Almost ready / Ready + feedback dla agenta-autora PRD do iteracji | autorski |
-| `to-tasks` | Task breakdown bieżącego slice'a — manager invoke per slice w pętli, rozbija slice na 3-7 granularnych tasków z file targets + acceptance | autorski |
-| `diagnose` | Zdyscyplinowana pętla diagnostyczna dla bugów i regresji | inspired by Matt Pocock |
-| `repo-onboarding` | Onboarding nowego repo: CLAUDE.md, CONTEXT.md, doc/ structure | autorski |
-| `code-manager` | Bird's-eye manager: planowanie, dispatch do subagentów, weryfikacja, archive po close inicjatywy | autorski |
-| `critical-code-review` | Krytyczne code review przez doświadczonego architekta | autorski |
-| `design-checker` | Weryfikacja zgodności kodu UI z design systemem (kolory, typografia, spacing, radius) | autorski |
-| `kronikarz` | Dokumentacja zmian, ADR creation, update CHANGELOG / backlog | autorski |
+| Skill | Cel |
+|---|---|
+| `grill` | Grilling pomysłu z budowaniem persistent kontekstu (CONTEXT.md, ADR-y) |
+| `to-prd` | Konwersja kontekstu rozmowy na folder inicjatywy `doc/plans/<slug>/` z `prd.md` (vision + slices) i scaffold `backlog.md` |
+| `critical-prd-review` | Krytyczny audyt PRD przed task breakdown'em — security/scalability/architecture lens. Pre-code review na poziomie wymagań. Werdykt Needs revision / Almost ready / Ready + feedback dla agenta-autora PRD do iteracji |
+| `to-tasks` | Task breakdown bieżącego slice'a — manager invoke per slice w pętli, rozbija slice na 3-7 granularnych tasków z file targets + acceptance |
+| `diagnose` | Zdyscyplinowana pętla diagnostyczna dla bugów i regresji |
+| `repo-onboarding` | Onboarding nowego repo: CLAUDE.md, CONTEXT.md, doc/ structure |
+| `code-manager` | Bird's-eye manager: planowanie, dispatch do subagentów, weryfikacja, archive po close inicjatywy |
+| `critical-code-review` | Krytyczne code review przez doświadczonego architekta |
+| `design-checker` | Weryfikacja zgodności kodu UI z design systemem (kolory, typografia, spacing, radius) |
+| `kronikarz` | Dokumentacja zmian, ADR creation, update CHANGELOG / backlog |
 
 ### Slash commands (session-state)
 
@@ -53,7 +53,7 @@ Komendy zapisują do `doc/session/`, restore usuwa plik po wczytaniu (ulotne). P
 
 ## Atrybucja
 
-Skille w tabeli oznaczone jako *inspired by Matt Pocock* są polskimi adaptacjami jego oryginalnych skili — credit: [Matt Pocock](https://www.mattpocock.com/).
+`grill`, `to-prd` i `diagnose` są polskimi adaptacjami oryginalnych skili Matta Pococka — credit: [Matt Pocock](https://www.mattpocock.com/). Pozostałe skille są autorskie.
 
 Większość zasad metodologii ma korzenie w klasykach software design — Ousterhout (*Philosophy of Software Design*), Fowler (*Refactoring*), Hunt/Thomas (*Pragmatic Programmer*), Brooks (*Design of Design*). LLM-y są nowe, problemy są stare.
 
