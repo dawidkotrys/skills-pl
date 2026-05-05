@@ -165,17 +165,15 @@ Rozważ które z tych skilli byłyby wartościowe dla tego repo (NIE twórz wszy
 - `/pre-session-onboarding` — briefing startowy (jeśli nie istnieje globalnie)
 - `/kronikarz` lub wariant — dokumentacja zmian (jeśli repo jest aktywnie rozwijane)
 
-**Dla code repos — workflow methodology (Matt Pocock, dostępne globalnie):**
+**Dla code repos — workflow methodology (autorska adaptacja, dostępne globalnie):**
 - `/grill` — grilling przed planowaniem, zamiast eager-planning
-- `/to-prd` — destination document po grilling session (z vertical slices i acceptance criteria w `doc/backlog.md`), gdy inicjatywa duża
-- `/tdd` — red-green-refactor pętla (test-first, vertical slicing)
+- `/to-prd` — destination document po grilling session — produkuje folder `doc/plans/<slug>/{prd.md, backlog.md}` z vertical slices + scaffold backlog
+- `/to-tasks` — task breakdown bieżącego slice'a (manager invoke per slice w pętli)
 - `/diagnose` — bug fixing przez Reprodukcję → Minimalizację → Hipotezy → Fix
-- `/improve-codebase-architecture` — deepening modułów (Ousterhout's deep modules)
 - `/critical-code-review` — formalny audyt przed merge
 
 **Dla code repos — operacyjne:**
-- `/code-manager` — orchestrator sesji (wybór taska, plan, weryfikacja)
-- `/quality-guard` — quick check jakości kodu
+- `/code-manager` — orchestrator sesji (wybór taska, plan, weryfikacja, archive)
 - `/design-checker` — weryfikacja design systemu (jeśli ma UI)
 
 **Dla knowledge/docs/strategy repos:**

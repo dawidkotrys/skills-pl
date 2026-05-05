@@ -1,6 +1,21 @@
-# 03. Konwencje — pliki persistent kontekstu
+# 03. Pliki projektu — kluczowa dokumentacja na dysku
 
-Metodologia opiera się na kilku kluczowych plikach na dysku. Ten dokument opisuje ich format, lokalizację i kiedy je tworzyć.
+Metodologia opiera się na kilku kluczowych plikach persistent na dysku (a nie w pamięci sesji). Ten dokument opisuje **co masz w projekcie**, gdzie to leży i kiedy się tym zajmuje.
+
+**Mapa plików:**
+
+| Plik / folder | Co zawiera | Kto pisze |
+|---|---|---|
+| `CLAUDE.md` (root) | Konwencje per repo (stack, framework, quality bar) | user / `/repo-onboarding` |
+| `CONTEXT.md` (root) | Domain glossary — język domeny | `/grill` aktualizuje na bieżąco |
+| `doc/plans/<slug>/prd.md` | PRD destination document per inicjatywa | `/to-prd` |
+| `doc/plans/<slug>/backlog.md` | Execution-grade backlog + task breakdown | `/to-prd` (scaffold) + `/to-tasks` (per slice) |
+| `doc/plans/<branch>.md` | Luźne plany dla small tasks | manager (`/code-manager` Tryb 4A) |
+| `doc/decisions/NNNN-*.md` | ADR-y — architektoniczne decyzje | `/grill` (rzadko, gdy hard-to-reverse) |
+| `doc/backlog.md` | One-offy, pre-PRD pomysły, nieprzypisane bugi | manager + user na bieżąco |
+| `doc/history/YYYY-MM-DD-*.md` | Kroniki zmian per branch | `/kronikarz live` (executor) + `close` (manager) |
+| `doc/code-reviews/YYYY-MM-DD-*.md` | Raporty `/critical-code-review` | manager (Tryb 5A) |
+| `doc/session/<role>-session.md` | Save game przed `/clear` (gitignored) | `/save-session-*` |
 
 ---
 
@@ -35,7 +50,7 @@ Claude Code wczytuje wszystkie odpowiednie do bieżącej pracy. Per typ repo (we
 
 ---
 
-## CONTEXT.md — domain glossary (zasada #17)
+## CONTEXT.md — domain glossary
 
 `CONTEXT.md` to **język domeny**, nie techniczny opis. Terminy biznesowe, ich znaczenia, aliasy do unikania, relacje. Czytany przez agenta na początku każdej sesji.
 
@@ -103,7 +118,50 @@ Jeśli repo ma odrębne moduły domenowe (np. `ordering/`, `billing/`, `fulfillm
 
 ---
 
-## doc/decisions/ — Architecture Decision Records (zasada #18)
+## doc/plans/ — folder per inicjatywa (Format B)
+
+Po `/to-prd` każda **large initiative** dostaje własny folder z dwoma plikami:
+
+```
+doc/plans/<slug>/
+├── prd.md       # vision + vertical slices + slice-level acceptance
+└── backlog.md   # execution-grade scaffold + task breakdown per slice
+```
+
+`<slug>` to kebab-case nazwa inicjatywy (`offline-mode-knowledge-source-items`, `payment-gateway-stripe`). Bez prefix'u numerowanego, bez polskich znaków.
+
+### `prd.md`
+
+Destination document po grilling sesji — vision i high-level approach. **NIE** zawiera konkretnych ścieżek plików ani fragmentów kodu (te trafiają do `backlog.md` per task).
+
+Sekcje: Problem, Rozwiązanie, User Stories, Decyzje implementacyjne, Decyzje testowe, Vertical slices (każdy slice z `Slice purpose` + `Slice acceptance`), Out of scope, Dodatkowe uwagi.
+
+### `backlog.md`
+
+Execution-grade backlog — slice'y rozpisane na taski wykonawcze. Frontmatter metadata (`status`, `current_slice`, `total_slices`). Per slice sekcja z task breakdown'em (T<slice>.<num>) gdy manager invoke `/to-tasks slice <N>`.
+
+Statusy slicesów: `[ ] niezdetailowany` | `🔄 in-progress` | `✅ done`.
+Statusy tasków: `[ ]` niezrobione | `🔄 in-progress` | `👀 to-review` | `✅ done`.
+
+### Lifecycle folderu
+
+- **Init** — `/to-prd` stworzył folder ze scaffold'em
+- **In-progress** — agent wykonuje, manager finalizuje per slice
+- **Done** — wszystkie slices `✅ done`. Manager Tryb 5D archiwizuje folder do `doc/plans/archive/<slug>/` (zawartość intact, audit trail)
+
+Pełen flow: [05-flow-duza-inicjatywa.md](./05-flow-duza-inicjatywa.md).
+
+---
+
+## doc/plans/<branch>.md — luźne plany (Format A)
+
+Dla **small/medium tasks** (1-3 plików, 1 vertical slice) — manager (`/code-manager` Tryb 4A) pisze pełen plan w pojedynczym pliku `doc/plans/<branch-name>.md`. Bez folderu, bez PRD.
+
+Patrz [04-flow-maly-task.md](./04-flow-maly-task.md).
+
+---
+
+## doc/decisions/ — Architecture Decision Records
 
 Numeracja sekwencyjna: `0001-slug.md`, `0002-slug.md`. Twórz katalog **leniwie** — gdy pojawia się pierwszy ADR.
 
@@ -127,7 +185,7 @@ Dodawaj tylko gdy realnie wnoszą wartość:
 
 ### Kiedy pisać ADR
 
-**Wszystkie trzy** warunki muszą być spełnione (zasada #18):
+**Wszystkie trzy** warunki muszą być spełnione:
 
 1. **Trudna do cofnięcia** — koszt zmiany w przyszłości jest znaczący
 2. **Zaskakująca bez kontekstu** — przyszły czytelnik zapyta „dlaczego, na litość boską?"
@@ -154,7 +212,7 @@ Dodawaj tylko gdy realnie wnoszą wartość:
 
 ## doc/backlog.md — lokalny tracker
 
-**Markdown-first.** Bez GitHub Issues / Linear / Jira — wszystko w jednym pliku w repo. Per zasada #11 (canon board) — to nie tylko TODO list, to graf z blocking relationships.
+**Markdown-first.** Bez GitHub Issues / Linear / Jira — wszystko w jednym pliku w repo. Backlog jest grafem zależności (blocking relationships), nie linearnym listą TODO.
 
 ### Format
 
@@ -202,7 +260,7 @@ Typowo `workflow-guide.md` z sekcjami:
 
 ---
 
-## _session-state.md — save game (zasada #19)
+## _session-state.md — save game
 
 Tymczasowy plik (gitignored) tworzony **tylko** gdy multi-phase feature wymaga `/clear` w trakcie. Format:
 

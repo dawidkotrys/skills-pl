@@ -40,12 +40,13 @@ USER             DEFAULT AGENT          MANAGER (Opus)         EXECUTOR (Sonnet)
 
 (3) USER → /to-prd
     rozmowa user ↔ default agent
-    konwersja rozmowy na destination document               ──►  doc/decisions/NNNN-<slug>.md (PRD)
-                                                                  doc/backlog.md (vertical slices z acceptance criteria)
+    konwersja rozmowy na folder inicjatywy                  ──►  doc/plans/<slug>/prd.md (vision + slices)
+                                                                  doc/plans/<slug>/backlog.md (scaffold ze statusem [ ] niezdetailowany)
 
 (4) USER → /code-manager (PIERWSZE wejście managera, Tryb 4B bridge mode)
-                          czyta PRD + slices + CONTEXT.md
-                          wybiera pierwszy slice z userem
+                          czyta prd.md + backlog.md scaffold
+                          wybiera bieżący slice z userem
+                          invoke /to-tasks slice <N>        ──►   doc/plans/<slug>/backlog.md (slice rozpisany na taski)
                           pisze bridge plan (~30-50 linii)  ──►   doc/plans/<branch>.md
                           ◄── wiadomość-do-wkleienia dla executora ─
 
@@ -142,7 +143,9 @@ To jest **fallback, nie default**. Kosztuje więcej bo manager Tryb 1 obciąża 
 | Artefakt | Tworzy | Aktualizuje (kiedy) | Finalizuje |
 |---|---|---|---|
 | `CONTEXT.md` | `/grill` lub `/repo-onboarding` | grilling kolejnych sesji (gdy nowy termin) | nigdy nie "zamyka się" |
-| `doc/decisions/NNNN-*.md` (ADR / PRD) | `/grill` lub `/to-prd` | rzadko (gdy decyzja rewidowana) | tylko status w nagłówku |
+| `doc/plans/<slug>/prd.md` (PRD destination document) | `/to-prd` | rzadko (gdy assumption violation w trakcie implementacji) | dopisuje sekcje, nie nadpisuje |
+| `doc/plans/<slug>/backlog.md` (execution-grade scaffold + task breakdown) | `/to-prd` (scaffold) + `/to-tasks` (per slice) | per slice w pętli | append task breakdown w sekcji current slice |
+| `doc/decisions/NNNN-*.md` (ADR) | `/grill` | rzadko (gdy decyzja rewidowana) | tylko status w nagłówku |
 | `doc/backlog.md` | manual lub `/to-prd` | manager (Tryb 6), kronikarz close, manager session-start (auto-DONE detection) | n/a — żyje cały czas |
 | `doc/plans/<branch>.md` | manager (Tryb 4A/4B) | rzadko (zmiana scope w trakcie) | n/a |
 | `doc/history/YYYY-MM-DD-<branch>.md` (kronika) | executor (`/kronikarz live` Krok 1) | executor live mode (impl, user QA, fix po review, re-test) | manager (`/kronikarz close`) — sekcja "Manager close" + commit |
@@ -188,15 +191,14 @@ Po `/kronikarz close` manager pyta: "Branch X gotowy do merge. OK?" — czekasz 
 |---|---|---|---|
 | `/repo-onboarding` | user (default agent) | nowe repo, brak CLAUDE.md / CONTEXT.md / doc/ | CLAUDE.md, CONTEXT.md, doc/ structure |
 | `/grill` | user (default agent) | mglisty pomysł / large initiative przed planem | CONTEXT.md (terms), doc/decisions/ (ADR-y) |
-| `/to-prd` | user (default agent) | po grillingu, large initiative | doc/decisions/NNNN-*.md (PRD), doc/backlog.md (slices) |
-| `/code-manager` | user → manager | start sesji / planowanie / external review / close / merge | doc/plans/ + commits |
+| `/to-prd` | user (default agent) | po grillingu, large initiative | doc/plans/<slug>/prd.md + scaffold backlog.md |
+| `/to-tasks` | manager | rozpisanie bieżącego slice'a na taski wykonawcze (przed dispatchem do agenta) | update doc/plans/<slug>/backlog.md sekcja current slice |
+| `/code-manager` | user → manager | start sesji / planowanie / external review / close / merge / archive | doc/plans/ + commits |
 | `/kronikarz live` | executor | przed implementacją + per faza pracy | doc/history/YYYY-MM-DD-<branch>.md (no commit) |
 | `/kronikarz close` | manager | po raporcie końcowym executora | finalize kronika + doc/backlog.md + doc/history/README.md + git commit |
 | `/critical-code-review` | manager | po STOP #1 user QA (Tryb 5A) | doc/code-reviews/YYYY-MM-DD-<branch>.md |
 | `/design-checker` | executor | po STOP #1 user QA, **jeśli UI dotknięte** | doc/design-reviews/YYYY-MM-DD-<branch>.md |
-| `/tdd` | executor | task wymaga test-first (vertical TDD) | testy + impl |
 | `/diagnose` | executor | bug fixing | reproducer + fix + test regresji |
-| `/improve-codebase-architecture` | user (default agent) | refactor / deepening modułów | propozycje + ADR jeśli reject |
 | `/save-session-manager` | manager | przed `/clear` w trakcie multi-session inicjatywy | doc/session/manager-session.md (gitignored) |
 | `/restore-session-manager` | manager | po `/clear` | wczytuje + usuwa plik |
 | `/save-session-agent` | executor | przed `/clear` w trakcie multi-slice slica | doc/session/agent-session.md (gitignored) |
@@ -261,6 +263,6 @@ Każdy worktree ma własny `doc/session/` — brak konfliktu między równoległ
 
 ## Dalej
 
-Jeśli pierwszy raz: czytaj sekwencyjnie [01-fundamenty.md](./01-fundamenty.md) → [02-zasady-metodologii.md](./02-zasady-metodologii.md) → [03-konwencje.md](./03-konwencje.md), potem **wracaj tutaj** dla pełnego obrazu choreografii.
+Jeśli pierwszy raz: czytaj sekwencyjnie [01-fundamenty.md](./01-fundamenty.md) → [02-zasady-metodologii.md](./02-zasady-metodologii.md) → [03-pliki-projektu.md](./03-pliki-projektu.md), potem **wracaj tutaj** dla pełnego obrazu choreografii.
 
 Jeśli jesteś agentem wykonawczym — zobacz [04a-rola-agenta-wykonawczego.md](./04a-rola-agenta-wykonawczego.md), counterpart `code-manager/SKILL.md` z perspektywy executora.

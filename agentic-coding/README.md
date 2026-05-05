@@ -16,8 +16,8 @@ agentic-coding/
 Sugerowana kolejność:
 
 1. [01-fundamenty.md](./onboarding/01-fundamenty.md) — LLM constraints, smart/dumb zone, Memento problem, Clear>Compact
-2. [02-zasady-metodologii.md](./onboarding/02-zasady-metodologii.md) — pełna lista 28 zasad agentic coding
-3. [03-konwencje.md](./onboarding/03-konwencje.md) — `CONTEXT.md`, `doc/decisions/`, `doc/backlog.md`
+2. [02-zasady-metodologii.md](./onboarding/02-zasady-metodologii.md) — 10 fundamentalnych zasad agentic coding
+3. [03-pliki-projektu.md](./onboarding/03-pliki-projektu.md) — kluczowe pliki projektu: `CLAUDE.md`, `CONTEXT.md`, `doc/plans/<slug>/`, `doc/decisions/`, `doc/backlog.md`
 4. **[00-glowny-flow.md](./onboarding/00-glowny-flow.md)** — choreografia Manager ↔ User ↔ Executor (sequence diagram, tabela komend, save/restore session)
 5. [04-flow-maly-task.md](./onboarding/04-flow-maly-task.md) — bug fix, mała feature, drobny refactor
 6. [04a-rola-agenta-wykonawczego.md](./onboarding/04a-rola-agenta-wykonawczego.md) — co dostajesz, co robisz, czego nie robisz (counterpart code-manager z perspektywy executora)

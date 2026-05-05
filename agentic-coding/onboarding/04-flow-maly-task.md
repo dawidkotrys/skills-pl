@@ -32,20 +32,15 @@ Dwie ścieżki — wybór zależy od skali:
 ```
 1. (opcjonalnie) Grill           →  /grill       jeśli problem niejasny
 2. Plan / dispatch               →  /code-manager (Tryb 4A — full plan mode)
-3. Implementacja                 →  agent wykonawczy → /kronikarz live (faza impl)
-4. Manual test inline na czat    →  STOP #1 user QA
-5. Fix-y po user QA jeśli były   →  /kronikarz live update
-6. External code review          →  Manager (Opus) odpala /critical-code-review
-                                    → STOP #2 user decyzje per-finding (FIX/BACKLOG/SKIP)
-7. Fix-y z review jeśli były     →  re-test → STOP #3 user re-weryfikacja
-                                    (pomijasz #3 jeśli zero fix-ów z review)
-8. Manager close                 →  /kronikarz close (sign-off, update backlog/indeks, commit)
-9. Autonomy gate                 →  Manager: "merge?" → user: "akcept" → Manager merguje
+3. Sekwencja 3-STOP              →  agent ↔ user ↔ Manager
+                                    (impl → user QA → external review → re-test → close → merge)
 ```
 
-**Filozofia 3-STOP:** "po co reviewować coś co nie działa". Implementacja musi najpierw zadziałać user-side (zasada #26 — imposing taste), dopiero potem polerowanie przez external code review.
+**Sekwencja 3-STOP** (impl → user QA → external review → re-test → close → autonomy gate → merge) jest jednolicie opisana w [00-glowny-flow.md](./00-glowny-flow.md#cztery-punkty-kontrolne-usera). Dla małego taska Ścieżki B obowiązuje **tak samo** jak dla dużej inicjatywy — różnica tylko w skali planu (krótki, 1 vertical slice).
 
-**Manager owner of remote/main:** agent wykonawczy NIE pushuje, NIE merguje, NIE odpala `/critical-code-review` ani `/kronikarz close` — to robi Manager (peer review principle, ADR-0002).
+**Filozofia 3-STOP:** "po co reviewować coś co nie działa". Implementacja musi najpierw zadziałać user-side (zasada #9 — QA = imposing taste), dopiero potem polerowanie przez external code review.
+
+**Manager owner of remote/main:** agent wykonawczy NIE pushuje, NIE merguje, NIE odpala `/critical-code-review` ani `/kronikarz close` — to robi Manager (peer review principle).
 
 ---
 
@@ -103,12 +98,10 @@ W tej opcji obowiązuje pełna sekwencja **3-STOP** (Ścieżka B w sekcji "Flow"
 
 ### TDD czy nie
 
-Per zasada #20 — TDD jest fajne, ale dla **bardzo** małego taska (typo, kosmetyka) overhead jest większy niż wartość. Heurystyka:
+Per zasada #7 — TDD jest fajne, ale dla **bardzo** małego taska (typo, kosmetyka) overhead jest większy niż wartość. Heurystyka:
 
 - **Zmiana behavior obserwowalnego z zewnątrz** → napisz test (red), zaimplementuj (green), refactor
 - **Zmiana czysto kosmetyczna / refactor preserving behavior** → uruchom istniejące testy, jeśli przejdą — done
-
-Jeśli chcesz pełny TDD flow → odpal `/tdd`.
 
 ---
 
@@ -119,7 +112,7 @@ Jeśli chcesz pełny TDD flow → odpal `/tdd`.
 1. **Automated** — testy przechodzą? lint clean? typecheck OK?
 2. **Manual** — kliknąłeś przez to w przeglądarce / CLI / aplikacji? Zachowanie zgadza się z intencją? UX nie jest słop?
 
-Per zasada #26 — automated testy mówią że "działa", manualny QA mówi że "jest dobre". Oba potrzebne.
+Per zasada #9 — automated testy mówią że "działa", manualny QA mówi że "jest dobre". Oba potrzebne.
 
 ---
 
@@ -168,7 +161,7 @@ Zacząłeś jako mały task, w trakcie odkrywasz że trzeba ruszyć 8 plików, d
 
 - To jest duża inicjatywa, nie mały task
 - Wróć do `/grill`, potem `/to-prd`
-- Per zasada #5 — eager planning bez grillingu = kłopoty
+- Per zasada #4 — eager planning bez grillingu = kłopoty
 
 ### Pomijanie weryfikacji bo „mały task"
 
@@ -176,4 +169,4 @@ Małe taski są **najczęstszym** źródłem regresji właśnie dlatego, że lud
 
 ### Pisanie ADR dla małej zmiany
 
-Per zasada #18 — ADR tylko gdy hard-to-reverse + surprising + real trade-off. Drobny fix nie spełnia tych kryteriów. Commit message wystarcza.
+ADR tylko gdy hard-to-reverse + surprising + real trade-off (patrz [03-pliki-projektu.md](./03-pliki-projektu.md) sekcja `doc/decisions/`). Drobny fix nie spełnia tych kryteriów. Commit message wystarcza.

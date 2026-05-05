@@ -29,7 +29,7 @@ src/app/CLAUDE.md            # Routing, layouts, middleware
 - Build/dev/test komendy
 
 ### Typowe skille
-- `/quality-guard` — quick check jakości kodu
+- `/critical-code-review` — formalny audyt przed merge
 - `/design-checker` — weryfikacja design systemu (jeśli custom design tokens)
 - `/kronikarz` — dokumentacja zmian przed push
 
@@ -58,7 +58,7 @@ src/middleware/CLAUDE.md      # Middleware chain, error handling
 - Test runner + jak uruchomić testy
 
 ### Typowe skille
-- `/quality-guard` — jakość kodu, security checks
+- `/critical-code-review` — formalny audyt (security, performance, architektura)
 - `/api-docs` — generowanie/aktualizacja dokumentacji API
 - `/migration-check` — weryfikacja migracji DB
 

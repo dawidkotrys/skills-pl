@@ -19,26 +19,25 @@ Jeśli mówisz "to wprowadza nowy concept w domain" / "to dotyka jak users się 
 ```
 PLANOWANIE
   1. Grill                     →  /grill        (CONTEXT.md + ADR-y)
-  2. PRD + vertical slices     →  /to-prd                 (doc/decisions/ + doc/backlog.md)
-  3. Bridge na implementację   →  /code-manager (Tryb 4B) (krótki plan-most)
+  2. PRD + scaffold backlog    →  /to-prd       (folder doc/plans/<slug>/{prd.md, backlog.md})
+  3. Bridge na implementację   →  /code-manager (Tryb 4B) — invoke /to-tasks slice <N>
+                                  + krótki plan-most dla agenta
 
-IMPLEMENTACJA per slice (sekwencja agent ↔ user ↔ Manager — 3 STOP-y)
-  4. Agent wykonawczy implementuje → /kronikarz live (faza impl)
-  5. Manual test scenariusze inline na czat → STOP #1 user QA
-  6. Fix-y po user QA (jeśli były) → /kronikarz live update
-  7. Agent NIE odpala /critical-code-review — zwraca raport do Managera (przez user)
-  8. Manager (Opus) odpala /critical-code-review → STOP #2 user decyzje per-finding
-  9. Agent fix-uje FIX'y → /kronikarz live → re-test (STOP #3 jeśli były fixy)
-  10. Agent zwraca raport końcowy do Managera
+IMPLEMENTACJA per slice (loop, slice po slicie)
+  4. Agent wykonawczy implementuje → /kronikarz live + sekwencja 3-STOP
+     (patrz 00-glowny-flow.md#cztery-punkty-kontrolne-usera)
+  5. Manager Tryb 5C close + slice → ✅ done w backlog.md
+  6. User /clear + restore → wróć do kroku 3 dla slice N+1
 
-MERGE GATE
-  11. Manager odpala /kronikarz close → sign-off, update backlog/indeks, commit
-  12. Manager pyta usera "merge?" → user "akcept" → Manager merguje
+ARCHIVE (po merge ostatniego slice'a)
+  7. Manager Tryb 5D → folder doc/plans/<slug>/ → doc/plans/archive/<slug>/
 ```
 
-Krok 1-3 to **day shift** (twoja pełna uwaga, designujesz z agentem). Krok 4-9 to mix **night shift** (agent implementuje, fixuje) i **day shift** (Twoje QA + decyzje per-finding po code review). Krok 11-12 znowu **day shift** (autonomy gate).
+Krok 1-3 to **day shift** (twoja pełna uwaga, designujesz z agentem). Krok 4 to mix **night shift** (agent implementuje) i **day shift** (Twoje QA + decyzje per-finding po code review).
 
-**Filozofia 3-STOP**: "po co reviewować coś co nie działa" — implementacja musi najpierw zadziałać user-side (zasada #26 imposing taste), dopiero potem polerowanie przez external review.
+**Per-slice loop:** każdy slice z PRD przechodzi pełną sekwencję 3-STOP osobno (`/to-tasks` → impl → user QA → external review → close → merge). Manager rozpisuje **tylko bieżący slice** — nie wszystko z góry. Po merge slice'a kolejny slice rozpisuje się dopiero gdy manager jest gotów.
+
+**Filozofia 3-STOP** (jednolicie opisana w [00-glowny-flow.md](./00-glowny-flow.md#cztery-punkty-kontrolne-usera)): "po co reviewować coś co nie działa" — implementacja musi najpierw zadziałać user-side (zasada #9 imposing taste), dopiero potem polerowanie przez external review.
 
 **External review**: Manager (Opus) odpala `/critical-code-review` na finalnym kodzie, **nie agent wykonawczy** (Sonnet). Peer review principle, brak confirmation bias na własne decyzje.
 
@@ -48,7 +47,7 @@ Krok 1-3 to **day shift** (twoja pełna uwaga, designujesz z agentem). Krok 4-9 
 
 ## Krok 1 — Grill (`/grill`)
 
-**Najważniejszy krok.** Nie skracaj. Per zasada #5 — eager planning bez grillingu = plan który nie wytrzyma kontaktu z rzeczywistością.
+**Najważniejszy krok.** Nie skracaj. Per zasada #4 — eager planning bez grillingu = plan który nie wytrzyma kontaktu z rzeczywistością.
 
 Cel grillingu:
 
@@ -75,26 +74,31 @@ Grill może trwać 30-60 minut rozmowy. To **nie jest** strata czasu — to inwe
 
 ---
 
-## Krok 2 — PRD + vertical slices (`/to-prd`)
+## Krok 2 — PRD + scaffold backlog (`/to-prd`)
 
-Po grillingu — `/to-prd` konwertuje kontekst rozmowy na **destination document**: PRD (Product Requirements Document) + rozbicie na **canon board** (zasada #11) — DAG slicesów z blocking relationships, zapisany w `doc/backlog.md`.
+Po grillingu — `/to-prd` konwertuje kontekst rozmowy na **destination document**: PRD (Product Requirements Document) + scaffold execution-grade backlog'u.
 
-PRD nie jest kontraktem (zasada #4 — kod jest polem bitwy, nie spec). PRD jest **kierunkiem**:
+PRD nie jest kontraktem — jest **kierunkiem**:
 
 - Cel inicjatywy (jednym zdaniem)
 - User stories / scenariusze
 - Constraints i non-goals (co eksplicytnie NIE jest scope)
 - High-level approach
+- Vertical slices z `Slice purpose` + `Slice acceptance` per slice
 - Decyzje już podjęte (linki do ADR-ów)
 - Otwarte pytania (do dorobienia w trakcie)
 
-PRD trafia do `doc/prd/` lub `doc/initiatives/{nazwa}/prd.md`. Konkretna lokalizacja zależy od konwencji repo (sprawdź `CLAUDE.md`). Vertical slices z acceptance criteria — do `doc/backlog.md`.
+`/to-prd` produkuje **folder inicjatywy** `doc/plans/<slug>/` z dwoma plikami:
+- `prd.md` — destination document (vision + slices)
+- `backlog.md` — scaffold execution-grade (sekcja per slice ze statusem `[ ] niezdetailowany`)
+
+Slice'y w `backlog.md` zostają **niezdetailowane** dopóki manager nie invoke `/to-tasks slice <N>` (krok 4). To kluczowa decyzja: **nie rozpisujemy wszystkich tasków z góry**, tylko bieżący slice w pętli.
 
 ### Każdy slice musi być
 
-- **Vertical slice** (zasada #8) — UI → API → DB → tests dla jednej małej funkcjonalności end-to-end
-- **Tracer bullet** (zasada #9) — działający kod, nie prototyp
-- **Cienki** (zasada #10) — bias na cieńsze. Jeśli wahasz się czy podzielić — dziel.
+- **Vertical slice** (zasada #5) — UI → API → DB → tests dla jednej małej funkcjonalności end-to-end
+- **Tracer bullet** — działający kod, nie prototyp
+- **Cienki** — bias na cieńsze. Jeśli wahasz się czy podzielić — dziel.
 - **Blocking relationships** explicite — `wymaga: SLICE-3`, `blokuje: SLICE-5`
 
 ### Anty-wzorzec — horizontal slicing
@@ -121,92 +125,43 @@ Każdy slice **dostarcza** coś działającego. User po slice 1 widzi listę (na
 
 ---
 
-## Krok 3 — Bridge (`/code-manager` Tryb 4B)
+## Krok 3 — Bridge + task breakdown (`/code-manager` Tryb 4B + `/to-tasks`)
 
-Po `/to-prd` masz **plan**. Przed implementacją: bridge mode managera. Manager:
+Po `/to-prd` masz folder inicjatywy. Przed implementacją: bridge mode managera. Manager:
 
-- Audituje slicesy (czy są wystarczająco cienkie? czy mają jasne acceptance criteria?)
-- Identyfikuje **kandydaty na parallel pickup** (slicesy bez blocking relationships)
-- Identyfikuje **collision risks** (czy slice A i slice B nie ruszą tego samego pliku?)
-- Proponuje **kolejność** dla sequential pickup (jeśli parallel niemożliwe)
+- Wybiera **bieżący slice** (typowo Slice 0 lub 1)
+- Invoke `/to-tasks slice <N>` → rozbija slice na 3-7 granularnych tasków wykonawczych z file targets + acceptance criteria. Status sekcji slice'a: `[ ] niezdetailowany` → `🔄 in-progress`
+- Pisze krótki **bridge plan** (~30-50 linii) — link do PRD + tasks w backlog.md, kontekst pracy równoległej, kolejność wykonania, pułapki
+- Dispatchuje do agenta wykonawczego (wiadomość-do-wkleienia)
 
-Output: bridge plan dla implementatora.
-
----
-
-## Krok 4 — Implementacja per slice
-
-Per slice:
-
-- **Mała inicjatywa wewnątrz dużej** → flow jak w [04-flow-maly-task.md](./04-flow-maly-task.md), ale w kontekście większego planu
-- **TDD red-green-refactor** dla każdego slice (zasada #20) — jeśli scope tego wymaga, odpal `/tdd`
-- **Per Memento (#2)** — jeśli implementacja slice'a jest długa i kontekst się zaśmieca → przed `/clear` zapisz `_session-state.md` (zasada #19)
-
-Manager (Tryb 1) dispatchuje do subagenta-implementera, weryfikuje, raportuje progress.
+Output: bridge plan + zaktualizowany `backlog.md` (current slice rozpisany na taski).
 
 ---
 
-## Krok 5 — Code review (`/critical-code-review`)
+## Krok 4 — Implementacja per slice (sekwencja 3-STOP)
 
-Per zasada #25 — Sonnet implementuje, Opus reviewuje. Po każdym slice (lub batchu):
+Per bieżący slice:
 
-- `/critical-code-review` przegląda zmiany krytycznym okiem
-- Identyfikuje bugi, security gaps, anti-patterny, brak edge case handling
-- Generuje formalny werdykt (pass / fix needed / reject)
+- Agent wykonawczy implementuje taski po kolei (T<N>.1 → T<N>.2 → ...)
+- `/kronikarz live` przez całą drogę
+- Sekwencja 3-STOP — szczegóły w [00-glowny-flow.md](./00-glowny-flow.md#cztery-punkty-kontrolne-usera)
+- Per Memento (zasada #2) — jeśli kontekst się zaśmieca → save/restore session
 
-**To NIE jest** "ostatnia bramka przed merge" — to jest pętla. Per zasada #27 — review tworzy nowe issues, fixujesz, wracasz do review.
-
----
-
-## Krok 6 — Dokumentacja (`/kronikarz`)
-
-Po **całej inicjatywie** (nie po każdym slice):
-
-- ADR-y dla decyzji architektonicznych podjętych w trakcie
-- Update `CHANGELOG.md`
-- Update `CONTEXT.md` (jeśli pojawiły się nowe terminy które przeżyły implementację)
-- Update `doc/backlog.md` (przerzuć ukończone issues do archiwum)
-- Update `CLAUDE.md` jeśli inicjatywa wprowadziła nowe konwencje per repo
+Manager Tryb 5C zamyka slice po merge: status `🔄 in-progress` → `✅ done` w `backlog.md`.
 
 ---
 
-## Krok 7 — QA loop
+## Krok 5 — Loop dla kolejnego slice'a
 
-Per zasada #27 — QA rodzi nowe issues. Nie ma "QA przeszło, mergujemy".
+Po close slice'a N: **user `/clear` + `/restore-session-manager`** → świeża sesja managera dla slice'a N+1. Wracasz do **kroku 3** (manager invoke `/to-tasks slice <N+1>`).
 
-Cykl:
-
-1. Manualny QA (klikasz, czytasz, dotykasz)
-2. Znajdujesz problem → dorzucasz issue do `doc/backlog.md`
-3. Fix → wraca do code review
-4. Powrót do QA
-5. ... aż QA jest **really** clean
-
-Per zasada #26 — QA to **imposing taste**, nie tylko sprawdzanie czy działa.
+Per-slice loop trwa aż wszystkie slices są `✅ done`. Wtedy → krok 6.
 
 ---
 
-## Krok 8 — Merge / release
+## Krok 6 — Archive folderu inicjatywy
 
-Per konwencje repo (sprawdź `CLAUDE.md`):
-
-- PR base: develop / main / integration branch
-- Squash / merge / rebase strategy
-- Wymagane checks (CI, code review approvals)
-- Release notes (jeśli releasowy projekt)
-
----
-
-## Iteracje wewnątrz dużej inicjatywy
-
-Duża inicjatywa **NIE jest** linią finishową. Może mieć fazy:
-
-- **Faza 1 — tracer bullet** (slice 1, najbardziej ryzykowny / najbardziej learning)
-- **Faza 2 — happy path** (kolejne slice'y, building feature)
-- **Faza 3 — edge cases + polish** (refinement)
-- **Faza 4 — performance / scaling** (jeśli zasadne)
-
-Między fazami: stop, ocena, eventualne aktualizacje PRD (zasada #4 — kod jest polem bitwy, PRD jest kierunkiem, gotów do aktualizacji gdy implementacja ujawni assumption violation).
+Manager Tryb 5D: po merge ostatniego slice'a → folder `doc/plans/<slug>/` przenosi się do `doc/plans/archive/<slug>/`. Zawartość intact (audit trail). Frontmatter `status: in-progress` → `status: done`.
 
 ---
 
@@ -216,22 +171,22 @@ Między fazami: stop, ocena, eventualne aktualizacje PRD (zasada #4 — kod jest
 
 "Już wiem co trzeba zrobić, lecę do `/to-prd`". Tracisz okazję do testu hipotez. Plan będzie wyglądał OK ale rozsypie się przy implementacji.
 
-### Issues które są horizontal
+### Slices które są horizontal
 
-Patrz wyżej — każdy issue **musi** być vertical slice end-to-end.
+Każdy slice **musi** być vertical slice end-to-end. Patrz zasada #5.
+
+### Rozpisanie wszystkich slicesów na taski z góry
+
+Anti-pattern. `/to-tasks` invoke per slice w pętli — nie wszystko z góry. Powód: kontekst kolejnego slice'a jest informowany przez to czego się nauczyłeś przy poprzednim. Eager task breakdown wszystkich slicesów = drift od rzeczywistości.
 
 ### Pisanie wszystkich testów na początku (anti-TDD)
 
-Per zasada #20 — to pozwala AI na cheating (hardcoded values żeby satysfakcjonować wszystkie testy). TDD red-green vertical, jeden test → jedna decyzja implementacyjna.
-
-### Sequential plan zamiast canon board
-
-Per zasada #11 — wymusza sekwencyjność tam gdzie nie ma faktycznych zależności. Marnuje okazję do parallel pickup.
+Per zasada #7 — to pozwala AI na cheating (hardcoded values żeby satysfakcjonować wszystkie testy). TDD red-green vertical, jeden test → jedna decyzja implementacyjna.
 
 ### Brak QA loop
 
-"Code review przeszło, mergujemy". QA nie jest opcjonalne. QA to imposing taste i pętla, nie checkpoint.
+"Code review przeszło, mergujemy". QA nie jest opcjonalne. QA to imposing taste i pętla, nie checkpoint (zasada #9).
 
 ### Pisanie ADR-a po fakcie / dla każdej decyzji
 
-Per zasada #18 — ADR-y sparingly. Hard-to-reverse + surprising + real trade-off. Reszta to commit messages.
+ADR-y sparingly. Hard-to-reverse + surprising + real trade-off. Reszta to commit messages. (Patrz `03-pliki-projektu.md` sekcja `doc/decisions/`.)
