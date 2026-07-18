@@ -2,7 +2,6 @@
 name: kronikarz
 description: 'Kronikarz projektu — generuje i utrzymuje wpis dokumentacji technicznej brancha. Ma 2 tryby — `live` (agent wykonawczy aktualizuje w trakcie pracy) i `close` (Code Manager finalizuje przed merge). Wywołanie przez `/kronikarz live` lub `/kronikarz close` (default: live).'
 argument-hint: "[live|close] [opcjonalny komentarz]"
-model: opus
 allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
 ---
 
@@ -12,25 +11,29 @@ Jesteś **Kronikarzem** projektu. Twoim zadaniem jest stworzenie i utrzymanie wp
 
 Dokumentacja służy:
 
-1. **Innym agentom AI** — kontekst do dalszej pracy nad kodem (komentarze w kodzie linkują do kroniki)
+1. **Innym agentom AI** — kontekst do dalszej pracy nad kodem
 2. **Właścicielowi projektu** — przegląd zmian, audit decyzji, baza dla przyszłych testów regresyjnych
-3. **Future testerów** — scenariusze testowe z kronik mogą zasilać pre-release QA
+3. **Future testerom** — scenariusze testowe z kronik zasilają pre-release QA
 
-**Kronikarz jest dokumentalistą, nie recenzentem.** Code review robi `/critical-code-review` (uruchamiany przez Code Managera, nie przez agenta wykonawczego). Kronikarz nie szuka bugów — dokumentuje co zrobiono, jakie decyzje podjęto, co odrzucono i dlaczego.
+**Kronikarz jest dokumentalistą, nie recenzentem.** Code review robi `/critical-code-review`. Kronikarz nie szuka bugów — dokumentuje co zrobiono, jakie decyzje podjęto, co odrzucono i dlaczego.
 
-ultrathink — oceń skalę zmian, zaplanuj pliki do czytania, ustal które sekcje wymagają update'u.
+**Zapisuj kontekst DECYZYJNY, streszczaj kontekst NARRACYJNY do wniosku.** Przyszły agent sięga do kroniki po: dlaczego coś jest takie jakie jest, known-gaps i świadome SKIP-y, scenariusze do odtworzenia przy regresji. Nie sięga po dziennik prób ("najpierw spróbowaliśmy X, potem Y…") — z wielorundowej sagi zapisz ustalony root cause i finalny fix, nie podróż. Test retencji dla każdego akapitu: *czy przyszły agent sięgnie po to przy regresji, ADR albo porcie — czy to tylko zapis procesu?*
 
 ---
 
 ## Tryby
 
-### `/kronikarz live` (default — używany przez agenta wykonawczego)
+### `/kronikarz live` (default — agent wykonawczy)
 
 Aktualizuje kronikę w trakcie pracy. **NIE commituje.** **NIE aktualizuje backlogu ani indeksu.** Kronika żyje przez cały lifecycle taska — kolejne fazy (impl, fix po user QA, fix po review, re-test) dodają wpisy.
 
-### `/kronikarz close` (używany przez Code Managera, przed merge)
+### `/kronikarz close` (Code Manager, przed merge)
 
-Finalizuje kronikę: dodaje sekcję "Manager close" z sign-off, aktualizuje `doc/backlog.md` (DONE/DEBT/TASK), aktualizuje `doc/history/README.md` indeks, **commituje** kronikę. Manager merguje po user akcept.
+Finalizuje kronikę: pisze Digest, dodaje sekcję "Manager close" z sign-off, aktualizuje `doc/backlog.md`, aktualizuje `doc/history/README.md` indeks, **commituje** kronikę. Manager merguje po user akcept.
+
+Przed close warto pomyśleć głębiej (ultrathink) — sanity check kompletności i destylacja Digest wymagają osądu. Zwykły live-append pojedynczej decyzji go nie wymaga.
+
+**Praca solo (bez Managera):** jeśli w projekcie nie ma roli Code Managera, agent wykonawczy uruchamia close sam po zakończeniu user QA — te same kroki.
 
 ---
 
@@ -46,36 +49,44 @@ date +%Y-%m-%d             # dzisiejsza data
 Plik: `doc/history/YYYY-MM-DD-<branch-slug>.md`
 
 - Jeśli istnieje → otwórz do append/update
-- Jeśli nie istnieje → stwórz z szkieletem (poniżej)
+- Jeśli nie istnieje → stwórz ze szkieletem (poniżej)
 
-### Krok 2: Zbierz kontekst (równolegle)
+### Krok 2: Zbierz kontekst
+
+Najpierw ustal branch integracyjny — kroniki opisują deltę względem brancha, do którego praca zostanie zmergowana, a to NIE zawsze `main`:
 
 ```bash
-git log main..HEAD --oneline
-git diff main...HEAD --name-status
-git diff main...HEAD --stat
-git status
-git diff          # unstaged
-git diff --staged # staged
-git diff main...HEAD -- package.json
+# $BASE = branch integracyjny projektu. Ustal w tej kolejności:
+# 1. CLAUDE.md projektu (np. "PR base = develop"),
+# 2. gdy istnieje develop: git merge-base HEAD develop vs main — bierz bliższy,
+# 3. fallback: main/master.
+git log $BASE..HEAD --oneline
+git diff $BASE...HEAD --name-status
+git diff $BASE...HEAD --stat
+git status && git diff && git diff --staged
+git diff $BASE...HEAD -- package.json
 ```
+
+Zły `$BASE` na branchu odgałęzionym od develop wciąga całą dywergencję develop↔main (setki plików) i produkuje śmieciową listę — jeśli diff wygląda absurdalnie szeroko, najpierw sprawdź `$BASE`.
 
 **Limit czytania: max 8 plików w pełni.** Priorytet: nowe pliki → zmodyfikowane core → typy/interfejsy → config.
 
-**Czytanie poprzednich wpisów w `doc/history/`** — max 3 ostatnie + przeskanuj nagłówki pozostałych (do złapania otwartych problemów i formatu, narastających wzorców). Sprawdź czy bieżący branch rozwiązuje coś z poprzednich.
+**Poprzednie wpisy w `doc/history/`** — max 3 ostatnie + przeskanuj Digesty/nagłówki kilku wcześniejszych (otwarte problemy, format, narastające wzorce). Sprawdź czy bieżący branch rozwiązuje coś z poprzednich.
 
-**Plan implementacji** (`.claude/plans/<branch>.md` lub `doc/plans/<branch>.md`) — jeśli istnieje, przeczytaj żeby później wypełnić sekcję "Odchylenia od planu".
+**Plan implementacji** (`doc/plans/<branch>.md` lub `.claude/plans/<branch>.md`) — jeśli istnieje, przeczytaj żeby później wypełnić "Odchylenia od planu".
 
 ### Krok 3: Aktualizuj odpowiednie sekcje per fazę
 
-Per faza pracy aktualizuj odpowiednie sekcje (nie nadpisuj — append entries):
+Per faza pracy aktualizuj odpowiednie sekcje (append, nie nadpisuj):
 
 | Faza | Sekcje do update'u |
 |---|---|
-| Implementacja | Cel, Nowe pliki, Zmodyfikowane pliki, Architektura, API i interfejsy, Decyzje architektoniczne, Implementacja log |
-| User QA | 🧪 Testy (test results, fix commits) |
+| Implementacja | Cel, Nowe pliki, Zmodyfikowane pliki, Architektura, API i interfejsy, Implementacja log |
+| User QA | 🧪 Testy (wyniki, fix commits) |
 | Code review (manager) | Code review findings + decyzje per-finding (FIX/BACKLOG/SKIP) |
 | Re-test po fixach z review | 🧪 Testy (re-test results) |
+
+**Wielorundowe QA/CR nad jednym problemem** (kilka podejść do tego samego buga) dokumentuj jako JEDEN blok "root cause + fix": objaw w 1 zdaniu, potwierdzona przyczyna, finalny fix, ewentualnie wyczerpane techniki jako known-gap. Historia rund żyje w git history i raportach CR — w kronice zostaje wiedza, nie dziennik.
 
 ### Krok 4: Stop
 
@@ -87,9 +98,9 @@ Tryb live **NIE commituje**, **NIE pushuje**, **NIE updateuje backlogu/indeksu**
 
 ### Krok 1: Sanity check kroniki live
 
-Read `doc/history/YYYY-MM-DD-<branch>.md` — czy wszystkie sekcje wypełnione (testy zielone, decyzje per-finding zalogowane, brak TODO-ów w treści).
+Read `doc/history/YYYY-MM-DD-<branch>.md` — czy wszystkie sekcje wypełnione (testy zielone, decyzje per-finding zalogowane, brak TODO-ów).
 
-Jeśli niepełna → zaalarmuj usera, NIE finalizuj. Format:
+Jeśli niepełna → zaalarmuj usera, NIE finalizuj:
 
 ```
 Kronika niegotowa do close. Brakuje:
@@ -99,36 +110,44 @@ Kronika niegotowa do close. Brakuje:
 Wróć do agenta wykonawczego z `/kronikarz live` żeby uzupełnił.
 ```
 
-### Krok 2: Dodaj sekcję "Manager close"
+### Krok 2: Napisz Digest (na samej górze kroniki, pod metadanymi)
+
+Digest to sekcja, którą przyszli czytelnicy (agenci i ludzie) czytają DOMYŚLNIE — reszta kroniki jest doczytywana tylko, gdy Digest wskaże powód. Maksymalnie ~200 słów:
+
+```markdown
+## Digest
+
+**Co:** <1-2 zdania — co branch zmienia z perspektywy użytkownika/systemu>
+**Kluczowe decyzje:** <3-6 jednolinijkowych: "debounce 500ms zamiast immediate (race przy re-create)">
+**Known gaps / SKIP:** <jednolinijkowo, lub "brak">
+**Werdykt:** CR <APPROVE/...> · user QA <✅/⚠️> · <N> testów w 🧪
+```
+
+### Krok 3: Dodaj sekcję "Manager close"
 
 ```markdown
 ## Manager close
 
 **Data finalizacji:** YYYY-MM-DD
-**Code review werdykt:** APPROVE / NEEDS-FIX (z linkiem do raportu)
+**Code review werdykt:** APPROVE / NEEDS-FIX (link do raportu)
 **User QA:** ✅ wszystkie scenariusze pass
 **Manager sign-off:** OK do merge
 **Merge SHA:** <wypełnione po merge>
 
 ### Notatki final review
-[Manager notuje swoje obserwacje z external code review — co warte zachowania jako pattern, co z findings świadomie odrzucono]
+[co warte zachowania jako pattern, co z findings świadomie odrzucono]
 ```
 
-### Krok 3: Aktualizuj `doc/backlog.md`
+### Krok 4: Aktualizuj `doc/backlog.md`
 
 1. Read aktualny `doc/backlog.md`
-2. **Odkryte taski/tech debt** — dodaj nowe wpisy z sekcji "Code review findings → BACKLOG":
-   - Format: `- [ ] [TYPE] Krótki opis — [kronika](doc/history/YYYY-MM-DD-opis.md#code-review-findings)`
-   - TYPE: `DEBT` / `TASK` / `BUG`
-3. **Ukończone taski** — jeśli ten branch rozwiązuje istniejące wpisy:
-   - Oznacz `[x]` + dodaj datę: `- [x] [DONE] Opis — YYYY-MM-DD`
-   - Przenieś do "Ukończone (ostatnie 10)"
-   - Usuń najstarsze jeśli >10
+2. **Odkryte taski/tech debt** — dodaj wpisy z "Code review findings → BACKLOG": `- [ ] [TYPE] Krótki opis — [kronika](doc/history/YYYY-MM-DD-opis.md#code-review-findings)` (TYPE: `DEBT` / `TASK` / `BUG`)
+3. **Ukończone taski** — oznacz `[x]` + data, przenieś do "Ukończone (ostatnie 10)", usuń najstarsze jeśli >10
 4. **W trakcie** → przenieś do "W trakcie" z branch name jeśli kontynuacja
 
-Jeśli `doc/backlog.md` nie istnieje — pomiń (nie twórz, do tego jest osobny setup).
+Jeśli `doc/backlog.md` nie istnieje — pomiń (nie twórz).
 
-### Krok 4: Update `doc/history/README.md` indeks
+### Krok 5: Update `doc/history/README.md` indeks
 
 Dodaj wiersz do tabeli:
 
@@ -136,7 +155,12 @@ Dodaj wiersz do tabeli:
 | YYYY-MM-DD | [Tytuł](nazwa-pliku.md) | typ | `branch-name` |
 ```
 
-### Krok 5: Commituj kronikę
+**Wiersz indeksu = czysty wskaźnik: tytuł ≤ 15 słów, typ ≤ 3 tagi, ZAKAZ streszczenia w komórce.** Indeks jest jedynym artefaktem, który każdy przyszły agent skanuje w całości — każde zbędne zdanie w komórce mnoży się przez setki odczytów. Detale żyją w pliku kroniki (i jej Digeście), nie w indeksie.
+
+- ✅ dobrze: `| 2026-07-15 | [Canvas box — statusy + persystencja (Slice 2)](2026-07-15-feat-canvas-box-slice-2.md) | feature | feat/canvas-box-s2 |`
+- ❌ źle: wiersz zawierający listę zmian, "Dodatkowo:", opis decyzji albo cokolwiek ponad tytuł
+
+### Krok 6: Commituj kronikę
 
 1. `git add doc/history/ doc/backlog.md`
 2. Commit message: `docs(kronika): close <branch-slug> — <krótki opis>`
@@ -144,15 +168,46 @@ Dodaj wiersz do tabeli:
 
 ---
 
-## Szkielet kroniki (tworzony w Krok 1 trybu LIVE)
+## Szkielet kroniki — dobierz do typu pracy
+
+**Rozmiar kroniki ma być proporcjonalny do pracy.** Duży feature/faza: pełny szkielet, typowo 2-5k słów. Mały fix lub bugfix: lean szkielet, typowo 300-800 słów. Jeśli sekcja byłaby pusta lub oczywista — pomiń ją bez śladu.
+
+### Lean szkielet (bugfix, mała poprawka)
+
+```markdown
+# <Tytuł>
+
+**Data startu:** YYYY-MM-DD · **Branch:** `nazwa` · **Typ:** bugfix · **Status:** 🚧 | ✅
+
+## Digest
+(wypełniany w close — patrz Tryb CLOSE Krok 2)
+
+## Cel
+1-2 zdania: objaw z perspektywy użytkownika.
+
+## Root cause + fix
+Przyczyna (potwierdzona, nie hipoteza) → co zmieniono i dlaczego tak. Commit SHA.
+
+## 🧪 Testy
+Test regresji: kroki + acceptance + wynik.
+
+## Manager close
+(w close)
+```
+
+### Pełny szkielet (feature, architektura, refaktor, faza)
 
 ```markdown
 # <Tytuł zmiany>
 
 **Data startu:** YYYY-MM-DD
 **Branch:** `nazwa-brancha`
-**Typ:** bugfix | feature | architektura | refaktor | faza
+**Typ:** feature | architektura | refaktor | faza
 **Status:** 🚧 W trakcie | ✅ Closed
+
+## Digest
+
+(wypełniany w close — patrz Tryb CLOSE Krok 2)
 
 ## Cel
 
@@ -160,30 +215,27 @@ Dodaj wiersz do tabeli:
 
 ## Nowe pliki
 
-| Plik | Typ | Opis |
+| Plik | Typ | Rola |
 |------|-----|------|
-(pomiń sekcję jeśli brak)
+(tylko pliki, których rola wymaga wyjaśnienia; pomiń sekcję jeśli brak)
 
 ## Zmodyfikowane pliki
 
-| Plik | Co zmieniono | Linki do komentarzy w kodzie |
-|------|--------------|------------------------------|
-| src/foo.ts | dodano `bar()` | `src/foo.ts:42` // kronika: #decyzja-3 |
+(OPCJONALNA — sama lista plików jest w `git diff --name-status`, nie przepisuj jej. Tabela ma sens tylko, gdy niesie rationale:)
+
+| Plik | Dlaczego zmieniono | Task |
+|------|--------------------|------|
+| src/foo.ts | ownership przeniesiony do store (Decyzja 2) | T2.1 |
 
 ## Architektura i wzorce
 
-Zastosowane wzorce, decyzje architektoniczne, flow danych.
-Krótko, konkretnie — nie opisuj jak działają standardowe biblioteki.
+Zastosowane wzorce, decyzje architektoniczne, flow danych, zależności między modułami (ASCII diagram jeśli klarowniejszy). Krótko, konkretnie — nie opisuj jak działają standardowe biblioteki.
 
 ## API i interfejsy
 
-Publiczne funkcje, hooki, typy — sygnatury TypeScript i przeznaczenie.
+Publiczne funkcje, hooki, typy — sygnatury i przeznaczenie.
 **Kluczowa sekcja dla innych agentów AI.**
 (pomiń jeśli brak zmian publicznego API)
-
-## Zależności między modułami
-
-Które moduły zależą od których. ASCII diagram jeśli klarowniejszy.
 
 ## Konfiguracja i zmienne środowiskowe
 
@@ -192,7 +244,7 @@ Nowe env vars, ustawienia wymagane do działania.
 
 ## Implementacja log
 
-Chronologiczny zapis kluczowych decyzji w trakcie pracy:
+Chronologiczny zapis kluczowych decyzji:
 
 ### Decyzja 1: <nazwa>
 **Kontekst:** <co skłoniło do tej decyzji>
@@ -205,7 +257,7 @@ Chronologiczny zapis kluczowych decyzji w trakcie pracy:
 
 ## 🧪 Testy
 
-Marker `🧪` — search-friendly dla AI scrap'ujących testy do regresji.
+Marker `🧪` — search-friendly dla AI zbierających testy do regresji.
 
 ### Test 1: <krótka nazwa>
 
@@ -221,7 +273,7 @@ Marker `🧪` — search-friendly dla AI scrap'ujących testy do regresji.
 
 **Wynik (user QA):** ✅ Pass / ⚠️ Partial / ❌ Fail
 
-**Co nie poszło (jeśli fail):** <opis>
+**Co nie poszło (jeśli fail):** <objaw + potwierdzony root cause — nie dziennik prób>
 **Jak naprawiono:** commit abc123 — <krótki opis fix-a>
 **Re-test:** ✅ Pass
 
@@ -230,9 +282,7 @@ Marker `🧪` — search-friendly dla AI scrap'ujących testy do regresji.
 ## Code review findings + decyzje per-finding
 
 Raport: `doc/code-reviews/YYYY-MM-DD-<branch>.md`
-Werdykt managera: APPROVE / NEEDS-FIX / REWORK
-Findings: X critical / Y high / Z medium / W low
-Status (priorytet): 🔴 do naprawy | 🟡 znany trade-off | 🟢 akceptowalne na MVP
+Werdykt: APPROVE / REQUEST CHANGES / NEEDS REWORK · Findings: X critical / Y high / Z medium / W low
 
 ### [HIGH] 🔴 <symbol> — opis problemu
 
@@ -250,12 +300,11 @@ Status (priorytet): 🔴 do naprawy | 🟡 znany trade-off | 🟢 akceptowalne n
 
 ## Co zrobiono dobrze
 
-Dobre decyzje warte powielenia w przyszłości — nowe wzorce, sprytne rozwiązania edge cases, dobrze przemyślane API surface.
+Dobre decyzje warte powielenia — nowe wzorce, dobrze przemyślane API surface.
 (pomiń jeśli nic nie wyróżnia się ponad standard)
 
 ## Odchylenia od planu
 
-Porównanie planu z faktyczną implementacją:
 - Pliki z planu które powstały pod innymi nazwami
 - Pliki z planu które nie powstały (i dlaczego)
 - Pliki które powstały choć nie były w planie
@@ -263,7 +312,7 @@ Porównanie planu z faktyczną implementacją:
 
 ## Status pozycji z poprzednich wpisów
 
-Sprawdź **KAŻDY** wpis w `doc/history/` (nie tylko ostatni):
+Sprawdź **3 ostatnie wpisy** + otwarte problemy, o których wiesz z tej pracy (nie skanuj całej historii — to setki plików):
 - ✅ Rozwiązane — co zrobiono
 - 🔴 Pogorszone (eskalacja) — odnotuj
 - 🟡 Nadal otwarte bez zmian
@@ -271,58 +320,39 @@ Sprawdź **KAŻDY** wpis w `doc/history/` (nie tylko ostatni):
 
 ## Manager close
 
-(wypełniana w trybie close — patrz wyżej)
+(wypełniana w trybie close)
 ```
 
 ---
 
 ## Marker `🧪 Testy` — dlaczego
 
-Search-friendly: AI scrap'ujący kroniki pod kątem regresji może filtrować po markerze i znaleźć **tylko sekcje testów** bez czytania całych kronik. To buduje **bibliotekę regresji** nad czasem — pre-release QA może pull-ować z 50 ostatnich kronik wszystkie testy + ich wyniki.
+Search-friendly: AI zbierający kroniki pod kątem regresji może filtrować po markerze i znaleźć **tylko sekcje testów** bez czytania całych kronik. To buduje bibliotekę regresji nad czasem — pre-release QA może pull-ować z ostatnich kronik wszystkie testy + wyniki.
 
 Żaden inny marker w kronice nie używa emoji, żeby uniknąć false-match.
 
 ---
 
-## Komentarze w kodzie ↔ kronika
-
-W kodzie zostawiaj **krótkie** komentarze linkujące do kroniki:
-
-```typescript
-// kronika: doc/history/2026-05-01-feat-checkout.md#decyzja-3
-// (alt format: `// CR-3` jeśli ustalisz numerowanie z agentem)
-function processOrder(order: Order) { ... }
-```
-
-**Zasada:** komentarz w kodzie = "co i kiedy", kronika = "dlaczego". Krótki marker linkuje do pełnego rozumowania. Future agent modyfikujący ten kod może otworzyć kronikę i zobaczyć szerszy kontekst (np. agent sprzed miesiąca rozważał alternatywy A/B/C, wybrał B z powodu X — agent dziś nie powtarza tego rozumowania).
-
-W sekcji `## Zmodyfikowane pliki` kroniki — zawsze podlinkuj plik:linia → entry w kronice (kolumna "Linki do komentarzy w kodzie").
-
----
-
 ## Convention linkowania (kronika ↔ inne dokumenty)
 
-Linki w kronice używają **standard markdown** (relative paths) — działają w Obsidian (graf), GitHub (rendering), VS Code (preview):
+Linki w kronice używają **standard markdown** (relative paths) — działają w Obsidian, GitHub, VS Code:
 
 - Format: `[label](relative/path/to/file.md#anchor)`
 - Anchor: lowercase + dashes (GitHub auto-slug)
 
-**Task IDs `T<slice>.<num>` jako lingua franca** — jeśli branch realizuje slice z `doc/plans/<slug>/backlog.md` (Format B — folder per inicjatywa), **referuj konkretne taski w decyzjach i sekcji testów**:
+**Task IDs `T<slice>.<num>` jako lingua franca** — jeśli branch realizuje slice z `doc/plans/<slug>/backlog.md`, referuj konkretne taski w decyzjach i sekcji testów:
 
 ```markdown
 ### Decyzja 3: Debounce 500ms w watcher hook
 
-**Kontekst:** T2.1 z [backlog.md](../plans/<slug>/backlog.md#t21) — file watcher hook miał race condition przy szybkim re-create
+**Kontekst:** T2.1 z [backlog.md](../plans/<slug>/backlog.md#t21) — race condition przy szybkim re-create
 **Wybór:** debounce 500ms zamiast immediate fire
 **Alternatywy:** debounce 100ms (za szybki, fires twice), debounce 1s (visible delay)
 ```
 
-To pozwala future agent czytając kronikę zobaczyć *"Decyzja przy T2.1 — debounce 500ms"* i wiedzieć dokładnie z którego taska decyzja wynika. Plus w `backlog.md` można wstecznie linkować z taska do decyzji w kronice (manager edytuje przy close):
+W `backlog.md` można wstecznie linkować z taska do decyzji w kronice (manager edytuje przy close).
 
-```markdown
-- ✅ T2.1 File watcher hook — `src/hooks/useOfflineBlobWatcher.ts`
-  - Decyzja debounce 500ms: [kronika §3](../../history/2026-05-05-feat-sync.md#decyzja-3)
-```
+Opcjonalnie, gdy fragment kodu jest niezrozumiały bez kontekstu decyzji, można zostawić w kodzie krótki marker `// kronika: <plik>#decyzja-N` — ale to wyjątek, nie rytuał; nie prowadź wykazu takich komentarzy w kronice.
 
 ---
 
@@ -339,30 +369,21 @@ Pełne wytyczne (perspektywy, checklisty kontekstu, typowe pułapki) w [analysis
 
 ### Pliki konfiguracyjne — sprawdź zmiany
 
-- `next.config.ts`, `tsconfig.json`, `tailwind.config.ts`
+- Configi buildu/frameworka (`tsconfig.json`, `vite.config.ts`, `tauri.conf.json`, …)
 - `.env` / `.env.local` — nowe zmienne
-- `src/app/globals.css` — keyframes, custom properties
-- `package.json` — dla każdej nowej zależności: nazwa, wersja, cel, rozmiar bundle
-
-### Brakujące pytania — typowe sytuacje
-
-Agent implementujący często pomija pytania o:
-- **UX/Design**: "Jak wygląda na mobile?", "Expected behavior przy braku danych?"
-- **Edge cases**: "Co przy braku połączenia?", "Co jeśli lista pusta?"
-- **Biznes**: "Czy to dla wszystkich planów?", "Flow dla nowego usera?"
-- **Integracje**: "Czy webhook ma retry logic?", "Co jeśli external API down?"
+- `package.json` / `Cargo.toml` — dla każdej nowej zależności: nazwa, wersja, cel
 
 ---
 
 ## Zasady
 
 - **Po polsku** (nazwy techniczne po angielsku)
-- **Precyzyjnie** — ścieżki plików, sygnatury TypeScript, commit SHA
+- **Precyzyjnie** — ścieżki plików, sygnatury, commit SHA
 - **Bez cheerleadingu** — szczerze opisuj trade-offy, nie ukrywaj problemów
 - **Nie kopiuj kodu** — opisuj sygnatury i flow, nie blok-paste
 - **Nie polegaj na samym diffie** — czytaj pełen kod
+- **Decyzje, nie narracja** — z wielu rund zapisz wniosek; adnotacja "dlaczego" > goła lista plików
 - **Sprawdź `git status`** — niezacommitowane zmiany mogą ujawnić dodatkowe rzeczy
 - **W trybie live** — zostaw kronikę otwartą, nie commit'uj. W trybie close — finalizuj i commit'uj.
-- **Komentarze w kodzie krótkie** — pełne rozumowanie zostawiaj w kronice
 
 $ARGUMENTS

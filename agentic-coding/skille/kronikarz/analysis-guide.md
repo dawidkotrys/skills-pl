@@ -59,28 +59,20 @@ Agent implementujący często pomija pytania o:
 
 Upewnij się że masz:
 
-- [ ] `git log main..HEAD --oneline` — lista commitów
-- [ ] `git diff main...HEAD --name-status` — lista plików (A/M/D/R)
-- [ ] `git diff main...HEAD --stat` — statystyki zmian
+- [ ] Ustalony `$BASE` — branch integracyjny projektu (CLAUDE.md → develop/main; zły $BASE = śmieciowy diff setek plików)
+- [ ] `git log $BASE..HEAD --oneline` — lista commitów
+- [ ] `git diff $BASE...HEAD --name-status` — lista plików (A/M/D/R)
+- [ ] `git diff $BASE...HEAD --stat` — statystyki zmian
 - [ ] `git status` + `git diff` — niezacommitowane zmiany
-- [ ] `git diff main...HEAD -- package.json` — nowe zależności
+- [ ] `git diff $BASE...HEAD -- package.json` — nowe zależności
 - [ ] Przeczytany kod kluczowych plików (max 8 w pełni, reszta z diffa)
 - [ ] Przeczytane ostatnie wpisy w `doc/history/` (max 3 + nagłówki)
 - [ ] Przeczytane raporty z `doc/code-reviews/` dla tego brancha
 - [ ] Sprawdzony plan implementacji (`.claude/plans/`) jeśli istnieje
 
-## Komentarze w kodzie ↔ kronika
+## Komentarze w kodzie ↔ kronika (opcjonalne)
 
-W kodzie zostawiaj **krótkie** markery linkujące do kroniki — pełne rozumowanie zostaje w kronice. Format domyślny:
-
-```typescript
-// kronika: doc/history/2026-05-01-feat-checkout.md#decyzja-3
-function processOrder(order: Order) { ... }
-```
-
-Zasada: **komentarz = "co i kiedy", kronika = "dlaczego"**. Future agent modyfikujący kod otwiera kronikę i widzi szerszy kontekst (alternatywy, trade-offy, kto co decydował).
-
-W sekcji `## Zmodyfikowane pliki` kroniki dorzuć kolumnę "Linki do komentarzy w kodzie" (`src/foo.ts:42` → `#decyzja-3`).
+Gdy fragment kodu jest niezrozumiały bez kontekstu decyzji, można zostawić krótki marker `// kronika: doc/history/<plik>.md#decyzja-3`. To wyjątek dla naprawdę zaskakujących miejsc, nie rytuał — nie prowadź wykazu takich komentarzy w kronice.
 
 ## Typowe pułapki
 

@@ -8,9 +8,9 @@ Folder zawiera **slash commands** (nie skille) dla Claude Code. Komendy nie maj�
 
 ## Komendy w tym folderze
 
-### Session-state (per ADR-0008)
+### Session-state
 
-Manager i agent wykonawczy potrzebują save/restore kontekstu przy `/clear` (Memento problem). Komendy zapisują kontekst do plików tymczasowych w `doc/session/`, restore wczytuje + **usuwa** plik (ulotne).
+Manager i agent wykonawczy potrzebują save/restore kontekstu przy `/clear` (Memento problem). Komendy zapisują kontekst do plików tymczasowych w `doc/session/`, restore wczytuje + zdejmuje plik z aktywnej lokalizacji (folder ulotny — scratchpad między save a restore, gitignored, nie commituje się).
 
 | Komenda | Opis | Plik docelowy |
 |---|---|---|
@@ -23,7 +23,7 @@ Manager i agent wykonawczy potrzebują save/restore kontekstu przy `/clear` (Mem
 
 ```
 1. Pracujesz w sesji (manager albo agent wykonawczy)
-2. Kontekst się zaśmieca / zbliżasz się do dumb zone (~100k tokenów)
+2. Kontekst się zaśmieca / zbliżasz się do dumb zone: ~100k tokenów lub sygnały jakościowe (halucynacje nazw plików, rozmyte odpowiedzi). To INNY próg niż handoff subagenta przez artefakty na dysku (~350k) — save/restore dotyczy cyklu `/clear` jednej roli.
 3. Wywołujesz /save-session-<rola> — komenda zapisuje kontekst do doc/session/<rola>-session.md
 4. /clear (Claude Code czyści kontekst)
 5. /restore-session-<rola> — komenda wczytuje plik do nowej sesji + usuwa go
@@ -51,4 +51,4 @@ Folder `doc/session/` powinien być w `.gitignore` projektu w którym używasz t
 - Komendy nie potrzebują auto-trigger — user świadomie wywołuje
 - Brak `description` triggering = mniej noise w skill list
 - Krótszy plik (no frontmatter z `argument-hint`, `model`, `allowed-tools`)
-- Per ADR-0008: "session commands jako slash commands, nie skille"
+- Świadoma decyzja: session-state to ręcznie wywoływany slash command, nie auto-triggered skill

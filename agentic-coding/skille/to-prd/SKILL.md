@@ -12,7 +12,9 @@ Ten skill bierze bieżący kontekst rozmowy i zrozumienie kodu, i produkuje **tr
 2. `doc/plans/<slug>/prd.md` — destination document (vision, vertical slices, slice-level acceptance)
 3. `doc/plans/<slug>/backlog.md` — scaffold (metadata header + sekcja per slice ze statusem `[ ] niezdetailowany` + skopiowane slice purpose/acceptance z PRD)
 
-**NIE przesłuchuj użytkownika** — po prostu zsyntetyzuj to, co już wiesz z konwersacji + kodu. Jedyne pytanie: potwierdzenie sluga folderu (Krok 3a).
+**NIE przesłuchuj użytkownika** — po prostu zsyntetyzuj to, co już wiesz z konwersacji + kodu. Dokładnie dwa punkty interakcji: (a) potwierdzenie podziału na slice'y (Krok 2), (b) potwierdzenie sluga folderu (Krok 3a).
+
+**Budżet długości PRD: celuj w 150-300 linii.** PRD >400 linii to sygnał, że albo inicjatywę trzeba podzielić na dwa PRD-y, albo szczegółowe kontrakty/inwarianty próbują mieszkać w PRD zamiast w dedykowanej sekcji `Invariants` lub ADR-ze. Destination document ma być czytelny dla właściciela produktu w jedno posiedzenie — dokument, którego docelowy czytelnik nie przeczyta, nie pełni swojej funkcji, a każdy downstream skill (audyt PRD × N rewizji, /to-tasks per slice, executor per slice) płaci za jego objętość wielokrotnie.
 
 ## Pozycja w workflow
 
@@ -89,7 +91,7 @@ Pełna ścieżka: `doc/plans/<slug>/prd.md`. Użyj template'u poniżej.
 Pełna ścieżka: `doc/plans/<slug>/backlog.md`. Użyj template'u poniżej.
 
 **Co skill robi:**
-1. Czyta wygenerowany `prd.md` (sekcje slice'ów)
+1. Bierze sekcje slice'ów z `prd.md` — treść masz w kontekście po Write, nie czytaj pliku ponownie
 2. Generuje frontmatter metadata (`status: init`, `current_slice: null`, `total_slices: <N>`, `last_update: <today>`)
 3. Generuje sekcję per slice — kopiuje **Slice purpose** + **Slice acceptance** z PRD do backlog'u
 4. W każdej sekcji slice'a wstawia placeholder `_Slice niezdetailowany. Manager invoke /to-tasks slice <N> żeby rozbić na taski._`
@@ -98,7 +100,11 @@ Pełna ścieżka: `doc/plans/<slug>/backlog.md`. Użyj template'u poniżej.
 **Dlaczego kopia, nie link:**
 - Backlog ma być **self-contained execution document** — agent wykonawczy nie powinien wracać do PRD per task
 - Linki do PRD są dodatkowe (sekcja `[→ prd.md#slice-N]`), ale acceptance i purpose są w backlog'u directly
-- Drift: jeśli ktoś updatuje PRD acceptance po scaffolding'u, to red flag (PRD = destination document, immutable po `/to-prd`; dłuższa zmiana wymaga `/grill` + nowa iteracja)
+
+**Lifecycle PRD po `/to-prd` — kto może go zmieniać:**
+- `/critical-prd-review` (następny krok pipeline'u) **iteruje PRD** — rewizje rev1→revN poprawiające acceptance/decyzje po feedbacku audytora są normalną częścią flow, NIE red flagiem.
+- **Po werdykcie Ready agent-autor PRD re-synchronizuje kopie acceptance w `backlog.md`** z finalną wersją PRD (kopia była robiona z wersji pre-audit — bez re-synca backlog egzekwuje przestarzałe kryteria).
+- Po starcie implementacji PRD jest stabilny: zmiana wymagań w trakcie = wróć do `/grill` + świadoma rewizja z userem, nie ciche edytowanie acceptance pod implementację. Detal odkryty w rewizjach (pełne kontrakty, tabele stanów) kieruj do sekcji `Invariants` w PRD lub do ADR-a — nie pompuj nim „Decyzji implementacyjnych".
 
 ---
 
@@ -117,25 +123,23 @@ Rozwiązanie problemu, z perspektywy użytkownika.
 
 ## User Stories
 
-DŁUGA, ponumerowana lista user stories. Każda w formacie:
+Zwięzła, ponumerowana lista **intencji** użytkownika — typowo 6-12 stories. Każda w formacie:
 
 1. Jako <aktor>, chcę <funkcjonalność>, żeby <korzyść>
 
-Lista user stories powinna być wyczerpująca i pokrywać wszystkie aspekty funkcji.
+Story = intencja, NIE kryterium akceptacji przebrane w formę story (acceptance mieszka per slice). Jeśli lista rośnie ponad ~12, prawdopodobnie przepisujesz acceptance criteria — skonsoliduj do intencji.
 
 ## Decyzje implementacyjne
 
-Lista decyzji implementacyjnych, które zostały podjęte. Może obejmować:
+Lista decyzji implementacyjnych, które zostały podjęte — poziom: moduły, interfejsy, decyzje architektoniczne, zmiany schematu, kontrakty API (nazwane, nie rozpisane).
 
-- Moduły, które zostaną zbudowane/zmodyfikowane
-- Interfejsy tych modułów
-- Doprecyzowania techniczne od dewelopera
-- Decyzje architektoniczne
-- Zmiany schematu bazy
-- Kontrakty API
-- Konkretne interakcje
+Guardy długości:
+- NIE umieszczaj konkretnych ścieżek plików ani fragmentów kodu — szybko się dezaktualizują. Konkrety lądują w `backlog.md` per task (zadanie `/to-tasks`).
+- Decyzja = kilka zdań. **Wielosetsłowny kontrakt / tabela przejść stanów / pełen inwariant NIE mieszka w tej sekcji** — przenieś do dedykowanej sekcji `## Invariants` na końcu PRD (lub do ADR-a) i zlinkuj. Inaczej ta sekcja puchnie do nieczytelności, a jej treść dubluje się w acceptance.
 
-NIE umieszczaj konkretnych ścieżek plików ani fragmentów kodu — szybko się dezaktualizują. Konkrety lądują w `backlog.md` per task (zadanie `/to-tasks`).
+## Invariants (opcjonalna)
+
+Dom dla pełnych kontraktów, które muszą być precyzyjne: tabele przejść stanów, ownership rules, twarde limity. Slice acceptance i Decyzje implementacyjne LINKUJĄ tu (`#invariants`), zamiast powtarzać treść — jeden kontrakt ma jedno miejsce, nie 3-5 kopii w różnych sekcjach.
 
 ## Decyzje testowe
 
@@ -255,6 +259,8 @@ W PRD linkuj do:
 | "Wpiszę konkretne ścieżki plików w decyzjach implementacyjnych" | Ścieżki plików dezaktualizują się szybko, PRD ma żyć długo. | Decyzje high-level w PRD; konkretne pliki w `backlog.md` per task (`/to-tasks`). |
 | "Rozbiję slice 1 na taski od razu w PRD" | Mieszasz odpowiedzialności — PRD to vision, taski to execution. | PRD zostaje na poziomie slice. `/to-tasks` invoke później rozbija slice na taski. |
 | "Zapomnę o `Slice acceptance` — wystarczy `Slice purpose`" | `/to-tasks` i agent wykonawczy konsumują acceptance. Bez nich = slice mglisty. | Każdy slice MUSI mieć acceptance (3-5 verifiowalnych kryteriów). |
+| "Wpiszę pełny kontrakt/tabelę stanów do Decyzji implementacyjnych" | 300-słowne bullety robią PRD nieczytelnym i duplikują się w acceptance — to główny realny wektor puchnięcia PRD. | Sekcja `## Invariants` (lub ADR) + link z decyzji i acceptance. |
+| "Ta sama treść w Decyzjach, Slice acceptance i Decyzjach testowych" | Każdy przyszły czytelnik (audytor × N rewizji, /to-tasks, executor) czyta ją wielokrotnie; kopie driftują. | Jeden kontrakt = jedno miejsce + linki. |
 | "Commitnę po Write żeby nic nie zginęło" | Manager owns docs commits. | Zostawiasz pliki na dysku (uncommitted). Manager commituje sam. |
 
 ---

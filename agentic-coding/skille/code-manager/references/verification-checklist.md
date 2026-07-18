@@ -76,7 +76,7 @@ Pytania:
 
 ### Krok 5: Aktualizuj shared docs sam (post-merge) — TY jesteś właścicielem
 
-Od konwencji v2 (feedback_parallel_docs_ownership, 2026-04-19) agent **NIE dotyka** `doc/**/backlog.md`, `doc/history/README.md`, `doc/features/*/observations/*`. Update shared indexów jest Twoim zadaniem po merge.
+Od konwencji v2: Manager jest jedynym writerem shared docs (backlog.md, history/README.md) post-merge — dwa równoległe PR-y edytujące te same pliki dokumentacji kończyły się konfliktami; single-writer eliminuje to architektonicznie. Agent **NIE dotyka** `doc/**/backlog.md`, `doc/history/README.md`, `doc/features/*/observations/*` — update shared indexów jest Twoim (Managera) zadaniem po merge.
 
 **Źródło prawdy dla patchu:** sekcja "Post-merge Manager action" w raporcie końcowym agenta (powinna być). Jeśli brakuje — wyczytaj z kroniki + code review co należy nanieść.
 
@@ -89,7 +89,7 @@ Od konwencji v2 (feedback_parallel_docs_ownership, 2026-04-19) agent **NIE dotyk
 
 **Po aktualizacjach:** commit + push do integration branch (typowo `develop` lub `main` — zgodnie z konwencją projektu). Manager ma autonomiczne commit uprawnienia na docs jeśli `CLAUDE.md` projektu tak stanowi — pokaż userowi commit message + scope post-hoc żeby mógł zaczepić jeśli coś się rozjechało.
 
-**Dlaczego Manager a nie agent:** 2 równoległe branche edytujące shared indexy = merge drugi zawsze CONFLICTING (obserwowane PR #43 + #45). Single writer eliminuje race architektonicznie.
+**Dlaczego Manager a nie agent:** 2 równoległe branche edytujące shared indexy = merge drugi zawsze CONFLICTING (przykład z historii projektu Voicie: PR #43 + #45). Single writer eliminuje race architektonicznie.
 
 ### Krok 6: Quick diff scan
 

@@ -1,8 +1,8 @@
 ---
-description: Odzyskaj kontekst Code Managera zapisany przez `/save-session-manager`. Wczytuje plik `doc/session/manager-session.md` i USUWA go po sukcesie (ulotne).
+description: Odzyskaj kontekst Code Managera zapisany przez `/save-session-manager`. Wczytuje plik `doc/session/manager-session.md` i archiwizuje go po sukcesie (ulotne).
 ---
 
-Cel: załaduj kontekst aktualnej sesji **w roli Code Managera** z pliku `doc/session/manager-session.md`, kontynuuj pracę bezstratnie. Po sukcesie usuwasz plik (ulotne — folder ma być pusty po restore).
+Cel: załaduj kontekst aktualnej sesji **w roli Code Managera** z pliku `doc/session/manager-session.md`, kontynuuj pracę bezstratnie. Po sukcesie archiwizujesz plik (ulotne — aktywna lokalizacja pusta po restore).
 
 ## Krok 1: Znajdź plik
 
@@ -24,6 +24,8 @@ Przeczytaj `doc/session/manager-session.md` w pełni (`Read` tool). Załaduj do 
 - Nierozwiązane / blockery
 - Następny krok
 
+**Obowiązkowo** przeczytaj pliki zlinkowane w sekcji Kluczowe pliki (kronika live, plan) — session-file to most, treść żyje na dysku.
+
 ## Krok 3: Sanity check stanu repo
 
 Po wczytaniu kontekstu, sprawdź czy stan repo zgadza się z tym co jest w pliku:
@@ -37,21 +39,22 @@ git log --oneline -5
 
 Porównaj z opisem w session file. Jeśli **zauważysz drift** (np. plik mówi "STOP #2 na branch X" ale `git log` pokazuje że X jest mergowany) — **zaraportuj to userowi przed dalszą pracą**.
 
-## Krok 4: Usuń plik (ulotny session-state)
+## Krok 4: Zarchiwizuj plik (ulotny session-state)
 
 ```bash
-rm doc/session/manager-session.md
-ls doc/session/  # weryfikacja czy folder pusty
+mkdir -p doc/session/archive
+mv doc/session/manager-session.md doc/session/archive/manager-session.md.$(date +%Y-%m-%d-%H%M)
+ls doc/session/  # session-file przeniesiony do archive/
 ```
 
-Per ADR-0008: folder `doc/session/` jest **ulotny** — pliki tam żyją tylko między save a restore. Po restore plik znika żeby uniknąć confusion przy kolejnym save (no stale state).
+Folder `doc/session/` jest **ulotny** — scratchpad między save a restore, gitignored, nie commituje się. Nie `rm`: crash tuż po usunięciu = bezpowrotna utrata (gitignored, brak historii); `mv` do `archive/` zostawia ślad. Po archiwizacji plik znika z aktywnej lokalizacji, żeby uniknąć confusion przy kolejnym save (no stale state).
 
 ## Krok 5: Raport startowy
 
 Po sukcesie poinformuj usera:
 
 ```
-Manager session przywrócony z `doc/session/manager-session.md` (plik usunięty po wczytaniu).
+Manager session przywrócony z `doc/session/manager-session.md` (plik zarchiwizowany po wczytaniu).
 
 ## Krótki briefing — gdzie jesteśmy:
 [2-3 zdania syntezy: bieżąca inicjatywa, najważniejszy aktywny handoff, następny krok]
@@ -65,7 +68,7 @@ Manager session przywrócony z `doc/session/manager-session.md` (plik usunięty 
 
 ## Uwagi
 
-- Jeśli sanity check (Krok 3) wykrywa drift → **NIE usuwaj** pliku, daj userowi wybór: "Plik pokazuje stan X, repo pokazuje Y. Co aktualizujemy?"
+- Jeśli sanity check (Krok 3) wykrywa drift → **NIE archiwizuj** pliku (zostaw na miejscu), daj userowi wybór: "Plik pokazuje stan X, repo pokazuje Y. Co aktualizujemy?"
 - Jeśli folder `doc/session/` nie istniał (rare) → utwórz po fakcie do następnego save (`mkdir -p doc/session`)
 
 $ARGUMENTS

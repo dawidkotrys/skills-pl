@@ -109,7 +109,3 @@ overlap = files_A ∩ files_B_estimated
 ```
 
 User decyduje. **Nie decydujesz Ty.**
-
-## Przykłady historyczne
-
-Do uzupełnienia po kilku sesjach — miejsce na przypadki z praktyki, gdy collision detection wyłapał (albo przepuścił) realny problem.

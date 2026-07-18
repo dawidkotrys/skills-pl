@@ -6,7 +6,7 @@ Ekosystem skili do pracy z Claude Code metodą agentic coding. Pokrywa pełny cy
 
 ```
 agentic-coding/
-├── onboarding/                  # 9 dokumentów wprowadzających (główny flow + warianty)
+├── onboarding/                  # 4 dokumenty wprowadzające (proces, zasady, pliki, instalacja)
 ├── skille/                      # 10 skili wykonawczych
 └── commands/                    # 4 slash commands do session-state save/restore
 ```
@@ -15,17 +15,12 @@ agentic-coding/
 
 Sugerowana kolejność:
 
-1. [01-fundamenty.md](./onboarding/01-fundamenty.md) — LLM constraints, smart/dumb zone, Memento problem, Clear>Compact
-2. [02-zasady-metodologii.md](./onboarding/02-zasady-metodologii.md) — 10 fundamentalnych zasad agentic coding
-3. [03-pliki-projektu.md](./onboarding/03-pliki-projektu.md) — kluczowe pliki projektu: `CLAUDE.md`, `CONTEXT.md`, `doc/plans/<slug>/`, `doc/decisions/`, `doc/backlog.md`
-4. **[00-glowny-flow.md](./onboarding/00-glowny-flow.md)** — choreografia Manager ↔ User ↔ Executor (sequence diagram, tabela komend, save/restore session)
-5. [04-flow-maly-task.md](./onboarding/04-flow-maly-task.md) — bug fix, mała feature, drobny refactor
-6. [04a-rola-agenta-wykonawczego.md](./onboarding/04a-rola-agenta-wykonawczego.md) — co dostajesz, co robisz, czego nie robisz (counterpart code-manager z perspektywy executora)
-7. [05-flow-duza-inicjatywa.md](./onboarding/05-flow-duza-inicjatywa.md) — nowy moduł, cross-cutting concern
-8. [06-flow-bug.md](./onboarding/06-flow-bug.md) — diagnose loop, build feedback FIRST
-9. [07-instalacja.md](./onboarding/07-instalacja.md) — jak zainstalować skille
+1. **[00-start.md](./onboarding/00-start.md)** — główny przewodnik procesu: aktorzy, Twoje cztery punkty decyzyjne, trzy ścieżki wg skali (mały task / duża inicjatywa / bug).
+2. [02-zasady-metodologii.md](./onboarding/02-zasady-metodologii.md) — 10 fundamentalnych zasad, które stoją za procesem.
+3. [03-pliki-projektu.md](./onboarding/03-pliki-projektu.md) — kluczowe pliki na dysku: `CLAUDE.md`, `CONTEXT.md`, `doc/plans/`, `doc/decisions/`, `doc/backlog.md`, kroniki.
+4. [07-instalacja.md](./onboarding/07-instalacja.md) — jak zainstalować skille.
 
-**Pierwszy raz?** 01-03 (fundamenty/zasady/konwencje), potem **00** dla pełnego obrazu choreografii, dopiero potem warianty per skala (04, 05, 06) i 04a (rola executora).
+**Pierwszy raz?** Przeczytaj **00-start** dla obrazu całości, potem 02 (zasady) i 03 (pliki). Szczegóły każdego etapu agent zna ze skilli i sam Cię przez nie poprowadzi.
 
 ### Skille wykonawcze
 
@@ -49,13 +44,11 @@ Sugerowana kolejność:
 - `/save-session-manager` + `/restore-session-manager` — strategy mode Code Managera
 - `/save-session-agent` + `/restore-session-agent` — universal (kod / copy / oferta / research)
 
-Komendy zapisują do `doc/session/`, restore usuwa plik po wczytaniu (ulotne). Patrz [commands/README.md](./commands/README.md).
+Komendy zapisują do `doc/session/`, restore archiwizuje plik po wczytaniu. Patrz [commands/README.md](./commands/README.md).
 
-## Atrybucja
+---
 
-Skille `grill`, `to-prd` i `diagnose` to polskie adaptacje [skili Matta Pococka](https://www.mattpocock.com/). Reszta autorska.
-
-Większość zasad metodologii ma korzenie w klasykach software design — Ousterhout (*Philosophy of Software Design*), Fowler (*Refactoring*), Hunt/Thomas (*Pragmatic Programmer*), Brooks (*Design of Design*). LLM-y są nowe, problemy są stare.
+Część skilli bazuje na [mattpocock/skills](https://github.com/mattpocock/skills) (MIT).
 
 ## Filozofia per skill
 
@@ -66,7 +59,7 @@ Każdy skill respektuje uniwersalne zasady (patrz [02-zasady-metodologii.md](./o
 - **Per-slice planning loop** — `/to-tasks` rozbija JEDEN slice na taski przed startem agenta, kolejny slice rozpisuje się dopiero po close poprzedniego (manager-driven cadence, nie wszystko z góry)
 - **Persistent kontekst** — `/repo-onboarding` zakłada `CONTEXT.md`, `/kronikarz` żyje przez cały lifecycle taska (live mode)
 - **Build feedback loop FIRST** — `/diagnose` Faza 1 to reprodukcja w fast/deterministic loop
-- **External review na dwóch poziomach** — `/critical-prd-review` na poziomie wymagań (po `/to-prd`, przed `/to-tasks`); `/critical-code-review` na poziomie kodu (po STOP #1 user QA, przed merge). Oba odpalane przez Code Managera (Opus), NIE przez agenta wykonawczego (Sonnet) — peer review principle. PRD review łapie luki bezpieczeństwa/skalowania **zanim** powstanie kod
+- **External review na dwóch poziomach** — `/critical-prd-review` na poziomie wymagań (po `/to-prd`, przed `/to-tasks`); `/critical-code-review` na poziomie kodu (po STOP #1 user QA, przed merge). Oba odpala Code Manager w świeżym subagencie, NIE agent wykonawczy — peer review principle (autor nie recenzuje własnej pracy). PRD review łapie luki bezpieczeństwa/skalowania **zanim** powstanie kod
 - **Po co reviewować coś co nie działa** — najpierw user QA (zasada #9 imposing taste), potem external review, kronikarz close na końcu
 - **Komunikacja bez presji** — `code-manager/references/manager-values.md` (research-backed: badanie Anthropic 2026-04-02)
 - **Autonomy gate** — Manager merguje, ale po user "akcept" (zasada #10: crucial decisions z udziałem człowieka)

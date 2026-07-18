@@ -19,10 +19,12 @@ Każdy plik to plan pracy dla jednego brancha. Plan pisze Manager (skill `/code-
 | `doc/design-reviews/` | Raporty z `/design-checker` | Subagent | Przed merge |
 | `doc/backlog.md` + `doc/features/*/backlog.md` | Taski, bugi, pomysły — otwarte i ukończone | Manager + user | Na bieżąco |
 
-## Nazewnictwo
+## Nazewnictwo i struktura
 
 - Nazwa pliku: `<branch-name-with-dashes>.md`
 - Slashy w nazwie brancha zamieniamy na dashe: `feat/file-explorer-context-menu` → `feat-file-explorer-context-menu.md`
+- **Samodzielny task** (Format A): plik w rootcie `doc/plans/`.
+- **Duża inicjatywa** (Format B): folder `doc/plans/<slug>/` z `prd.md` + `backlog.md`; bridge plany branchy realizujących slice'y inicjatywy w podfolderze `doc/plans/<slug>/bridges/`.
 
 ## Czas życia planu
 

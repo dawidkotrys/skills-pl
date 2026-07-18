@@ -6,9 +6,10 @@
 # Użycie:
 #   bash hitl-loop.template.sh
 #
-# Dwa helpery:
-#   step "<instrukcja>"          → pokaż instrukcję, czekaj na Enter
-#   capture VAR "<pytanie>"      → pokaż pytanie, zapisz odpowiedź do VAR
+# Trzy helpery:
+#   step "<instrukcja>"               → pokaż instrukcję, czekaj na Enter
+#   capture VAR "<pytanie>"           → pokaż pytanie, zapisz jedną linię do VAR
+#   capture_multiline VAR "<pytanie>" → zapisz wiele linii do VAR (koniec: samotna linia EOF)
 #
 # Na końcu, captured wartości są wypisane jako KEY=VALUE do parsowania przez agenta.
 
@@ -26,13 +27,29 @@ capture() {
   printf -v "$var" '%s' "$answer"
 }
 
+capture_multiline() {
+  # Czyta wiele linii aż do samotnej linii-sentinela "EOF".
+  # Bezpieczne pod `set -euo pipefail`: warunek [[ ]] siedzi w `if`,
+  # a `read` zwracające non-zero na Ctrl-D kończy pętlę bez wyjścia z shella.
+  local var="$1" question="$2" line acc=""
+  printf '\n>>> %s\n' "$question"
+  printf '    (wklej treść; zakończ samotną linią: EOF)\n'
+  while IFS= read -r line; do
+    if [[ "$line" == "EOF" ]]; then
+      break
+    fi
+    acc+="$line"$'\n'
+  done
+  printf -v "$var" '%s' "$acc"
+}
+
 # --- edytuj poniżej ---------------------------------------------------------
 
 step "Otwórz aplikację na http://localhost:3000 i zaloguj się."
 
 capture ERRORED "Kliknij przycisk 'Eksportuj'. Czy wyrzucił błąd? (y/n)"
 
-capture ERROR_MSG "Wklej treść błędu (lub 'brak'):"
+capture_multiline ERROR_MSG "Wklej treść błędu (wieloliniowo, lub 'brak'):"
 
 # --- edytuj powyżej ---------------------------------------------------------
 

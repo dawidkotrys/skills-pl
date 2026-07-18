@@ -36,27 +36,11 @@ cd ~/aiOS/Projekty/skills-pl/agentic-coding/skille
 for s in */; do
   cp -r "$s" ~/.claude/skills/
 done
-
 ```
 
 ### Wariant 3 — symlink całego repo (dla developerów)
 
-Jeśli chcesz **edytować skille u siebie i kontrybuować z powrotem do repo**:
-
-```bash
-# Sklonuj repo (jeśli jeszcze nie masz)
-cd ~/aiOS/Projekty/
-git clone https://github.com/{user}/skills-pl.git  # placeholder URL — patrz manifest
-
-# Symlink każdy skill do ~/.claude/skills/
-for s in ~/aiOS/Projekty/skills-pl/agentic-coding/skille/*/; do
-  name=$(basename "$s")
-  ln -s "$s" ~/.claude/skills/"$name"
-done
-
-```
-
-Teraz każda zmiana w repo natychmiast działa w Claude Code.
+Jeśli chcesz **edytować skille u siebie i kontrybuować z powrotem do repo** — sklonuj repo, potem zamiast kopiować, podepnij symlinkiem każdy katalog skilla do `~/.claude/skills/` (pętla jak w Wariancie 2, ale `ln -s` zamiast `cp -r`). Wtedy każda zmiana w repo natychmiast działa w Claude Code.
 
 ## Weryfikacja
 

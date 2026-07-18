@@ -3,7 +3,6 @@ name: repo-onboarding
 description: 'Analizuje repozytorium i wdraża metodologię Claude Code — hierarchiczne CLAUDE.md, skille workflow''owe, doc structure, workflow guide. Działa na dowolnym typie repo (kod, baza wiedzy, dokumentacja strategiczna).'
 disable-model-invocation: true
 argument-hint: "[opcjonalny typ repo: code|knowledge|docs|mixed]"
-model: opus
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion, WebSearch, WebFetch
 ---
 
@@ -25,10 +24,16 @@ Skill rekomenduje i odwołuje się do innych skilli z metodologii agentic coding
 
 Zainstaluj te skille globalnie (`~/.claude/skills/`) zanim uruchomisz `/repo-onboarding`, jeśli chcesz pełny workflow. W szczególności:
 
-- **`grill-with-docs`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
-- **`pre-session-onboarding`, `kronikarz`, `tdd`, `diagnose`, `improve-codebase-architecture`, `critical-code-review`, `code-manager`, `to-prd`** — opcjonalne. Skill rekomenduje je w Fazie 2.3 per typ repo. Bez nich plan wdrożenia nadal się wygeneruje, ale rekomendacje skilli będą wskazywać na komendy których user nie ma.
+- **`grill`** — wymagany twardo. Faza 4 używa pliku `~/.claude/skills/grill/CONTEXT-FORMAT.md` jako specyfikacji formatu `CONTEXT.md`. Bez niego krok zawiedzie.
+- **`kronikarz`, `tdd`, `diagnose`, `improve-codebase-architecture`, `critical-code-review`, `code-manager`, `to-prd`** — opcjonalne. Skill rekomenduje je w Fazie 2.3 per typ repo. Bez nich plan wdrożenia nadal się wygeneruje, ale rekomendacje skilli będą wskazywać na komendy których user nie ma.
 
 Jeśli któregoś brak — zainstaluj z repo, albo pomiń rekomendację w prezentacji planu (Faza 3).
+
+---
+
+## Faza 0: Detekcja trybu
+
+Zanim zaczniesz: jeśli `CLAUDE.md` + `CONTEXT.md` + `doc/` już istnieją → **tryb REFRESH**. Audytuj różnice wobec wzorca i proponuj TYLKO brakujące elementy (Edit, nie nadpisywanie); nie generuj od zera i nie twórz drugiego ADR-a metodologii.
 
 ---
 
@@ -84,11 +89,13 @@ Jeśli podano argument ($ARGUMENTS), użyj go jako wskazówki typu. Jeśli nie �
 
 ### 1.3 Sprawdź istniejące globalne skille
 
+Zbierz opisy jednym przebiegiem (zamiast czytać pliki pojedynczo):
+
 ```bash
-find ~/.claude/skills -name "SKILL.md" 2>/dev/null | sort
+grep -H '^description:' ~/.claude/skills/*/SKILL.md | head -60
 ```
 
-Przeczytaj nagłówki (frontmatter) każdego znalezionego skilla — zrozum jakie workflow'y są już dostępne globalnie.
+Zrozum jakie workflow'y są już dostępne globalnie.
 
 ### 1.4 Przeczytaj istniejące CLAUDE.md i dokumentację
 
@@ -134,13 +141,14 @@ Szczegółowe wzorce per typ repo znajdziesz w [patterns.md](patterns.md).
 CONTEXT.md                  # Słownik domeny (terminy, relacje, aliasy do unikania)
 doc/
 ├── backlog.md              # Taski, tech debt, pomysły
+├── plans/                  # Plany pracy — README: Format A `<branch>.md`, Format B `<slug>/` (prd.md + backlog.md)
 └── decisions/              # ADR (Architecture/Any Decision Records)
     └── 0001-<opis>.md
 ```
 
 **`CONTEXT.md` — domain glossary (zawsze w roocie repo):**
 
-Persistent kontekst językowy projektu. Nie jest opisem techniki — jest opisem **języka domeny**: terminów, ich znaczeń, aliasów do unikania, relacji między pojęciami. Format: zobacz `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md` (sekcja "Struktura").
+Persistent kontekst językowy projektu. Nie jest opisem techniki — jest opisem **języka domeny**: terminów, ich znaczeń, aliasów do unikania, relacji między pojęciami. Format: zobacz `~/.claude/skills/grill/CONTEXT-FORMAT.md` (sekcja "Struktura").
 
 W tej fazie zaplanuj **5-10 terminów seed** wyciągniętych z analizy:
 - README — nazwy domenowe powtarzające się w opisie
@@ -153,8 +161,8 @@ Jeśli repo jest duże i ma wyraźnie odrębne konteksty (np. ordering, billing,
 **Pomijaj** ogólne pojęcia programistyczne (timeout, error, util) — tylko terminy domenowe specyficzne dla tego projektu.
 
 Dodatkowe katalogi per typ repo:
-- Code: `doc/history/` (kroniki zmian), `doc/design-reviews/`
-- Knowledge: nie wymaga history ani design-reviews
+- Code: `doc/history/` (kroniki zmian), `doc/code-reviews/`, `doc/plans/`
+- Knowledge: nie wymaga history ani code-reviews
 - Strategy: `doc/decisions/` jest kluczowy
 
 ### 2.3 Zaplanuj skille projektowe
@@ -162,20 +170,19 @@ Dodatkowe katalogi per typ repo:
 Rozważ które z tych skilli byłyby wartościowe dla tego repo (NIE twórz wszystkich — tylko te które mają sens):
 
 **Uniwersalne (rozważ dla każdego repo):**
-- `/pre-session-onboarding` — briefing startowy (jeśli nie istnieje globalnie)
 - `/kronikarz` lub wariant — dokumentacja zmian (jeśli repo jest aktywnie rozwijane)
 
-**Dla code repos — workflow methodology (Matt Pocock, dostępne globalnie):**
-- `/grill-with-docs` — grilling przed planowaniem, zamiast eager-planning
+**Dla code repos — workflow methodology (dostępne globalnie):**
+- `/grill` — grilling przed planowaniem, zamiast eager-planning
 - `/to-prd` — destination document po grilling session (z vertical slices i acceptance criteria w `doc/backlog.md`), gdy inicjatywa duża
 - `/tdd` — red-green-refactor pętla (test-first, vertical slicing)
 - `/diagnose` — bug fixing przez Reprodukcję → Minimalizację → Hipotezy → Fix
-- `/improve-codebase-architecture` — deepening modułów (Ousterhout's deep modules)
+- `/improve-codebase-architecture` — deepening modułów (Ousterhout's deep modules) (jeśli zainstalowany)
 - `/critical-code-review` — formalny audyt przed merge
 
 **Dla code repos — operacyjne:**
 - `/code-manager` — orchestrator sesji (wybór taska, plan, weryfikacja)
-- `/quality-guard` — quick check jakości kodu
+- `/quality-guard` — quick check jakości kodu (jeśli zainstalowany)
 - `/design-checker` — weryfikacja design systemu (jeśli ma UI)
 
 **Dla knowledge/docs/strategy repos:**
@@ -237,12 +244,13 @@ Po akceptacji planu, twórz pliki w kolejności:
 2. **Zagnieżdżone CLAUDE.md** (jeśli zaplanowane)
 3. **CONTEXT.md** — domain glossary z 5-10 terminami seed (lub `CONTEXT-MAP.md` + per-module `CONTEXT.md` dla repo z wieloma kontekstami)
 4. **doc/backlog.md** — z istniejącymi taskami jeśli da się je wyciągnąć z TODO/README/issues
-5. **doc/decisions/0001-claude-code-methodology.md** — ADR dokumentujący wdrożenie
-6. **Skille projektowe** (jeśli zaplanowane) — do `.claude/skills/`
+5. **doc/plans/README.md** — jedno zdanie: „Plany pracy: Format A `doc/plans/<branch>.md` dla małych tasków, Format B `doc/plans/<slug>/` dla inicjatyw (prd.md + backlog.md)"
+6. **doc/decisions/0000-claude-code-methodology.md** — ADR dokumentujący wdrożenie (0000 = meta poza numeracją realnych decyzji; slot 0001 zostaje dla pierwszej decyzji architektonicznej)
+7. **Skille projektowe** (jeśli zaplanowane) — do `.claude/skills/`
 
 **Tworzenie `CONTEXT.md`:**
 
-- Format dokładnie jak w `~/.claude/skills/grill-with-docs/CONTEXT-FORMAT.md`
+- Format dokładnie jak w `~/.claude/skills/grill/CONTEXT-FORMAT.md`
 - 5-10 terminów seed wyciągniętych z analizy fazy 1 (README, package.json, struktura folderów, nazwy modułów)
 - Każdy termin: zwięzła definicja (1 zdanie) + `_Unikaj_:` z aliasami które nie powinny być używane
 - Sekcja **Relacje** — kardynalność między terminami (np. "Order generuje jeden lub więcej Invoice")
@@ -279,7 +287,7 @@ Po utworzeniu wszystkich plików:
 
 ### Następne kroki:
 1. Przejrzyj CLAUDE.md — popraw jeśli coś nie pasuje
-2. Uruchom `/pre-session-onboarding` żeby przetestować briefing
+2. Uruchom `/code-manager` żeby zacząć pierwszą sesję pracy
 3. [Dodatkowe kroki specyficzne dla repo]
 ```
 

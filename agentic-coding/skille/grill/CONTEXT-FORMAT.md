@@ -44,7 +44,7 @@ _Unikaj_: Client, buyer, account
 - **Pokazuj relacje.** Używaj pogrubionych nazw terminów i wyrażaj kardynalność tam, gdzie jest oczywista.
 - **Uwzględniaj wyłącznie terminy specyficzne dla kontekstu projektu.** Ogólne pojęcia programistyczne (timeouty, typy błędów, wzorce util-owe) nie pasują, nawet jeśli projekt intensywnie ich używa. Zanim dodasz termin, zapytaj: czy to pojęcie unikalne dla tego kontekstu, czy ogólne pojęcie programistyczne? Tylko to pierwsze pasuje.
 - **Grupuj terminy w podsekcjach** kiedy naturalnie wyłaniają się klastry. Jeśli wszystkie terminy należą do jednego spójnego obszaru — płaska lista wystarczy.
-- **Napisz przykładowy dialog.** Rozmowa między devem a domain expertem, która pokazuje, jak terminy ze sobą współgrają, i wyjaśnia granice między pokrewnymi pojęciami.
+- **Przykładowy dialog — opcjonalnie.** Dodaj rozmowę dev ↔ domain expert tylko wtedy, gdy ujawnia granicę lub timing między pojęciami, których płaska lista + sekcja Relacje nie oddają. Jeśli dialog tylko powtarza relacje — pomiń go; każdy przyszły agent czyta CONTEXT.md w całości, więc sekcja musi bronić swojego kosztu.
 
 ## Repo z jednym kontra wieloma kontekstami
 

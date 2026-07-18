@@ -4,6 +4,19 @@ description: Universal session-save dla agenta wykonawczego. Zapisuje kontekst a
 
 Cel: utrwal kontekst aktualnej sesji **agenta wykonawczego** do pliku `doc/session/agent-session.md`, niezależnie od domeny pracy. Universal — działa w każdym projekcie (kodowanie, copywriting, oferty, research, strategia). User za chwilę zrobi `/clear` — po nim wykona `/restore-session-agent` żeby załadować kontekst z powrotem.
 
+## Kiedy zapisać
+
+Próg dumpu: ~100k tokenów lub sygnały jakościowe (halucynacje nazw plików, rozmyte odpowiedzi). Uwaga: to INNY próg niż handoff subagenta przez artefakty na dysku (~350k) — save/restore dotyczy cyklu `/clear` jednej roli.
+
+**vs auto-compaction** — manualny save/restore przewyższa auto-compaction harnessu gdy:
+
+- **Precyzyjna kontrola** co przetrwa (vs lossy summary)
+- **Twardy fresh window** — dyscyplina `/clear` między slice'ami
+- **Handoff do INNEGO agenta/człowieka** — plik jest przenośny
+- **Przetrwanie crashu**
+
+Prosty single-session case → auto-compaction wystarcza, nie rób ceremonii.
+
 ## Krok 1: Sprawdź lokalizację
 
 ```bash
@@ -36,12 +49,15 @@ Twój session-state agenta ma zawierać:
 - **Co zostało do zrobienia** — explicite, tak żeby nowa sesja wiedziała co robić jako pierwsze
 - **Otwarte pytania / blockery** — czekasz na decyzję usera? Na feedback? Na external resource?
 - **Kluczowe pliki / źródła** — co czytałeś, co edytowałeś, gdzie są decyzje (linki względne, np. `doc/plans/...`)
+- **Working-tree state (domena kod)** — wynik `git status --short`; restore używa tego jako baseline do wykrycia driftu na niescommitowanych plikach
 - **Konwencje / styl** — co specyficznego dla tego projektu (per `CLAUDE.md`, lessons-learned, style guide)
 - **Następny krok po restore** — konkretnie, czym zacząć w nowej sesji
 
 ## Krok 4: Zapisz plik
 
 Format pliku `doc/session/agent-session.md`:
+
+**Target: 20-40 linii.** Zapisuj TYLKO deltę — ustalenia werbalne z userem jeszcze nigdzie nie zapisane, precyzyjny next micro-step, otwarte blockery, wskaźniki do plików. NIE kopiuj treści, która już jest w kronice/planie/PRD — linkuj (dysk jest source of truth).
 
 ```markdown
 # Agent session — <YYYY-MM-DD HH:MM>
@@ -81,6 +97,10 @@ Format pliku `doc/session/agent-session.md`:
 - src/foo.ts:42 (ostatnia ważna edycja)
 - ...
 
+## Working-tree state (domena kod)
+
+<wynik `git status --short` — niescommitowane pliki (baseline driftu przy restore)>
+
 ## Konwencje / styl tej sesji
 
 - Z `CLAUDE.md`: <key rules tego projektu>
@@ -102,7 +122,7 @@ Po zapisaniu poinformuj usera:
 Agent session zapisany do `doc/session/agent-session.md` (X linii, domena: <domena>).
 
 Możesz teraz wykonać `/clear`. Po wyczyszczeniu wpisz `/restore-session-agent`
-żeby odzyskać kontekst. Plik zostanie usunięty po restore (ulotny).
+żeby odzyskać kontekst. Plik zostanie przeniesiony do archiwum po restore (ulotny w aktywnej lokalizacji).
 ```
 
 ## Uwagi

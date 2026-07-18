@@ -58,6 +58,9 @@ src/middleware/CLAUDE.md      # Middleware chain, error handling
 - Test runner + jak uruchomić testy
 
 ### Typowe skille
+
+Poniżej PRZYKŁADY skilli projektowych, które możesz stworzyć — nie są częścią bundla.
+
 - `/critical-code-review` — formalny audyt (security, performance, architektura)
 - `/api-docs` — generowanie/aktualizacja dokumentacji API
 - `/migration-check` — weryfikacja migracji DB
@@ -83,6 +86,9 @@ src/CLAUDE.md                # Internal patterns, exports
 - Supported platforms/environments
 
 ### Typowe skille
+
+Poniżej PRZYKŁADY skilli projektowych, które możesz stworzyć — nie są częścią bundla.
+
 - `/release` — przygotowanie nowej wersji
 - `/breaking-change-check` — weryfikacja backward compatibility
 
@@ -130,6 +136,9 @@ CLAUDE.md                    # Cel bazy, struktura, konwencje, indeksy
 - Indeksy i spisy treści (gdzie są, jak aktualizować)
 
 ### Typowe skille
+
+Poniżej PRZYKŁADY skilli projektowych, które możesz stworzyć — nie są częścią bundla.
+
 - `/summarize` — podsumowanie sekcji lub dokumentu
 - `/consistency-check` — weryfikacja spójności dat, nazw, informacji
 - `/update-index` — aktualizacja spisów treści i indeksów
@@ -162,6 +171,9 @@ CLAUDE.md                    # Kontekst firmy/projektu, struktura, konwencje
 - Relacje między dokumentami strategicznymi
 
 ### Typowe skille
+
+Poniżej PRZYKŁADY skilli projektowych, które możesz stworzyć — nie są częścią bundla.
+
 - `/quarterly-review` — podsumowanie postępów OKR
 - `/consistency-check` — spójność celów i metryk
 - `/decision-log` — dokumentowanie decyzji

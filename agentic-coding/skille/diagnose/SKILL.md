@@ -1,6 +1,6 @@
 ---
 name: diagnose
-description: 'Zdyscyplinowana pętla diagnostyczna dla trudnych bugów i regresji wydajnościowych. Reprodukcja → Minimalizacja → Hipotezy → Instrumentacja → Fix → Test regresji. Triggeruj na "diagnose", "debug", "zdiagnozuj", "broken", "throwing", "failing", "regression", "nie działa", "spadek wydajności".'
+description: 'Zdyscyplinowana pętla diagnostyczna dla trudnych bugów i regresji wydajnościowych. Zbuduj pętlę feedbacku → Reprodukcja + Minimalizacja → Hipotezy → Instrumentacja → Fix + Test regresji → Cleanup. Triggeruj na "diagnose", "debug", "zdiagnozuj", "broken", "throwing", "failing", "regression", "nie działa", "spadek wydajności".'
 ---
 
 # Diagnose
@@ -46,6 +46,8 @@ Cel to nie czysta reprodukcja, tylko **wyższy reproduction rate**. Loop trigger
 
 ### Gdy genuinely nie umiesz zbudować pętli
 
+Miękki budżet: po 2-3 nieudanych podejściach do budowy pętli zrób checkpoint z userem zamiast budować czwarty harness w ciemno — user często ma wiedzę (środowisko, artefakt, timing), która zmienia podejście taniej niż kolejna próba.
+
 Zatrzymaj się i powiedz to wprost. Wymień co próbowałeś. Zapytaj usera o: (a) dostęp do środowiska gdzie się reprodukuje, (b) zapisany artifact (HAR, log dump, core dump, screen recording z timestampami), albo (c) pozwolenie na dodanie tymczasowej production instrumentacji. **Nie** przechodź do hipotez bez pętli.
 
 Nie przechodź do Fazy 2 dopóki nie masz pętli, w którą wierzysz.
@@ -59,6 +61,8 @@ Potwierdź:
 - [ ] Pętla produkuje dokładnie ten failure mode, który **user** opisał — nie inny failure który dzieje się obok. Zły bug = zły fix.
 - [ ] Failure jest reprodukowalny przez wiele uruchomień (lub, dla bugów non-deterministycznych, reprodukowalny w wystarczająco wysokim rate żeby debuggować).
 - [ ] Uchwyciłeś dokładny symptom (error message, zły output, slow timing) tak żeby później fazy mogły zweryfikować, że fix faktycznie go adresuje.
+
+**Minimalizuj reprodukcję** zanim pójdziesz dalej: usuwaj pola/kroki/dane, skracaj inputy, redukuj dataset — aż zostanie najmniejszy scenariusz, który nadal failuje. Zminimalizowana reprodukcja to ziarno testu regresji (Faza 5) i drastycznie zawęża przestrzeń hipotez.
 
 Nie przechodź dalej dopóki nie zreprodukujesz buga.
 

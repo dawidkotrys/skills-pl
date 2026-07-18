@@ -1,8 +1,8 @@
 # Format ADR
 
-ADR-y żyją w `docs/adr/` i używają numeracji sekwencyjnej: `0001-slug.md`, `0002-slug.md`, itd.
+ADR-y żyją w katalogu decyzji projektu — sprawdź istniejącą konwencję repo (`doc/decisions/` domyślnie w tej metodologii; starsze repo bywają na `docs/adr/`) — i używają numeracji sekwencyjnej: `0001-slug.md`, `0002-slug.md`, itd.
 
-Twórz katalog `docs/adr/` leniwie — dopiero kiedy potrzebny jest pierwszy ADR.
+Twórz katalog leniwie — dopiero kiedy potrzebny jest pierwszy ADR. Nigdy nie zakładaj drugiego katalogu decyzji obok istniejącego.
 
 ## Szablon
 
@@ -24,7 +24,7 @@ Dodawaj je tylko wtedy, kiedy wnoszą realną wartość. Większość ADR-ów ni
 
 ## Numeracja
 
-Przeskanuj `docs/adr/` w poszukiwaniu najwyższego istniejącego numeru i zwiększ o jeden.
+Przeskanuj katalog decyzji projektu w poszukiwaniu najwyższego istniejącego numeru i zwiększ o jeden.
 
 ## Kiedy proponować ADR
 

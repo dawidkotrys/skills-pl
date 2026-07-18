@@ -65,19 +65,18 @@ Repo nie powinno zawierać:
 
 Wyjątki: imię + lokacje w `LICENSE` (copyright), GitHub username w atrybucji repo.
 
-## Atrybucja
+## Credits i ton opisów
 
-Część skili w `agentic-coding/skille/` jest inspirowana metodologią Matt Pocock. Atrybucja w jednym miejscu — `agentic-coding/README.md` sekcja "Atrybucja" (lista explicite które skille są adaptacjami).
+Jedyny ślad źródeł zewnętrznych w repo to sucha stopka licencyjna na dole `agentic-coding/README.md` (jedna linia, wymagana przez MIT upstreamu). **NIE dodawaj nigdzie:**
 
-**NIE dodawaj** w README:
-
+- Sekcji "Atrybucja" / wyliczania które skille są adaptacjami, a które własne — takie wyjaśnianie się brzmi nienaturalnie i nic nie wnosi czytelnikowi
 - "PR-y mile widziane" / "kontrybucje welcome" / "feedback welcome"
-- Defensywnego tłumaczenia się autorom źródeł
-- Słów "autorski/autorskie" w sekcjach opisowych — lista cech mówi sama za siebie. Atrybucja Matt Pocock vs autorskie żyje w jednym miejscu (sekcja "Atrybucja" w `agentic-coding/README.md`), nie w tabeli skili ani w opisach poszczególnych skili.
+- Defensywnego tłumaczenia się autorom źródeł, namedroppingu inspiracji i klasyków
+- Słów "autorski/autorskie" w sekcjach opisowych — lista cech mówi sama za siebie
 
 ## Decisions folder
 
-`decisions/` (gitignored) — lokalne ADR-y decyzji architektonicznych. Format zgodny z `agentic-coding/skille/grill-with-docs/ADR-FORMAT.md`. NIE commit'uj do public repo — to internal record.
+`decisions/` (gitignored) — lokalne ADR-y decyzji architektonicznych. Format zgodny z `agentic-coding/skille/grill/ADR-FORMAT.md`. NIE commit'uj do public repo — to internal record.
 
 ## Struktura
 

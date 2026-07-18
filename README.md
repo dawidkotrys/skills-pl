@@ -51,9 +51,9 @@ Pełna lista 10 zasad: [agentic-coding/onboarding/02-zasady-metodologii.md](./ag
 
 ## Jak zacząć
 
-1. Przeczytaj **[agentic-coding/onboarding/](./agentic-coding/onboarding/)** — 9 dokumentów wprowadzających (fundamenty, zasady, pliki projektu, główny flow, warianty per skala, instalacja).
+1. Przeczytaj **[agentic-coding/onboarding/](./agentic-coding/onboarding/)** — 4 dokumenty wprowadzające (proces, zasady, pliki projektu, instalacja). Zacznij od [00-start.md](./agentic-coding/onboarding/00-start.md).
 2. Zainstaluj skille (`~/.claude/skills/`) i slash commands (`~/.claude/commands/`) — pełna instrukcja w [07-instalacja.md](./agentic-coding/onboarding/07-instalacja.md).
-3. Pracuj z metodologią — odpalaj skille kontekstowo (`/grill`, `/to-prd`, `/to-tasks`, `/code-manager`, `/diagnose`, etc.) zgodnie z flow w [04-flow-maly-task.md](./agentic-coding/onboarding/04-flow-maly-task.md), [05-flow-duza-inicjatywa.md](./agentic-coding/onboarding/05-flow-duza-inicjatywa.md), [06-flow-bug.md](./agentic-coding/onboarding/06-flow-bug.md).
+3. Pracuj z metodologią — odpalaj skille kontekstowo (`/grill`, `/to-prd`, `/to-tasks`, `/code-manager`, `/diagnose`, etc.) zgodnie z procesem opisanym w [00-start.md](./agentic-coding/onboarding/00-start.md).
 
 ## Sync z `~/.claude/skills/`
 

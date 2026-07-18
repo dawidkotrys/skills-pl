@@ -1,309 +1,50 @@
-# 03. Pliki projektu — kluczowa dokumentacja na dysku
+# 03. Pliki projektu — co żyje na dysku
 
-Metodologia opiera się na kilku kluczowych plikach persistent na dysku (a nie w pamięci sesji). Ten dokument opisuje **co masz w projekcie**, gdzie to leży i kiedy się tym zajmuje.
+Metodologia trzyma wszystko ważne w plikach na dysku, nie w pamięci rozmowy (model nie pamięta poprzedniej sesji — pliki pamiętają). Ten dokument mówi, **co masz w projekcie, gdzie to leży i kto to pisze**. Formatów nie musisz znać na pamięć — agent zna je ze skilli i tworzy pliki za Ciebie.
 
-**Mapa plików:**
+## Mapa plików
 
 | Plik / folder | Co zawiera | Kto pisze |
 |---|---|---|
-| `CLAUDE.md` (root) | Konwencje per repo (stack, framework, quality bar) | user / `/repo-onboarding` |
-| `CONTEXT.md` (root) | Domain glossary — język domeny | `/grill` aktualizuje na bieżąco |
-| `doc/plans/<slug>/prd.md` | PRD destination document per inicjatywa | `/to-prd` |
-| `doc/plans/<slug>/backlog.md` | Execution-grade backlog + task breakdown | `/to-prd` (scaffold) + `/to-tasks` (per slice) |
-| `doc/plans/<branch>.md` | Luźne plany dla small tasks | manager (`/code-manager` Tryb 4A) |
-| `doc/decisions/NNNN-*.md` | ADR-y — architektoniczne decyzje | `/grill` (rzadko, gdy hard-to-reverse) |
-| `doc/backlog.md` | One-offy, pre-PRD pomysły, nieprzypisane bugi | manager + user na bieżąco |
-| `doc/history/YYYY-MM-DD-*.md` | Kroniki zmian per branch | `/kronikarz live` (executor) + `close` (manager) |
-| `doc/code-reviews/YYYY-MM-DD-*.md` | Raporty `/critical-code-review` | manager (Tryb 5A) |
-| `doc/session/<role>-session.md` | Save game przed `/clear` (gitignored) | `/save-session-*` |
+| `CLAUDE.md` (root) | Konwencje repo: stack, styl kodu, komendy, quality bar | Ty / `/repo-onboarding` |
+| `CONTEXT.md` (root) | Słownik domeny — język projektu | `/grill` (na bieżąco) |
+| `doc/plans/<slug>/prd.md` | Dokument docelowy dużej inicjatywy | `/to-prd` |
+| `doc/plans/<slug>/backlog.md` | Etapy inicjatywy rozpisane na zadania | `/to-prd` + `/to-tasks` |
+| `doc/plans/<branch>.md` | Plan pojedynczego małego taska | Manager |
+| `doc/decisions/NNNN-*.md` | Decyzje architektoniczne (ADR) | `/grill` (rzadko) |
+| `doc/backlog.md` | Lista zadań, pomysłów, bugów | Manager + Ty |
+| `doc/history/YYYY-MM-DD-*.md` | Kroniki zmian per branch | Executor (live) + Manager (close) |
+| `doc/code-reviews/*.md` | Raporty z przeglądów kodu | Manager |
+| `doc/session/*.md` | Zapis kontekstu przed `/clear` (poza gitem) | komendy save/restore |
 
----
+## CLAUDE.md — konwencje repo
 
-## CLAUDE.md — konwencje per repo
+Plik w katalogu głównym, który agent wczytuje **automatycznie** na starcie każdej sesji. Trzyma to, co specyficzne dla tego repo: stack i wersje, styl kodu, komendy (build, test, dev), quality bar. Może być na kilku poziomach — bardziej szczegółowy `CLAUDE.md` w podkatalogu (np. dla systemu designu) uzupełnia ten z roota. Tu **nie** trzymasz słownika domeny (to `CONTEXT.md`), decyzji architektonicznych (to `doc/decisions/`) ani listy zadań (to `doc/backlog.md`).
 
-Plik w roocie (i opcjonalnie w podkatalogach) który Claude Code **automatycznie** wczytuje przy każdej sesji. Zawiera **konwencje specyficzne dla tego repo**:
+## CONTEXT.md — słownik domeny
 
-- Stack + wersje
-- Wzorce nazewnictwa, styl kodu, framework conventions
-- Komendy (build, test, dev, lint)
-- Środowisko (env vars, lokalne config)
-- Quality bar / opinions per repo (np. "zawsze TypeScript strict", "PR base = develop")
-- Workflow ze skilami (które skille typowo używać dla typowych sytuacji)
+Język projektu, nie opis techniczny. Terminy biznesowe, ich znaczenia, aliasy których unikać, relacje między pojęciami. Agent czyta go na początku każdej sesji, żeby mówić Twoim językiem i nie mylić pojęć. Rośnie w trakcie pracy — gdy w rozmowie pojawia się nowy termin, `/grill` dopisuje go do słownika. Na start wystarczy 5-10 terminów.
 
-**To NIE jest miejsce na:**
+## doc/plans/ — plany pracy
 
-- Domain glossary (to → `CONTEXT.md`)
-- Architectural decisions (to → `doc/decisions/`)
-- Backlog (to → `doc/backlog.md`)
+Mały task dostaje jeden plik `doc/plans/<branch>.md` z planem od Managera. Duża inicjatywa dostaje własny folder `doc/plans/<slug>/` z dwoma plikami: `prd.md` (dokument docelowy — cel i podział na etapy) i `backlog.md` (etapy rozpisane na konkretne zadania). Zadania kolejnego etapu rozpisuje się dopiero, gdy poprzedni jest gotowy — nie wszystko z góry. Po zakończeniu całości Manager przenosi folder do `doc/plans/archive/` (zawartość zostaje nietknięta jako ślad).
 
-### Hierarchia
+## doc/decisions/ — decyzje architektoniczne (ADR)
 
-Można mieć `CLAUDE.md` na różnych poziomach — każdy bardziej szczegółowy:
+Krótkie notatki o decyzjach, które są **trudne do cofnięcia**, **zaskakujące bez kontekstu** i **wynikają z realnego wyboru** między opcjami. ADR może być jednym akapitem — jego wartość to zapis, **że** decyzja zapadła i **dlaczego**, żeby za pół roku nikt nie „naprawiał" czegoś, co jest celowe. Zwykłe, oczywiste albo łatwo odwracalne decyzje nie są ADR-ami — wystarczy commit. Folder tworzy się **leniwie** — dopiero przy pierwszym ADR-ze.
 
-```
-CLAUDE.md                    # global per repo
-src/components/CLAUDE.md     # per katalog (np. design system)
-src/api/CLAUDE.md            # per warstwa
-```
+## doc/backlog.md — lista zadań
 
-Claude Code wczytuje wszystkie odpowiednie do bieżącej pracy. Per typ repo (web app, backend, library, mobile, knowledge base, strategy) — wzorce są w `repo-onboarding/patterns.md`.
+Jeden plik w repo zamiast zewnętrznego narzędzia (bez Jira / Linear / GitHub Issues). Zadania, pomysły, bugi, tech debt — pogrupowane, z aktywnymi sekcjami na górze i archiwum na dole. Zasady: **daty zawsze pełne** (`2026-04-29`, nigdy „w czwartek" — bo następna sesja nie zna kontekstu), **zależności wypisane wprost** („blokuje X", „wymaga Y"), a w sekcji ukończonych **trzymaj tylko 10 ostatnich** — starsze usuwaj albo przenoś do changelogu, żeby plik nie puchł.
 
----
+## doc/history/ — kroniki zmian
 
-## CONTEXT.md — domain glossary
+Każdy branch dostaje kronikę: co i dlaczego zrobiono, jakie decyzje zapadły, wyniki testów. Agent wykonawczy prowadzi ją **na bieżąco** w trakcie pracy (tryb live), a Manager **domyka** ją przed scaleniem (tryb close): podpis, aktualizacja listy zadań i indeksu kronik. Dzięki temu następna sesja (albo następny agent) wie, skąd wzięło się rozwiązanie, i nie analizuje wszystkiego od nowa.
 
-`CONTEXT.md` to **język domeny**, nie techniczny opis. Terminy biznesowe, ich znaczenia, aliasy do unikania, relacje. Czytany przez agenta na początku każdej sesji.
+## doc/session/ — zapis kontekstu przed czyszczeniem
 
-### Format
+Ulotny folder (poza kontrolą wersji), używany tylko wtedy, gdy długa praca wymaga wyczyszczenia rozmowy (`/clear`) w połowie. Komendy `/save-session-*` zrzucają do pliku **samą deltę** — ustalenia jeszcze nigdzie niezapisane i wskaźnik następnego kroku, nie kopię tego, co już jest w kronice czy planie. Po wyczyszczeniu `/restore-session-*` wczytuje plik, a po udanym odzyskaniu **archiwizuje go** (przenosi do `doc/session/archive/`, nie kasuje — zostaje ślad na wypadek problemu).
 
-```md
-# {Nazwa kontekstu}
+## Nowe repo?
 
-{1-2 zdania: czym ten kontekst jest i dlaczego istnieje.}
-
-## Język
-
-**Order**:
-Zwięzła definicja terminu — czym JEST, nie co ROBI.
-_Unikaj_: Purchase, transaction
-
-**Invoice**:
-Żądanie płatności wysłane do klienta po dostawie.
-_Unikaj_: Bill, payment request
-
-**Customer**:
-Osoba lub organizacja, która składa zamówienia.
-_Unikaj_: Client, buyer, account
-
-## Relacje
-
-- **Order** generuje jeden lub więcej **Invoice**
-- **Invoice** należy do dokładnie jednego **Customer**
-
-## Przykładowy dialog
-
-> **Dev:** „Kiedy **Customer** składa **Order** — czy tworzymy **Invoice** od razu?"
-> **Domain expert:** „Nie, **Invoice** powstaje dopiero po potwierdzeniu **Fulfillmentu**."
-
-## Zaflagowane niejasności
-
-- „account" było używane zarówno w znaczeniu **Customer**, jak i **User** — rozstrzygnięte: to są oddzielne pojęcia.
-```
-
-### Zasady
-
-- **Bądź zdecydowany.** Wybierz jedno słowo, resztę wymień jako aliasy do unikania.
-- **Konflikty flaguj eksplicytnie** w sekcji „Zaflagowane niejasności" z rozstrzygnięciem.
-- **Zwięźle.** Definicje max 1 zdanie. Czym coś **jest**, nie co **robi**.
-- **Tylko terminy domenowe.** Pomijaj generic programming concepts (timeout, error, util).
-- **5-10 terminów seed** na start — dodajesz w trakcie pracy gdy nowe pojawia się w rozmowie.
-- **Pokazuj relacje** z kardynalnością tam gdzie oczywista.
-- **Napisz przykładowy dialog** dev ↔ domain expert — testuje czy terminy współgrają.
-
-### Repo z wieloma kontekstami (DDD bounded contexts)
-
-Jeśli repo ma odrębne moduły domenowe (np. `ordering/`, `billing/`, `fulfillment/`) — utwórz `CONTEXT-MAP.md` w roocie i osobne `CONTEXT.md` per moduł:
-
-```md
-# Mapa kontekstów
-
-## Konteksty
-- [Ordering](./src/ordering/CONTEXT.md) — przyjmuje i śledzi zamówienia
-- [Billing](./src/billing/CONTEXT.md) — generuje faktury i przetwarza płatności
-
-## Relacje
-- **Ordering → Fulfillment**: emituje eventy `OrderPlaced`
-- **Ordering ↔ Billing**: współdzielone typy `CustomerId`, `Money`
-```
-
----
-
-## doc/plans/ — folder per inicjatywa (Format B)
-
-Po `/to-prd` każda **large initiative** dostaje własny folder z dwoma plikami:
-
-```
-doc/plans/<slug>/
-├── prd.md       # vision + vertical slices + slice-level acceptance
-└── backlog.md   # execution-grade scaffold + task breakdown per slice
-```
-
-`<slug>` to kebab-case nazwa inicjatywy (`offline-mode-knowledge-source-items`, `payment-gateway-stripe`). Bez prefix'u numerowanego, bez polskich znaków.
-
-### `prd.md`
-
-Destination document po grilling sesji — vision i high-level approach. **NIE** zawiera konkretnych ścieżek plików ani fragmentów kodu (te trafiają do `backlog.md` per task).
-
-Sekcje: Problem, Rozwiązanie, User Stories, Decyzje implementacyjne, Decyzje testowe, Vertical slices (każdy slice z `Slice purpose` + `Slice acceptance`), Out of scope, Dodatkowe uwagi.
-
-### `backlog.md`
-
-Execution-grade backlog — slice'y rozpisane na taski wykonawcze. Frontmatter metadata (`status`, `current_slice`, `total_slices`). Per slice sekcja z task breakdown'em (T<slice>.<num>) gdy manager invoke `/to-tasks slice <N>`.
-
-Statusy slicesów: `[ ] niezdetailowany` | `🔄 in-progress` | `✅ done`.
-Statusy tasków: `[ ]` niezrobione | `🔄 in-progress` | `👀 to-review` | `✅ done`.
-
-### Lifecycle folderu
-
-- **Init** — `/to-prd` stworzył folder ze scaffold'em
-- **In-progress** — agent wykonuje, manager finalizuje per slice
-- **Done** — wszystkie slices `✅ done`. Manager Tryb 5D archiwizuje folder do `doc/plans/archive/<slug>/` (zawartość intact, audit trail)
-
-Pełen flow: [05-flow-duza-inicjatywa.md](./05-flow-duza-inicjatywa.md).
-
----
-
-## doc/plans/<branch>.md — luźne plany (Format A)
-
-Dla **small/medium tasks** (1-3 plików, 1 vertical slice) — manager (`/code-manager` Tryb 4A) pisze pełen plan w pojedynczym pliku `doc/plans/<branch-name>.md`. Bez folderu, bez PRD.
-
-Patrz [04-flow-maly-task.md](./04-flow-maly-task.md).
-
----
-
-## doc/decisions/ — Architecture Decision Records
-
-Numeracja sekwencyjna: `0001-slug.md`, `0002-slug.md`. Twórz katalog **leniwie** — gdy pojawia się pierwszy ADR.
-
-### Format
-
-```md
-# {Krótki tytuł decyzji}
-
-{1-3 zdania: jaki jest kontekst, co zdecydowaliśmy, dlaczego.}
-```
-
-To wszystko. ADR może być pojedynczym akapitem. Wartość polega na zapisaniu *że* decyzja zapadła i *dlaczego* — nie na wypełnianiu sekcji.
-
-### Sekcje opcjonalne
-
-Dodawaj tylko gdy realnie wnoszą wartość:
-
-- **Status** (`proposed | accepted | deprecated | superseded by ADR-NNNN`) — gdy decyzje są rewidowane
-- **Considered Options** — gdy odrzucone alternatywy warto zapamiętać
-- **Consequences** — gdy są nieoczywiste skutki uboczne
-
-### Kiedy pisać ADR
-
-**Wszystkie trzy** warunki muszą być spełnione:
-
-1. **Trudna do cofnięcia** — koszt zmiany w przyszłości jest znaczący
-2. **Zaskakująca bez kontekstu** — przyszły czytelnik zapyta „dlaczego, na litość boską?"
-3. **Wynik realnego trade-offu** — istniały realne alternatywy, wybraliście jedną z konkretnych powodów
-
-### Co się kwalifikuje
-
-- **Kształt architektoniczny** — „monorepo", „event-sourced write model"
-- **Wzorce integracji między kontekstami** — „Ordering i Billing przez domain events, nie HTTP"
-- **Wybory technologiczne z lock-inem** — DB, message bus, auth provider, deploy target. NIE każda biblioteka — tylko te, których wymiana zajmie kwartał
-- **Decyzje o granicach i zakresie** — „Customer dane są właściwością kontekstu Customer; inni referują przez ID"
-- **Świadome odstępstwa od oczywistej ścieżki** — „ręczny SQL zamiast ORM-a, bo X". Powstrzymuje następnego inżyniera przed „naprawianiem" zamierzonego stanu
-- **Ograniczenia niewidoczne w kodzie** — „nie AWS przez compliance", „latency < 200ms przez kontrakt z partnerem"
-- **Odrzucone alternatywy gdy odrzucenie jest nieoczywiste** — żeby za pół roku ktoś nie zaproponował znowu tego samego
-
-### Co NIE jest ADR
-
-- Decyzja oczywista (nie ma trade-offu)
-- Decyzja łatwa do cofnięcia (po prostu cofniesz)
-- Wybór konwencji nazewniczej (to → `CLAUDE.md`)
-- Implementation detail (to → komentarz w kodzie albo nigdzie)
-
----
-
-## doc/backlog.md — lokalny tracker
-
-**Markdown-first.** Bez GitHub Issues / Linear / Jira — wszystko w jednym pliku w repo. Backlog jest grafem zależności (blocking relationships), nie linearnym listą TODO.
-
-### Format
-
-```md
-# Backlog
-
-## Priorytetowe
-- [ ] [TASK] Opis — blokuje: TASK-3
-
-## W trakcie
-- [ ] [WIP] Opis — branch: `feature/xyz`
-
-## Tech Debt
-- [ ] [DEBT] Opis
-
-## Pomysły
-- [ ] [IDEA] Opis
-
-## Ukończone (ostatnie 10)
-- [x] [DONE] Opis — 2026-04-29
-```
-
-### Konwencje
-
-- **Aktywne sekcje na górze** (Priorytetowe, W trakcie), **archiwum na dole** (Ukończone)
-- **Daty zawsze absolutne** (`2026-04-29`), nigdy „w czwartek" — bo Memento
-- **Zależności explicite** w opisie (`blokuje: X`, `wymaga: Y`)
-- **Ukończone trzymaj 10 ostatnich** — starsze przerzucaj do CHANGELOG.md (jeśli istnieje) albo usuwaj
-- **`code-manager` Tryb 3** czyta backlog i wybiera niezależne taski do parallel pickup
-
----
-
-## doc/For humans/ — workflow guides
-
-Dokumenty dla **ciebie**, nie dla AI. Notatki jak ty pracujesz w tym repo, jak zaczynać sesję, którego skilla użyć kiedy.
-
-Typowo `workflow-guide.md` z sekcjami:
-
-1. Jak zacząć sesję (który skill odpalić)
-2. Jak pracować na co dzień
-3. Skrót typowego flow
-4. Gdzie leżą skille (pełne ścieżki)
-5. Gdzie leżą CLAUDE.md (pełne ścieżki + zakres)
-6. Co gdzie trafia (kto aktualizuje, co zawiera)
-
----
-
-## _session-state.md — save game
-
-Tymczasowy plik (gitignored) tworzony **tylko** gdy multi-phase feature wymaga `/clear` w trakcie. Format:
-
-```md
-# Session state — {feature/initiative}
-
-**Data:** {YYYY-MM-DD}
-**Status:** {co zrobione, co w toku, co blokuje}
-
-## Decyzje już podjęte
-- ...
-
-## Otwarte pytania
-- ...
-
-## Następne kroki
-1. ...
-2. ...
-
-## Pliki kluczowe
-- {path:line} — {co tam jest}
-```
-
-Po `/clear` → wczytujesz `_session-state.md` jako pierwszy plik. Po zakończeniu inicjatywy → usuwasz lub przerzucasz wartościowe ustalenia do `doc/decisions/`.
-
----
-
-## Lista plików per repo (typowy zestaw)
-
-```
-{repo}/
-├── CLAUDE.md                          # konwencje per repo
-├── CONTEXT.md                         # domain glossary (lub CONTEXT-MAP.md)
-├── doc/
-│   ├── decisions/
-│   │   ├── 0001-meta.md
-│   │   ├── 0002-...md
-│   │   └── ...
-│   ├── backlog.md
-│   └── For humans/
-│       └── workflow-guide.md
-└── src/
-    └── ...
-```
-
-Onboarding nowego repo: odpal `/repo-onboarding`. Jeśli któreś pliki istnieją ale w innym formacie — skill robi audit i sugeruje migrację.
+Zanim zaczniesz pracę w repo, sprawdź, czy ma `CLAUDE.md`, `CONTEXT.md`, `doc/decisions/` i `doc/backlog.md`, i czy testy biegną szybko. Jeśli czegoś brakuje — odpal `/repo-onboarding`, który zakłada tę strukturę i dopasowuje ją do projektu.

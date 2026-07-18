@@ -21,30 +21,32 @@ Większość repozytoriów ma jeden kontekst:
 ```
 /
 ├── CONTEXT.md
-├── docs/
-│   └── adr/
+├── doc/
+│   └── decisions/
 │       ├── 0001-event-sourced-orders.md
 │       └── 0002-postgres-for-write-model.md
 └── src/
 ```
+
+Katalog decyzji: **najpierw sprawdź istniejącą konwencję repo** (`doc/decisions/`, `docs/adr/` lub wskazanie w CLAUDE.md) i trzymaj się jej; w świeżym repo domyślnie `doc/decisions/` (konwencja tej metodologii). Nigdy nie twórz drugiego katalogu decyzji obok istniejącego.
 
 Jeśli w roocie istnieje `CONTEXT-MAP.md`, repo ma wiele kontekstów. Mapa wskazuje, gdzie każdy z nich się znajduje:
 
 ```
 /
 ├── CONTEXT-MAP.md
-├── docs/
-│   └── adr/                          ← decyzje obejmujące cały system
+├── doc/
+│   └── decisions/                    ← decyzje obejmujące cały system
 ├── src/
 │   ├── ordering/
 │   │   ├── CONTEXT.md
-│   │   └── docs/adr/                 ← decyzje specyficzne dla kontekstu
+│   │   └── doc/decisions/            ← decyzje specyficzne dla kontekstu
 │   └── billing/
 │       ├── CONTEXT.md
-│       └── docs/adr/
+│       └── doc/decisions/
 ```
 
-Twórz pliki leniwie — dopiero kiedy masz coś do zapisania. Jeśli `CONTEXT.md` nie istnieje, utwórz go, kiedy pierwszy termin zostanie ustalony. Jeśli `docs/adr/` nie istnieje, utwórz katalog, kiedy pojawi się pierwsza ADR.
+Twórz pliki leniwie — dopiero kiedy masz coś do zapisania. Jeśli `CONTEXT.md` nie istnieje, utwórz go, kiedy pierwszy termin zostanie ustalony. Jeśli katalog decyzji nie istnieje, utwórz go, kiedy pojawi się pierwsza ADR.
 
 ## W trakcie sesji
 
@@ -79,3 +81,14 @@ Proponuj utworzenie ADR-a tylko wtedy, gdy spełnione są wszystkie trzy warunki
 3. **Wynik realnego trade-offu** — istniały realne alternatywy i wybraliście jedną z konkretnych powodów.
 
 Jeśli któregokolwiek z trzech brakuje — pomiń ADR. Format opisany w [ADR-FORMAT.md](./ADR-FORMAT.md).
+
+## Sygnały, że grill jest done
+
+Grill kończy się, gdy zachodzi większość z poniższych — nie iteruj dalej „na wszelki wypadek":
+
+- Możesz zwięźle opisać problem i rozwiązanie bez dziur, na które nie macie odpowiedzi.
+- Padły przynajmniej 3+ pytania, które zmusiły użytkownika do doprecyzowania (jeśli wszystko było jasne od razu — plan był już dojrzały albo pytasz za płytko).
+- Twoja początkowa hipoteza rozwiązania została przynajmniej raz zmodyfikowana przez odpowiedzi użytkownika.
+- W `CONTEXT.md` przybyło typowo 2-5 terminów (0 nowych terminów przy large initiative = podejrzane).
+
+Gdy sygnały zachodzą — powiedz to wprost: „Mamy wspólne zrozumienie. Następny krok: `/to-prd`." Przeciąganie sesji poza ten punkt produkuje pytania coraz niższej wartości.

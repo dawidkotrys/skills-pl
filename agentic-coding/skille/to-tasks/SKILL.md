@@ -3,8 +3,7 @@ name: to-tasks
 description: 'Manager invoke gdy chce rozpisać konkretny vertical slice z backlogu na granularne taski wykonawcze (3-7 per slice). Bierze `doc/plans/<slug>/backlog.md` (scaffolded by /to-prd) + `prd.md`, eksploruje kod, generuje task breakdown z file targets + acceptance criteria. Wywołanie przez `/to-tasks slice <N>` (lub fallback do "first niezdetailowany"). Używaj zawsze gdy manager musi przekazać "co konkretnie agent ma zrobić w tym etapie" — nawet jeśli user nie wymieni słowa "to-tasks". Triggery: "rozpisz slice", "rozpisz etap", "task breakdown", "rozbij slice na taski", "co konkretnie w tym etapie", "detail current slice", "co dalej w tym slice". NIE auto-trigger, NIE commit (manager owns docs commits).'
 disable-model-invocation: true
 argument-hint: "[slice <N>]"
-model: opus
-allowed-tools: Bash(*), Read, Grep, Glob, Edit, Write
+allowed-tools: Bash(git branch:*), Bash(date:*), Read, Grep, Glob, Edit
 ---
 
 # `/to-tasks` — Task breakdown bieżącego slice'a
@@ -56,8 +55,8 @@ Jeśli **>1 aktywna inicjatywa** (kilka folderów w `doc/plans/` z `backlog.md` 
 
 ### Krok 2: Wczytaj PRD + backlog
 
-- `Read doc/plans/<slug>/prd.md` w pełni — vision, decyzje, slice purpose i slice acceptance
-- `Read doc/plans/<slug>/backlog.md` w pełni — metadata header + już wykonane slices
+- `Read doc/plans/<slug>/prd.md` — **w całości: vision (Problem/Rozwiązanie), Decyzje implementacyjne, Invariants i sekcję TEGO slice'a.** Sekcje pozostałych slice'ów tylko skimuj pod kątem cross-slice zależności — przy PRD z 6+ slice'ami czytanie wszystkich cudzych acceptance nie wnosi nic do breakdownu jednego.
+- `Read doc/plans/<slug>/backlog.md` — metadata header + sekcja tego slice'a + statusy pozostałych
 
 **Detect current slice** (priorytet kolejności):
 1. Explicit param: `/to-tasks slice 2` → slice 2
@@ -96,7 +95,9 @@ Grep/Glob dla orientacji *gdzie pliki istnieją* (np. `src/services/*.ts` żeby 
 **Pola per task:**
 
 - **File** (primary file path) — nazwa pliku który task **głównie** dotyka. Jeśli task dotyka kilku plików, wymień primary; reszta wynika z context'u acceptance lub można wymienić ad-hoc inline.
-- **Acceptance** — verifiowalne kryterium. *"hook fires `onNewBlob(path)` callback w <2s gdy plik pojawi się w synced folderze"* ✅. *"zaimplementuj watcher"* ❌ (TODO list, nie acceptance).
+- **Acceptance** — verifiowalne kryterium, dwa poziomy zależnie od taska:
+  - **Task prosty** → jedna linia obserwowalnego rezultatu: *"hook fires `onNewBlob(path)` callback w <2s gdy plik pojawi się w synced folderze"* ✅. *"zaimplementuj watcher"* ❌ (TODO list, nie acceptance).
+  - **Task kontraktowo-ciężki** (maszyna stanów, ownership table, model współbieżności) → **wskazuj, nie przepisuj**: *"realizuje kontrakt ownership z [prd.md#invariants](../prd.md#invariants); obserwowalne: <2-3 outcome'y>"*. NIE transkrybuj kontraktu do acceptance — kontrakt ma jedno miejsce w PRD; kopia w tasku to trzecia reprezentacja tej samej treści (PRD + slice acceptance w backlogu + task), którą każdy przyszły agent czyta wielokrotnie i która drifted przy pierwszej rewizji PRD. To samo robi już pole Test ("Test: PRD Decyzje testowe — ...").
 - **Test** — opcjonalny. Dodawaj **gdy ma sens**: manual QA scenariusz, link do unit test który pokrywa task, scenariusz e2e. NIE forsuj.
 
 **Czego NIE dodawaj** (rule projektowa "no speculative flexibility"):
@@ -153,13 +154,12 @@ Output **na czat** (NIE do pliku) — krótki raport co rozpisałeś + na co man
 
 **Tasks:** T<N>.1 - T<N>.<X> (X tasków). Status sekcji: `🔄 in-progress`.
 
-**Pułapki które warto wpisać do bridge plan dla agenta:**
+**Pułapki które warto wpisać do bridge plan dla agenta:** (sekcję POMIŃ w całości, jeśli żadna pułapka nie zachodzi — nie generuj pustych bulletów)
 - <flag jeśli odkryłem race z innym slice'm — np. shared state>
 - <flag jeśli ADR-NNNN dotyka obszaru i agent powinien przeczytać>
-- <flag jeśli slice ma dependency na niedokończonym innym slice — to powinien być sygnał dla managera>
+- <flag jeśli slice ma dependency na niedokończonym innym slice>
 
-**Kolejność wykonania (rec):**
-T<N>.1 → T<N>.2 → ... (typowo: foundation → integration → wire-up → tests; custom per slice).
+**Kolejność wykonania:** podaj TYLKO jeśli nie jest oczywista z numeracji tasków (nie wypisuj generycznego "foundation → integration → tests").
 
 Backlog zaktualizowany. Manager: edytuj `doc/plans/<slug>/backlog.md` jeśli chcesz dopasować, potem briefuj agenta.
 ```
@@ -214,7 +214,8 @@ Bounce-back po code review: `👀` → manager edytuje na `🔄` + dopisuje link
 |---|---|---|
 | "Przy okazji uzupełnię też slice 3 bo widzę że jest podobny" | Surgical changes — Twoje zadanie to ten slice. | Zaalarmuj managerowi że slice 3 wygląda jak duplikat. |
 | "Dodam pole `Estimated: M` do każdego taska" | Speculative flexibility — nikt tego nie używa do decyzji. | Pomiń. Pojawi się gdy będzie realna potrzeba. |
-| "Dopiszę 3-zdaniowy opis co task robi" | Backlog ma być scan'owalny, narracja idzie do kroniki. | Acceptance jednolinijkowe. Reszta w kronice w trakcie pracy. |
+| "Dopiszę 3-zdaniowy opis co task robi" | Backlog ma być scan'owalny, narracja idzie do kroniki. | Acceptance jednolinijkowe (prosty task) lub wskaźnik na kontrakt (ciężki task). |
+| "Przepiszę kontrakt ownership/state-machine do acceptance" | Potrójny drift: ten sam kontrakt w PRD + slice acceptance + tasku; każdy przyszły agent czyta go 3×. | Wskaż `prd.md#invariants` + wymień tylko obserwowalne outcome'y. |
 | "Commitnę po update'cie żeby nic nie zginęło" | Manager owns docs commits. | Output na czat, manager commituje sam. |
 | "Przeczytam 30 plików żeby mieć pełny kontekst" | Context bloat, surgical. | Max 5 plików, tylko relevantne dla slice acceptance. |
 

@@ -1,8 +1,8 @@
 ---
-description: Odzyskaj kontekst agenta wykonawczego (universal — kod / copy / oferta / research) z `doc/session/agent-session.md` i USUŃ plik po sukcesie.
+description: Odzyskaj kontekst agenta wykonawczego (universal — kod / copy / oferta / research) z `doc/session/agent-session.md` i zarchiwizuj plik po sukcesie.
 ---
 
-Cel: załaduj kontekst aktualnej sesji **agenta wykonawczego** z pliku `doc/session/agent-session.md`. Po sukcesie usuwasz plik (ulotne — folder pusty po restore).
+Cel: załaduj kontekst aktualnej sesji **agenta wykonawczego** z pliku `doc/session/agent-session.md`. Po sukcesie archiwizujesz plik (ulotne — aktywna lokalizacja pusta po restore).
 
 ## Krok 1: Znajdź plik
 
@@ -25,6 +25,8 @@ Przeczytaj `doc/session/agent-session.md` w pełni. Załaduj do kontekstu:
 - Konwencje / styl
 - Następny krok
 
+**Obowiązkowo** przeczytaj pliki zlinkowane w sekcji Kluczowe pliki / źródła (kronika live, plan, źródła) — session-file to most, treść żyje na dysku.
+
 ## Krok 3: Sanity check stanu
 
 Sprawdź czy stan środowiska zgadza się z plikiem:
@@ -35,19 +37,20 @@ Sprawdź czy stan środowiska zgadza się z plikiem:
 
 Jeśli **drift** (np. plik mówi "branch X" a jesteś na Y) — zaalarmuj usera przed dalszą pracą.
 
-## Krok 4: Usuń plik
+## Krok 4: Zarchiwizuj plik
 
 ```bash
-rm doc/session/agent-session.md
-ls doc/session/  # weryfikacja czy pusty
+mkdir -p doc/session/archive
+mv doc/session/agent-session.md doc/session/archive/agent-session.md.$(date +%Y-%m-%d-%H%M)
+ls doc/session/  # session-file przeniesiony do archive/
 ```
 
-Per ADR-0008: folder `doc/session/` jest ulotny — plik znika po restore.
+Folder `doc/session/` jest ulotny — scratchpad między save a restore, gitignored, nie commituje się; plik znika z aktywnej lokalizacji po restore. Nie `rm`: crash tuż po usunięciu = bezpowrotna utrata (gitignored, brak historii); `mv` do `archive/` zostawia ślad.
 
 ## Krok 5: Raport startowy
 
 ```
-Agent session przywrócony z `doc/session/agent-session.md` (domena: <X>, plik usunięty).
+Agent session przywrócony z `doc/session/agent-session.md` (domena: <X>, plik zarchiwizowany).
 
 ## Briefing — gdzie jestem:
 [2-3 zdania: rola, bieżący task, faza pracy]
@@ -64,7 +67,7 @@ Agent session przywrócony z `doc/session/agent-session.md` (domena: <X>, plik u
 
 ## Uwagi
 
-- Drift w Kroku 3 → **NIE usuwaj** pliku. Daj userowi decyzję: aktualizujemy plik czy stan?
+- Drift w Kroku 3 → **NIE archiwizuj** pliku (zostaw na miejscu). Daj userowi decyzję: aktualizujemy plik czy stan?
 - Universal — restore działa w każdej domenie
 
 $ARGUMENTS

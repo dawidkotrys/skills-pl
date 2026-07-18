@@ -1,6 +1,6 @@
 # Subagent Briefing Template
 
-Gdy Manager kończy pisanie planu (`doc/plans/<branch>.md`), przygotowuje **wiadomość briefingową** dla usera. User kopiuje ją i wkleja jako pierwszą wiadomość do subagenta w nowym worktree / sesji.
+Gdy Manager kończy pisanie planu (`doc/plans/<branch>.md`), przygotowuje **briefing** — prompt startowy executora, którego Manager spawnuje bezpośrednio jako subagenta. (Wariant dwóch okien: user wkleja briefing jako pierwszą wiadomość w osobnej sesji executora.)
 
 Cel briefingu: zero-context-loss onboarding. Subagent po przeczytaniu briefingu **wie dokładnie** co robić, gdzie szukać szczegółów, czego unikać, kiedy skończyć. Bez briefingu subagent spędza pierwsze 30 minut na ogarnianiu kontekstu.
 
@@ -43,7 +43,7 @@ Nie ma równoległej pracy w innych worktreeach. Masz swobodę w całym repo, al
 
 ## Zasady projektu do przypomnienia
 
-Gdy załadujesz kontekst, `CLAUDE.md` z repo Ci się wczyta automatycznie. Ale w tym zadaniu **szczególnie istotne** są:
+Przeczytaj CLAUDE.md projektu w całości — briefing nie powtarza jego reguł; wymienia tylko te, które są krytyczne SPECYFICZNIE dla tego taska:
 
 - **<Rule X z CLAUDE.md z wyjaśnieniem dlaczego w tym zadaniu kluczowe>**
 - **<Rule Y>**
@@ -54,21 +54,16 @@ Gdy załadujesz kontekst, `CLAUDE.md` z repo Ci się wczyta automatycznie. Ale w
 1. `git status && git log --oneline -5` — zobacz w jakim stanie zaczynasz
 2. Przeczytaj `doc/plans/<branch-name>.md` w pełni
 3. Przeczytaj pliki z sekcji "Punkty startowe" planu
-4. **Przedstaw userowi plan implementacji** (konkretne komponenty, akcje, flow) **zanim napiszesz pierwszą linię kodu**. Czekaj na approval.
+4. **Przedstaw plan implementacji** (konkretne komponenty, akcje, flow) **zanim napiszesz pierwszą linię kodu** i czekaj na approval Managera, który Cię prowadzi.
 
 ## Gdy skończysz
 
-Sekwencja agent ↔ user ↔ Manager (filozofia: "po co reviewować coś co nie działa" — najpierw user QA, potem **external review przez Managera**, kronika na końcu, **merge przez Managera z user-OK gate**):
+Sekwencja agent ↔ user ↔ Manager (3-STOP — pełna specyfikacja: ~/.claude/skills/code-manager/references/lifecycle-3stop.md):
 
-1. **Implementacja gotowa** → wywołaj `/kronikarz live` (zaloguj implementację). Przygotuj manual test scenariusze (user-friendly, ~10 min wyklikania, język nie-techniczny). **Inline na czat** plus duplikuj do kroniki w sekcji `## 🧪 Testy`.
-2. **STOP #1** — czekaj na user feedback per-test (✅/⚠️/❌).
-3. **Po user QA** → fix in-branch jeśli fail/partial (commit `fix(<scope>): ... per user QA`). Update kroniki (sekcja 🧪 Testy: "Co nie poszło" + "Jak naprawiono: commit X" + "Re-test: ✅"). Jeśli zielone od razu — idź dalej.
-4. **NIE odpalasz `/critical-code-review`** — to robi Manager (ADR-0002, peer review principle). Przygotuj **wiadomość-do-wkleienia** dla usera żeby przekazał Managerowi: TL;DR + status branch (SHA, acceptance) + link do kroniki + "Zlecam odpal /critical-code-review".
-5. **STOP #2** — czekaj aż user wklei Ci wiadomość Managera z findingsami i rekomendacjami per-finding (FIX/BACKLOG/SKIP) + decyzjami usera.
-6. **Po decyzjach Managera** → fix in-branch dla FIX'ów. SKIP entries w kronice z ustrukturyzowanym templatem (Impact / Koszt / Rationale / Re-evaluate gdy — ADR-0011). Update kroniki przez `/kronikarz live`.
-7. **Jeśli były fix-y z review** → re-test scenariuszy dotyczących zmian. **STOP #3** dla user re-weryfikacji. **Jeśli zero fix'ów (wszystko BACKLOG/SKIP)** → pomiń STOP #3.
-8. **Raport końcowy do Managera** (przez user-mediated wiadomość-do-wkleienia): TL;DR + status (user QA ✅, review APPROVE/NEEDS-FIX, re-test ✅/N/A) + lista BACKLOG entries do dopisania + "Zlecam /kronikarz close".
-9. **Twoja praca tu się kończy.** Manager: odpala `/kronikarz close`, pyta usera "merge?", po user "akcept" pushuje + merguje. **NIE pushujesz, nie mergujesz, nie odpalasz `/kronikarz close`** — Manager owner of remote/main.
+1. STOP #1 user QA: /kronikarz live → scenariusze inline (co klikasz → czego oczekujesz) → user testuje; poprawki = fix in-branch + ponowny STOP #1.
+2. STOP #2 review: NIE odpalasz /critical-code-review — raport-do-wkleienia dla Managera; Manager robi review, user decyduje FIX/BACKLOG/SKIP; fixy in-branch + SKIP template.
+3. STOP #3 re-test (tylko jeśli były FIXy): user re-testuje scenariusze dotknięte zmianami.
+4. Raport końcowy do Managera („zlecam /kronikarz close"). NIE pushujesz, NIE mergujesz — Manager owner of remote/main.
 
 **NIE dotykaj shared indexów:**
 - `doc/features/*/backlog.md`
@@ -82,15 +77,15 @@ Manager aktualizuje je post-merge na develop. W Twoim raporcie końcowym **zawrz
 
 **NIE merguj do `<source-branch>`** — user merguje po review.
 
-## Raport zwrotny
+## Raport końcowy
 
-Gdy push + PR zrobione, odpowiedz userowi krótko:
-- Link do PR
+Gdy praca domknięta (po STOP #3 lub gdy wszystkie findingi poszły w BACKLOG/SKIP), raportuj Managerowi krótko:
+- Branch + link do kroniki
 - Czy były odchylenia od planu (i gdzie opisane w kronice)
-- Czy code review wygenerował follow-upy które zostały w backlogu (lista)
+- Follow-upy z code review przygotowane do backlogu (lista, sekcja "Post-merge Manager action")
 - Czy wszystkie acceptance criteria spełnione
 
-User przekaże ten raport Managerowi, który zrobi verification Medium i ewentualny merge.
+Manager robi verification Medium, /kronikarz close i — po "akcept" usera — merge.
 
 Powodzenia. 🚀
 ```

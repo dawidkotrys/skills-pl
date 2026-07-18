@@ -4,6 +4,19 @@ description: Zapisz aktualny kontekst sesji Code Managera przed `/clear`. Pozwal
 
 Cel: utrwal kontekst aktualnej sesji **w roli Code Managera** (strategy mode) do pliku `doc/session/manager-session.md`. User za chwilę zrobi `/clear` — po nim wykona `/restore-session-manager` żeby załadować ten plik z powrotem do kontekstu.
 
+## Kiedy zapisać
+
+Próg dumpu: ~100k tokenów lub sygnały jakościowe (halucynacje nazw plików, rozmyte odpowiedzi). Uwaga: to INNY próg niż handoff subagenta przez artefakty na dysku (~350k) — save/restore dotyczy cyklu `/clear` jednej roli.
+
+**vs auto-compaction** — manualny save/restore przewyższa auto-compaction harnessu gdy:
+
+- **Precyzyjna kontrola** co przetrwa (vs lossy summary)
+- **Twardy fresh window** — dyscyplina `/clear` między slice'ami
+- **Handoff do INNEGO agenta/człowieka** — plik jest przenośny
+- **Przetrwanie crashu**
+
+Prosty single-session case → auto-compaction wystarcza, nie rób ceremonii.
+
 ## Krok 1: Sprawdź lokalizację
 
 ```bash
@@ -21,6 +34,7 @@ Jako Code Manager — strategiczna rola — Twój session-state ma zawierać **w
 
 - **Bieżąca inicjatywa / scope** — nad czym pracujesz, na jakim etapie (planowanie / implementacja / review / merge)
 - **Aktywne branche i worktrees** — `git worktree list`, status każdego (kto pracuje, na jakiej fazie 3-STOP)
+- **Working-tree state** — wynik `git status --short` (niescommitowane pliki); restore używa tego jako baseline do wykrycia driftu na niescommitowanych plikach
 - **Otwarte handoff'y** — czy czekasz na user QA? Na decyzje per-finding po review? Na user akcept dla merge?
 - **Kluczowe decyzje** — co wynegocjowane / zaakceptowane w tej sesji (które ADR-y do napisania, które TODO odhaczone)
 - **Status backlogów** — co odhaczone w tej sesji, jakie nowe entries dopisane
@@ -32,6 +46,8 @@ Jako Code Manager — strategiczna rola — Twój session-state ma zawierać **w
 
 Format pliku `doc/session/manager-session.md`:
 
+**Target: 20-40 linii.** Zapisuj TYLKO deltę — ustalenia werbalne z userem jeszcze nigdzie nie zapisane, precyzyjny next micro-step, otwarte blockery, wskaźniki do plików. NIE kopiuj treści, która już jest w kronice/planie/PRD — linkuj (dysk jest source of truth).
+
 ```markdown
 # Manager session — <YYYY-MM-DD HH:MM>
 
@@ -42,6 +58,10 @@ Format pliku `doc/session/manager-session.md`:
 ## Stan worktreeów
 
 <lista z `git worktree list` + opis fazy każdego>
+
+## Working-tree state
+
+<wynik `git status --short` — niescommitowane pliki (baseline driftu przy restore)>
 
 ## Otwarte handoff'y
 
@@ -86,7 +106,7 @@ Manager session zapisany do `doc/session/manager-session.md` (X linii).
 Możesz teraz wykonać `/clear`. Po wyczyszczeniu wpisz `/restore-session-manager`
 żeby odzyskać kontekst.
 
-Plik zostanie automatycznie usunięty po restore (ulotny session-state).
+Plik zostanie przeniesiony do archiwum po restore (ulotny w aktywnej lokalizacji).
 ```
 
 ## Uwagi
