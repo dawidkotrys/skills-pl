@@ -57,7 +57,7 @@ Tu nie skaczesz od razu do pisania kodu. Najpierw plan, potem audyt planu, dopie
 1. **Ty:** `/grill` — agent przesłuchuje Twój pomysł pytaniami, aż oboje rozumiecie problem **tak samo**. To najważniejszy krok; nie skracaj go.
 2. **Ty:** `/to-prd` — agent spisuje ustalenia w dokument docelowy: opis celu plus podział na cienkie, samodzielne etapy (każdy da działającą wartość).
 3. **Ty:** `/critical-prd-review` — inny agent audytuje ten dokument i szuka luk (bezpieczeństwo, skala, architektura), zanim powstanie kod. Poprawiasz, aż plan jest czysty. Tanie minuty tutaj oszczędzają godziny przepisywania kodu później.
-4. **Ty:** `/code-manager` — Manager bierze pierwszy etap i prowadzi go przez pełen cykl małego taska (plan → kod → Twoje cztery punkty → scalenie).
+4. **Ty:** `/code-manager` — Manager bierze pierwszy etap: najpierw sam rozpisuje go na konkretne zadania z kryteriami ukończenia (robi to komendą `/to-tasks` — Ty jej nie wpisujesz), a potem prowadzi etap przez pełen cykl małego taska (plan → kod → Twoje cztery punkty → scalenie).
 5. Powtarzasz krok 4 dla kolejnych etapów, aż całość jest gotowa.
 
 ```mermaid
