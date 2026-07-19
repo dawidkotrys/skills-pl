@@ -85,6 +85,33 @@ flowchart TD
 
 Jeśli buga prowadzisz przez `/code-manager` (bo chcesz przegląd i kontrolę nad scaleniem), po naprawie wchodzi ten sam cykl czterech punktów co przy małym tasku.
 
+## Co się dzieje w środku, gdy Manager prowadzi etap
+
+Każdy „pełen cykl" z powyższych ścieżek — czy to mały task, czy jeden etap dużej inicjatywy — wygląda w środku tak samo:
+
+1. **Plan.** Manager pisze plan pracy. Przy dużej inicjatywie najpierw rozpisuje etap na konkretne zadania (`/to-tasks`).
+2. **Kod.** Manager uruchamia executora z planem. Executor pisze kod, prowadzi na bieżąco kronikę (zapis decyzji — `/kronikarz`) i przygotowuje dla Ciebie scenariusze testowe.
+3. **Twój test** — punkt decyzyjny 1. Klikasz scenariusze na żywej aplikacji. Poprawki wracają do executora, aż powiesz „ok".
+4. **Przegląd kodu.** Manager odpala `/critical-code-review` w świeżym, niezależnym agencie — ktoś inny niż autor szuka słabych punktów. Manager tłumaczy uwagi na ludzki język.
+5. **Twoje decyzje o uwagach** — punkt decyzyjny 2. Przy każdej: napraw teraz / zapisz na później / świadomie pomiń. Naprawy robi executor, a ich przegląd dostaje tylko poprawione miejsca (nie cały kod od nowa — maksymalnie dwie rundy, potem decyzja wraca do Ciebie).
+6. **Twój re-test** — punkt decyzyjny 3, tylko jeśli coś było naprawiane.
+7. **Zamknięcie.** Manager finalizuje kronikę (`/kronikarz close`), aktualizuje listę zadań i pyta: **„merge?"** — punkt decyzyjny 4. Po Twoim „akcept" scala zmianę.
+
+```mermaid
+flowchart TD
+    A["Manager: plan<br/>(inicjatywa: /to-tasks rozpisuje etap)"] --> B["Executor pisze kod<br/>+ kronika + scenariusze testowe"]
+    B --> C{"1) Ty testujesz<br/>na żywej aplikacji"}
+    C -->|"popraw"| B
+    C -->|"ok"| D["/critical-code-review<br/>świeży agent przegląda kod"]
+    D --> E{"2) Ty decydujesz o uwagach:<br/>napraw / na później / pomiń"}
+    E -->|"naprawy"| F["Executor poprawia<br/>przegląd tylko poprawek"]
+    F --> G{"3) Ty re-testujesz<br/>poprawione miejsca"}
+    E -->|"bez napraw"| H["/kronikarz close<br/>zapis zmian i decyzji"]
+    G -->|"ok"| H
+    H --> I{"4) merge? → akcept"}
+    I --> J["Zmiana scalona"]
+```
+
 ## Nie musisz tego pamiętać
 
 Nie odtwarzaj tego schematu z pamięci. W praktyce wpisujesz `/code-manager` i mówisz, co chcesz osiągnąć — agent zna proces. Sam rozpozna skalę, wskaże brakujący krok („zacznijmy od `/grill`") i poprowadzi Cię dalej, punkt po punkcie. Ten dokument jest po to, żebyś rozumiał, **dlaczego** proces wygląda tak, jak wygląda, i wiedział, czego się spodziewać w każdym z czterech punktów decyzyjnych.
