@@ -39,6 +39,20 @@ git log --oneline -5
 
 Porównaj z opisem w session file. Jeśli **zauważysz drift** (np. plik mówi "STOP #2 na branch X" ale `git log` pokazuje że X jest mergowany) — **zaraportuj to userowi przed dalszą pracą**.
 
+## Krok 3b: Liveness check agentów w tle (OBOWIĄZKOWY, jeśli session file wspomina subagentów)
+
+Jeśli session file wymienia subagenta w tle (handoff z ID agenta, „executor odpalony w tle") — **zweryfikuj, czy agent nadal żyje, ZANIM podejmiesz jakąkolwiek decyzję za niego** (zwłaszcza zanim odpalisz zastępczego):
+
+```bash
+# świeże pliki output tasków tła (mtime + ID agenta w nazwie = ślad życia)
+ls -lat "$TMPDIR"/claude-*/<project-slug>/*/tasks/*.output 2>/dev/null | head
+```
+
+- **Pusty worktree / brak brancha / brak kroniki ≠ martwy agent** — agent może od godzin siedzieć w fazie czytania i nie mieć jeszcze żadnego zapisu na dysku (incydent 2026-07-22: uznany za martwego executor żył, duplikat trzeba było ubijać).
+- **TaskList to NIE lista żywych agentów** (to lista tasków do śledzenia) — pusty wynik niczego nie dowodzi.
+- Dalsze kroki weryfikacji: SendMessage ping na zapisane ID agenta; pytanie do usera, czy widzi działającego agenta (`/tasks`).
+- Zastępczego agenta spawnuj dopiero, gdy śmierć jest **potwierdzona** — nie gdy życie jest jedynie nieudowodnione.
+
 ## Krok 4: Zarchiwizuj plik (ulotny session-state)
 
 ```bash

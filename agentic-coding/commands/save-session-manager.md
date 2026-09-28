@@ -36,6 +36,7 @@ Jako Code Manager — strategiczna rola — Twój session-state ma zawierać **w
 - **Aktywne branche i worktrees** — `git worktree list`, status każdego (kto pracuje, na jakiej fazie 3-STOP)
 - **Working-tree state** — wynik `git status --short` (niescommitowane pliki); restore używa tego jako baseline do wykrycia driftu na niescommitowanych plikach
 - **Otwarte handoff'y** — czy czekasz na user QA? Na decyzje per-finding po review? Na user akcept dla merge?
+- **Agenci w tle** — ID każdego działającego subagenta + czym się zajmuje. ID jest jedynym uchwytem do liveness check przy restore (Krok 3b restore-skilla); dopisz ostrzeżenie, że agent może żyć mimo pustego worktree
 - **Kluczowe decyzje** — co wynegocjowane / zaakceptowane w tej sesji (które ADR-y do napisania, które TODO odhaczone)
 - **Status backlogów** — co odhaczone w tej sesji, jakie nowe entries dopisane
 - **Linki do kluczowych plików** — kroniki live, code-review reports, plany w `doc/plans/<branch>.md` (Format A) lub `doc/plans/<slug>/{prd.md, backlog.md}` (Format B), ADR-y w `doc/decisions/`
@@ -65,6 +66,7 @@ Format pliku `doc/session/manager-session.md`:
 
 ## Otwarte handoff'y
 
+- [ ] SUBAGENT W TLE (id `<agentId>`): <zadanie> — ⚠️ przy restore najpierw liveness check (Krok 3b restore-skilla); pusty worktree ≠ martwy agent
 - [ ] STOP #1 user QA na branch `<X>` — czekam na ✅/⚠️/❌
 - [ ] STOP #2 user decyzje per-finding na branch `<Y>` — czekam na FIX/BACKLOG/SKIP
 - [ ] STOP #3 user re-weryfikacja na branch `<Z>`
