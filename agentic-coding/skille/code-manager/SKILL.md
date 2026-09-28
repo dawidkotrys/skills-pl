@@ -78,6 +78,8 @@ Każdy scenariusz musi być w formacie **co user klika → czego user oczekuje**
 
 Jeśli scenariusz wymaga technicznych narzędzi (DevTools, React Profiler, terminal) — **dla użytkownika nie-technicznego oferuj alternatywę** typu *"Możesz pominąć — Manager / subagent zweryfikuje pomiarowo. Twoja część: subiektywne odczucie 'czy jest płynniej?' przy normalnym używaniu."*
 
+**Nośnik bramki manualnej: lokalny plik HTML na Pulpicie, nigdy artefakt online.** Bramka zbiera od użytkownika decyzje (działa / nie działa / pominięte + uwagi per scenariusz), a artefakt online gubi je — zaznaczenia zostają w jego przeglądarce i nie docierają do Ciebie. Werdykt i uwaga są rozdzielone: „Mam uwagę" to osobny przełącznik, który nie rusza werdyktu — scenariusz może działać i nieść uwagę. Stan zapisuje się sam przy każdej zmianie, a na końcu użytkownik klika „Zbierz wynik" i wrzuca Ci gotowy plik `.md`. Pełna reguła, szkielet do skopiowania i sposób odczytu wyniku: [`references/manual-gate-form.md`](references/manual-gate-form.md). Czytaj **przed** wystawieniem jakiejkolwiek bramki.
+
 **Implikacje po wprowadzeniu zmiany:**
 
 Po każdej decyzji / planie wskaż wprost:
@@ -485,6 +487,7 @@ Bridge mode (Tryb 4B) jest **dramatycznie krótszy** niż full plan, bo PRD nies
 Szczegółowe sekcje w `references/`:
 
 - `collision-detection.md` — proces deep research przy równoległej pracy, format tabeli ryzyk
+- `manual-gate-form.md` — bramka manualna jako lokalny plik HTML (+ `manual-gate-form-template.html`, kanon v3: scenariusze jako dane w `GATE`/`GROUPS`, autozapis przy każdej zmianie, uwaga niezależna od werdyktu, wynik jako Markdown); jak czytać wynik i jak klasyfikować uwagi użytkownika
 - `plan-template.md` — format pliku `doc/plans/<branch>.md`
 - `plans-readme-template.md` — README dla folderu `doc/plans/` gdy tworzony pierwszy raz
 - `subagent-briefing.md` — format wiadomości briefingowej dla subagenta
